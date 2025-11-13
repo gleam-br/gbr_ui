@@ -34,37 +34,15 @@
 //// ```
 ////
 
-import gbr/ui/svg
 import gleam/bool
-import gleam/option.{type Option, None}
+import gleam/option.{None}
 
 import lustre/attribute.{class}
 import lustre/element
 import lustre/element/html
 
-/// UI render required element of generic event `a`.
-///
-/// Wrapper to `lustre/element.{type Elment}`
-///
-pub type UIRender(a) =
-  element.Element(a)
-
-/// List of `gbr/ui.{type UIRender}`.
-///
-pub type UIRenders(a) =
-  List(UIRender(a))
-
-/// List of `gbr/ui.{type UIRenderOpt}`.
-///
-pub type UIRenderOpts(a) =
-  List(UIRenderOpt(a))
-
-/// UI render option element of generic event `a`.
-///
-/// Option to `gbr/ui.{type UIRender}`
-///
-pub type UIRenderOpt(a) =
-  Option(UIRender(a))
+import gbr/ui/core.{type UIRender, type UIRenderOpt, type UIRenders}
+import gbr/ui/svg
 
 /// Construct new super svg element `gbr/ui/svg.{of}`.
 ///

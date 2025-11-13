@@ -471,14 +471,10 @@ gleam test  # Run the tests
 - [ ] UI checkbox
 - [ ] UI header
 - [ ] UI sidebar
+- [ ] UI breadcrumb
 - [ ] UI search
 - [ ] UI profile
-- [ ] UI avatar
-- [ ] UI avatar
-- [ ] UI avatar
-- [ ] UI avatar
-- [ ] UI avatar
-- [ ] UI avatar
+- [ ] UI box
 - [x] UI layouts
 - [x] UI svg
 - [x] UI attr

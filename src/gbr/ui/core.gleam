@@ -1,0 +1,70 @@
+////
+//// Gleam UI core type and functinos.
+////
+
+import gleam/list
+import gleam/option.{type Option}
+
+import lustre/attribute as a
+import lustre/element
+
+pub const id_prefix = "gbr-ui-"
+
+/// UI render required element of generic event `a`.
+///
+/// Wrapper to `lustre/element.{type Elment}`
+///
+pub type UIRender(a) =
+  element.Element(a)
+
+/// List of `gbr/ui.{type UIRender}`.
+///
+pub type UIRenders(a) =
+  List(UIRender(a))
+
+/// List of `gbr/ui.{type UIRenderOpt}`.
+///
+pub type UIRenderOpts(a) =
+  List(UIRenderOpt(a))
+
+/// UI render option element of generic event `a`.
+///
+/// Option to `gbr/ui.{type UIRender}`
+///
+pub type UIRenderOpt(a) =
+  Option(UIRender(a))
+
+/// Attributes is list of two string tuple.
+///
+pub type UIAttrs =
+  List(#(String, String))
+
+/// Label is form by text and attributes.
+///
+pub type UILabel {
+  Label(text: String, att: UIAttrs)
+}
+
+/// Attributes exists any name.
+///
+pub fn attrs_any(att: UIAttrs, any_name: String) -> Bool {
+  use #(name, _) <- list.any(att)
+
+  name == any_name
+}
+
+/// Attributes remove name, please.
+///
+pub fn attrs_remove(att: UIAttrs, to_remove: String) -> UIAttrs {
+  use #(name, _) <- list.filter(att)
+
+  name == to_remove
+}
+
+/// Attributes map to list of `lustre/attribute.{type Attribute}`, please.
+///
+pub fn attrs_to_lustre(att: UIAttrs) -> List(a.Attribute(a)) {
+  use #(name, value) <- list.map(att)
+
+  a.attribute(name, value)
+}
