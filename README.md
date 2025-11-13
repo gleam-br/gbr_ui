@@ -463,10 +463,22 @@ gleam test  # Run the tests
 
 - [ ] Unit tests
 - [ ] More docs
-- [ ] UI input
-- [ ] UI checkbox
 - [ ] UI typo
+- [ ] UI form
 - [ ] UI button
+- [ ] UI input
+- [ ] UI select
+- [ ] UI checkbox
+- [ ] UI header
+- [ ] UI sidebar
+- [ ] UI search
+- [ ] UI profile
+- [ ] UI avatar
+- [ ] UI avatar
+- [ ] UI avatar
+- [ ] UI avatar
+- [ ] UI avatar
+- [ ] UI avatar
 - [x] UI layouts
 - [x] UI svg
 - [x] UI attr
