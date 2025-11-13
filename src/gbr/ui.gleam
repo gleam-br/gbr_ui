@@ -1,5 +1,5 @@
 ////
-//// Gleam UI library by @gleam-br
+//// 🎨 Gleam UI library by @gleam-br
 ////
 //// Loader:
 ////
@@ -38,7 +38,7 @@ import gbr/ui/svg
 import gleam/bool
 import gleam/option.{type Option, None}
 
-import lustre/attribute.{class}
+import lustre/attribute.{alt, class, src}
 
 import lustre/element
 import lustre/element/html
@@ -209,6 +209,41 @@ pub fn main_with_breadcrumb(
   ])
 }
 
+/// UI grid layout with left, right, inner elements.
+///
+/// Excelent layout to one page message from errors, e.g. 404 or page to payment success message.
+///
+/// Supose page 404 with grid img background render function:
+///
+/// ```gleam
+/// pub fn render() -> Element(Msg) {
+///   let img = html.img([src("/assets/grid-01.svg"), alt("Grid")])
+///   let inner = [
+///     html.h1([], [html.text("404: Not found")])
+///   ]
+///
+///   ui.grid(left: img, right: img, inner:)
+/// }
+/// ```
+///
+/// ### Fn desc: Transform three `3 -> 1`
+///
+/// Three elements to one element with grid layout.
+///
+pub fn grid(
+  left: UIRenders(a),
+  right: UIRenders(a),
+  inner: UIRenders(a),
+) -> UIRender(a) {
+  html.div([class(grid_content_class)], [
+    html.div([class(grid_main_class)], [
+      html.div([class(grid_left_class)], left),
+      html.div([class(grid_right_class)], right),
+      ..inner
+    ]),
+  ])
+}
+
 // PRIVATE
 //
 
@@ -225,3 +260,11 @@ const main_body_class = "mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6"
 const horizontal_class = "relative p-6 sm:p-0"
 
 const horizontal_main_class = "relative flex flex-col justify-center w-full h-screen bg-white dark:bg-gray-900 sm:p-0 lg:flex-row"
+
+const grid_content_class = "relative items-center hidden w-full h-full bg-brand-950 dark:bg-white/5 lg:grid lg:w-1/2"
+
+const grid_main_class = "flex items-center justify-center z-1"
+
+const grid_left_class = "absolute right-0 top-0 -z-1 w-full max-w-[250px] xl:max-w-[450px]"
+
+const grid_right_class = "absolute bottom-0 left-0 -z-1 w-full max-w-[250px] rotate-180 xl:max-w-[450px]"
