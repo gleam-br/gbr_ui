@@ -38,8 +38,7 @@ import gbr/ui/svg
 import gleam/bool
 import gleam/option.{type Option, None}
 
-import lustre/attribute.{alt, class, src}
-
+import lustre/attribute.{class}
 import lustre/element
 import lustre/element/html
 
