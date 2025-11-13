@@ -463,6 +463,13 @@ gleam test  # Run the tests
 
 - [ ] Unit tests
 - [ ] More docs
+- [ ] UI input
+- [ ] UI checkbox
+- [ ] UI typo
+- [ ] UI button
+- [x] UI layouts
+- [x] UI svg
+- [x] UI attr
 - [x] GH workflow
   - [x] test & build
   - [x] changelog & issue to doc
