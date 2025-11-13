@@ -1,0 +1,98 @@
+name: '🐛 Bug'
+description: Criar um relatório p/ ajudar a melhorar o projeto!
+title: '🐛 Bug: <title>'
+labels: ['bug']
+body:
+    - type: markdown
+      attributes:
+          value: |
+              1. Por favor, fale em `Português`.
+              2. Tenha certeza de estar utilizando a última versão.
+              3. Tire um tempo p/ verificar se este erro já foi reportado antes.
+              4. É muito importante prover detalhes e logs pertinentes, detalhes incompletos irão ser tratados como
+                 um erro inválido.
+              <br />
+
+    - type: dropdown
+      id: priority-type
+      attributes:
+          label: Prioridade
+          description: |
+              Quanto este erro é crítico?
+              Error que completamente quebram o sistema devem ser classificados como urgent.
+              **`Required`**
+          options:
+              - 'Low'
+              - 'Medium'
+              - 'High'
+              - 'Urgent'
+      validations:
+          required: true
+
+    - type: input
+      id: ver
+      attributes:
+          label: 'Versão'
+          description: |
+              Versão do projeto que você está usando
+              Versão pode ser localizada em ./tags
+              **`Required`**
+          placeholder: 'Ex: vX.X.X'
+      validations:
+          required: true
+
+    - type: textarea
+      id: description
+      attributes:
+          label: Descrição
+          description: |
+              Por favor, descreva o seu erro aqui.
+              **`Required`**
+      validations:
+          required: true
+
+    - type: textarea
+      id: steps-reproduce
+      attributes:
+          label: Etapas p/ Reproduzir
+          description: |
+              Descreva as etapas p/ reproduzir o erro.
+              **`Required`**
+          value: |
+              1.
+              2.
+      validations:
+          required: true
+
+    - type: textarea
+      id: expected-behavior
+      attributes:
+          label: Comportamento Esperado
+          description: |
+              O quê devemos esperar que o sistema faça, se este estiver funcionando corretamente.
+              **`Required`**
+          value: |
+              -
+              -
+      validations:
+          required: true
+
+    - type: textarea
+      id: logs-console
+      attributes:
+          label: Logs
+          description: |
+              Lista qualquer mensagem de error, logs, etc encontrados durante a análise do erro.
+              **`Not Required`**
+          render: shell
+
+    - type: textarea
+      id: attachments
+      attributes:
+          label: 'Anexos'
+          description: |
+              Adicionar anexos aqui.
+              Anexe um teste, print screen, etc que represente o erro.
+              Tenha certeza de não divulgar informações de segurança nos anexos.
+              Pode ser GIFs, melhor ainda.
+              **`Not Required`**

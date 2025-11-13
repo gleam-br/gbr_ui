@@ -1,0 +1,31 @@
+# top-most EditorConfig file
+root = true
+
+# Matches all files by default
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+# Specific rules for Gleam and related files
+[*.{gleam,erl,hrl,ex,mjs,js,ts,sh,md}]
+charset = utf-8
+indent_size = 2
+indent_style = space
+max_line_length = 80
+trim_trailing_whitespace = true
+
+[*.css]
+indent_size = 2
+
+[*.java]
+charset = utf-8
+indent_size = 4
+indent_style = space
+trim_trailing_whitespace = true
+
+[package.json]
+indent_style = space
+indent_size = 2
+
+[Makefile]
+indent_style = tab

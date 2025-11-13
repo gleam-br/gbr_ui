@@ -1,0 +1,49 @@
+name: '💡 Feature'
+description: Tem uma sugestão? Aplique sua requisição aqui.
+title: '💡 Feat: <title>'
+labels: ['feat']
+body:
+    - type: markdown
+      attributes:
+          value: |
+              1. Por favor, fale em `Português`.
+              2. Tenha certeza de estar utilizando a última versão.
+              3. Tire um tempo p/ verificar se esta feature já foi proposta antes.
+              4. É muito importante prover detalhes que sejam pontuais p/ implementar a feature.
+            <br />
+
+    - type: textarea
+      id: text-description
+      attributes:
+          label: Descrição
+          description: |
+              Explique sua funcionalidade. Seja detalhado:
+              Se sua funcionalidade endereça algum problema, por favor, explique o problema.
+              **`Required`**
+          placeholder: |
+              Eu gostaria de requisitar ...
+      validations:
+          required: true
+
+    - type: textarea
+      id: text-benefits
+      attributes:
+          label: Benefícios
+          description: |
+              Explique por quê esta funcionalidade deve beneficiar o sistema e seus usuários, e não somente um ou dois usuários.
+              **`Required`**
+      validations:
+          required: true
+
+    - type: textarea
+      id: attachments
+      attributes:
+          label: 'Anexos'
+          description: |
+              Se possível, provenha screenshots.
+              Precisa que q funcionalidade esteja em um determinado lugar? Marque este lugar no screenshot.
+              Precisa que algo seja modificado? Tente criar um mockup.
+              Mais detalhes de como deve se parecer esta funcionalidade, o melhor possível.
+              **`Not Required`**
+      validations:
+          required: false

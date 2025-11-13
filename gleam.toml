@@ -1,0 +1,20 @@
+name = "gbr_ui"
+version = "1.0.0"
+
+# Fill out these fields if you intend to generate HTML documentation or publish
+# your project to the Hex package manager.
+#
+description = "🎨 Gleam UI lustre library by @gleam-br"
+licences = ["Apache-2.0"]
+repository = { type = "github", user = "gleam-br", repo = "gbr_ui" }
+# links = [{ title = "Website", href = "" }]
+#
+# For a full reference of all the available options, you can have a look at
+# https://gleam.run/writing-gleam/gleam-toml/.
+
+[dependencies]
+lustre = "~> 5.4"
+gleam_stdlib = "~> 0.65"
+
+[dev-dependencies]
+gleeunit = "~> 1.0"

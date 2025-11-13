@@ -1,0 +1,45 @@
+name: '🗺️ Roadmap'
+description: Planejamento futuro do projeto.
+title: '🗺️ Roadmap: <title>'
+labels: ['Type ◦ Roadmap']
+body:
+    - type: input
+      id: roadmap-version-target
+      attributes:
+          label: Versão Alvo
+          description: Qual versão estamos incluíndo ao projeto?
+          placeholder: "vX.X.X"
+      validations:
+          required: true
+
+    - type: markdown
+      id: roadmap-summary
+      attributes:
+          value: |
+              1. Por favor, fale em `Português`.
+              2. Por favor, tire um tempo p/ checar se sua sugestão já está implementada ou se encontra em outro ticket/roadmap.
+              3. Seja detalhado e direto ao ponto.
+              4. Descreva os benefícios deste plano, e o quê deve ser considerado durante a implementação.
+      validations:
+          required: true
+
+    - type: textarea
+      id: roadmap-details
+      attributes:
+          label: Detalhes
+          description: |
+              Explique as etapas vitais p/ um ponto de partida.
+          placeholder: |
+              - Requer atualizações das bibliotecas X, Y, Z.
+              - Deve primeiro integrar ao item A, B, C.
+      validations:
+          required: true
+
+    - type: textarea
+      id: roadmap-screenshots
+      attributes:
+          label: 'Info Adicional / Exemplos / Screenshots'
+          description: |
+              Se possível, prover mockups ou exemplos.
+              Qualquer informação adicional que você precisa adicionar.
+              Exemplo de códigos.
