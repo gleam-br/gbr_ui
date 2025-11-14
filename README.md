@@ -469,13 +469,18 @@ gleam test  # Run the tests
 - [ ] UI input
 - [ ] UI select
 - [ ] UI checkbox
+- [ ] UI box
 - [ ] UI header
 - [ ] UI sidebar
 - [ ] UI breadcrumb
 - [ ] UI search
 - [ ] UI profile
-- [ ] UI box
-- [x] UI layouts
+- [ ] UI notify
+- [ ] UI login
+  - [ ] basic
+  - [ ] provider
+- [x] UI layout
+- [x] UI alert
 - [x] UI svg
 - [x] UI attr
 - [x] GH workflow

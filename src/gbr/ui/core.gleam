@@ -39,10 +39,22 @@ pub type UIRenderOpt(a) =
 pub type UIAttrs =
   List(#(String, String))
 
-/// Label is form by text and attributes.
+/// Label is text and attributes.
 ///
 pub type UILabel {
-  Label(text: String, att: UIAttrs)
+  UILabel(text: String, att: UIAttrs)
+}
+
+/// Desc is title and description.
+///
+pub type UIDesc {
+  UIDesc(title: String, desc: String)
+}
+
+/// Link is href and title.
+///
+pub type UILink {
+  UILink(href: String, title: String)
 }
 
 /// Attributes exists any name.
