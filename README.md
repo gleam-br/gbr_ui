@@ -465,7 +465,6 @@ gleam test  # Run the tests
 - [ ] More docs
 - [ ] UI form
 - [ ] UI button
-- [ ] UI input
 - [ ] UI select
 - [ ] UI checkbox
 - [ ] UI box
@@ -480,6 +479,7 @@ gleam test  # Run the tests
   - [ ] provider
 - [x] UI layout
 - [x] UI core
+- [x] UI input
 - [x] UI typo
 - [x] UI alert
 - [x] UI svg
