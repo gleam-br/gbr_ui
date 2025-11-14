@@ -463,12 +463,9 @@ gleam test  # Run the tests
 
 - [ ] Unit tests
 - [ ] More docs
-- [ ] UI form
-- [ ] UI select
 - [ ] UI box
 - [ ] UI header
 - [ ] UI sidebar
-- [ ] UI breadcrumb
 - [ ] UI search
 - [ ] UI profile
 - [ ] UI notify
@@ -481,8 +478,12 @@ gleam test  # Run the tests
 - [x] UI typo
 - [x] UI alert
 - [x] UI svg
+- [x] UI form
 - [x] UI button
+- [x] UI select
 - [x] UI checkbox
+- [x] UI logotype
+- [x] UI breadcrumb
 - [x] GH workflow
   - [x] test & build
   - [x] changelog & issue to doc
