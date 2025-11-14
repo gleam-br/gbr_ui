@@ -484,6 +484,7 @@ gleam test  # Run the tests
 - [x] UI checkbox
 - [x] UI logotype
 - [x] UI breadcrumb
+- [x] UI separator
 - [x] GH workflow
   - [x] test & build
   - [x] changelog & issue to doc
