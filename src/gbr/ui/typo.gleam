@@ -1,5 +1,5 @@
 ////
-//// Gleam UI typography super element.
+//// ⌨ Gleam UI typography super element.
 ////
 
 import gleam/list
@@ -8,7 +8,9 @@ import lustre/attribute as a
 import lustre/element.{type Element}
 import lustre/element/html
 
-import gbr/ui/core.{type UIAttrs, type UILabel, UILabel, attrs_to_lustre, label}
+import gbr/ui/core.{
+  type UIAttrs, type UILabel, UILabel, attrs_to_lustre, uilabel,
+}
 
 type Label =
   UILabel
@@ -34,43 +36,53 @@ pub opaque type UITypo {
 /// H1 super element.
 ///
 pub fn h1(text: String) -> UITypo {
-  H1(label(text:, att: [#("class", text_color_class), #("class", "text-9xl")]))
+  H1(
+    uilabel(text:, att: [#("class", text_color_class), #("class", "text-9xl")]),
+  )
 }
 
 /// H1 super element.
 ///
 pub fn h2(text: String) -> UITypo {
-  H2(label(text:, att: [#("class", text_color_class), #("class", "text-8xl")]))
+  H2(
+    uilabel(text:, att: [#("class", text_color_class), #("class", "text-8xl")]),
+  )
 }
 
 /// H3 super element.
 ///
 pub fn h3(text: String) -> UITypo {
-  H3(label(text:, att: [#("class", text_color_class), #("class", "text-7xl")]))
+  H3(
+    uilabel(text:, att: [#("class", text_color_class), #("class", "text-7xl")]),
+  )
 }
 
 /// H4 super element.
 ///
 pub fn h4(text: String) -> UITypo {
-  H4(label(text:, att: [#("class", text_color_class), #("class", "text-6xl")]))
+  H4(
+    uilabel(text:, att: [#("class", text_color_class), #("class", "text-6xl")]),
+  )
 }
 
 /// H5 super element.
 ///
 pub fn h5(text: String) -> UITypo {
-  H5(label(text:, att: [#("class", text_color_class), #("class", "text-5xl")]))
+  H5(
+    uilabel(text:, att: [#("class", text_color_class), #("class", "text-5xl")]),
+  )
 }
 
 /// Text super element.
 ///
 pub fn text(text: String) -> UITypo {
-  Text(label(text:, att: [#("class", text_color_class)]))
+  Text(uilabel(text:, att: [#("class", text_color_class)]))
 }
 
 /// Paragraph super element.
 ///
 pub fn p(text: String) -> UITypo {
-  Paragraph(label(text:, att: [#("class", text_color_class)]))
+  Paragraph(uilabel(text:, att: [#("class", text_color_class)]))
 }
 
 /// Mark super element.

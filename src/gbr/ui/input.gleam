@@ -15,7 +15,7 @@ import lustre/event
 
 import gbr/ui/core.{
   type UIAttrs, type UILabel, UILabel, attrs_any, attrs_remove, attrs_to_lustre,
-  id_prefix, label as uilabel,
+  id_prefix, uilabel,
 }
 import gbr/ui/svg
 import gbr/ui/svg/form as svg_form

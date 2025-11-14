@@ -59,8 +59,20 @@ pub type UILink {
 
 /// New super label element
 ///
-pub fn label(text text, att att) {
+pub fn uilabel(text text, att att) {
   UILabel(text:, att:)
+}
+
+/// New super label element
+///
+pub fn uidesc(title title, desc desc) {
+  UIDesc(title:, desc:)
+}
+
+/// New super label element
+///
+pub fn uilink(href href, title title) {
+  UILink(href:, title:)
 }
 
 /// Attributes exists any name.
