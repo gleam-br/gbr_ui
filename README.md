@@ -463,7 +463,6 @@ gleam test  # Run the tests
 
 - [ ] Unit tests
 - [ ] More docs
-- [ ] UI typo
 - [ ] UI form
 - [ ] UI button
 - [ ] UI input
@@ -480,9 +479,10 @@ gleam test  # Run the tests
   - [ ] basic
   - [ ] provider
 - [x] UI layout
+- [x] UI core
+- [x] UI typo
 - [x] UI alert
 - [x] UI svg
-- [x] UI attr
 - [x] GH workflow
   - [x] test & build
   - [x] changelog & issue to doc

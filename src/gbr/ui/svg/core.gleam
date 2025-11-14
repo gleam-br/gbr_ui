@@ -25,6 +25,8 @@ pub type Mask {
   Path(kind: Path, att: Properties)
 }
 
+/// Svg super element.
+///
 pub type Svg {
   Svg(
     h: Int,

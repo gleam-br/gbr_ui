@@ -12,17 +12,17 @@ import lustre/element.{type Element}
 import lustre/element/html
 import lustre/element/svg
 
-import gbr/ui/svg/model.{type Svg, Circle, Path, Svg}
+import gbr/ui/svg/core.{type Svg, Circle, Path, Svg}
 import gbr/ui/svg/util.{
   to_animate, to_att, to_attrs_circle, to_attrs_rect, to_path,
 }
 
-/// Function identity to `gbr/ui/svg/model.{type Svg}`.
+/// Function identity to `gbr/ui/svg/core.{type Svg}`.
 ///
 pub type Identity =
   fn(Svg) -> Svg
 
-/// Constructor of super svg element `gbr/ui/svg/model.{type Svg}`.
+/// Constructor of super svg element `gbr/ui/svg/core.{type Svg}`.
 ///
 pub fn of(height h, width w) -> Svg {
   Svg(
@@ -38,7 +38,7 @@ pub fn of(height h, width w) -> Svg {
   )
 }
 
-/// Append list in `gbr/ui/svg/model.{type Svg}` classes.
+/// Append list in `gbr/ui/svg/core.{type Svg}` classes.
 ///
 pub fn classes(in: Svg, classes: List(String)) -> Svg {
   Svg(..in, classes: list.append(in.classes, classes))

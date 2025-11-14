@@ -2,7 +2,7 @@
 //// Gleam UI super svg alert icons
 ////
 
-import gbr/ui/svg/model.{type Svg}
+import gbr/ui/svg/core.{type Svg}
 import gbr/ui/svg/util
 
 pub fn info(in: Svg) -> Svg {

@@ -10,7 +10,7 @@ import lustre/element
 import lustre/element/html
 import lustre/element/svg
 
-import gbr/ui/svg/model.{type Circle, type Path, type Properties, type Rect, Svg}
+import gbr/ui/svg/core.{type Circle, type Path, type Properties, type Rect, Svg}
 
 pub fn to_path(path: Path) {
   case path {

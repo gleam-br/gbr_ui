@@ -57,6 +57,12 @@ pub type UILink {
   UILink(href: String, title: String)
 }
 
+/// New super label element
+///
+pub fn label(text text, att att) {
+  UILabel(text:, att:)
+}
+
 /// Attributes exists any name.
 ///
 pub fn attrs_any(att: UIAttrs, any_name: String) -> Bool {
