@@ -9,9 +9,10 @@ import lustre/attribute as a
 import lustre/element/html
 import lustre/event
 
-import gbr/ui/core.{type UIRender, to_id}
 import gbr/ui/svg
 import gbr/ui/svg/icons as svg_icons
+
+import gbr/ui/core.{type UIRender, to_id}
 
 type Select =
   UISelect
@@ -28,7 +29,13 @@ type Render(a) =
 /// Select super element.
 ///
 pub opaque type UISelect {
-  Select(id: String, multi: Bool, title: String, items: Items)
+  Select(
+    id: String,
+    placeholder: String,
+    multi: Bool,
+    title: String,
+    items: Items,
+  )
 }
 
 /// Select render type.
@@ -46,7 +53,7 @@ pub type UISelectItem {
 /// Constructor of select super element.
 ///
 pub fn new(id: String) -> Select {
-  Select(id: to_id(id), title: "", multi: False, items: [])
+  Select(id: to_id(id), placeholder: "", title: "", multi: False, items: [])
 }
 
 /// Set select title.
@@ -79,7 +86,7 @@ pub fn selected(in: Select, value: String) -> Select {
 /// Render select super element to `lustre/element.{type Element}`.
 ///
 pub fn render(in: Select, render: Render(a)) -> UIRender(a) {
-  let Select(id:, multi:, title:, items:) = in
+  let Select(id:, placeholder:, multi:, title:, items:) = in
   let UISelectRender(onchange:) = render
 
   use <- bool.guard(multi, do_multi(in))
@@ -87,7 +94,7 @@ pub fn render(in: Select, render: Render(a)) -> UIRender(a) {
   html.div([], [
     html.label(
       [
-        a.for("falcon-admin-select-" <> id),
+        a.for("gbr-admin-select-" <> id),
         a.class(title_class),
       ],
       [html.text(title)],
@@ -95,8 +102,9 @@ pub fn render(in: Select, render: Render(a)) -> UIRender(a) {
     html.div([a.class(container_class)], [
       html.select(
         [
-          a.id("falcon-admin-select-" <> title),
+          a.id("gbr-admin-select-" <> title),
           a.class(select_class),
+          a.placeholder(placeholder),
           event.on_change(onchange),
         ],
         do_items(items),
@@ -123,11 +131,11 @@ fn items_toggle(value, items: Items) {
 }
 
 fn do_multi(in: Select) -> UIRender(a) {
-  let Select(id:, title:, items:, ..) = in
+  let Select(id:, placeholder:, title:, items:, ..) = in
   html.div([], [
     html.label(
       [
-        a.for("falcon-admin-select-" <> id),
+        a.for("gbr-admin-select-" <> id),
         a.class(title_class),
       ],
       [html.text(title)],
@@ -135,7 +143,7 @@ fn do_multi(in: Select) -> UIRender(a) {
     html.div([], [
       html.select(
         [
-          a.id("falcon-admin-select-" <> id),
+          a.id("gbr-admin-select-" <> id),
           a.class("hidden"),
         ],
         do_items(items),
@@ -161,7 +169,7 @@ fn do_multi(in: Select) -> UIRender(a) {
                             True -> "block"
                             False -> "hidden"
                           }),
-                          a.placeholder("Selecionar..."),
+                          a.placeholder(placeholder),
                           a.class(
                             "h-full w-full appearance-none border-0 bg-transparent p-1 pr-2 text-sm outline-hidden placeholder:text-gray-800 focus:border-0 focus:ring-0 focus:outline-hidden dark:placeholder:text-white/90",
                           ),

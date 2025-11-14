@@ -23,10 +23,13 @@ type Login =
 type Render(a) =
   UILoginBasicRender(a)
 
+/// Login basic super element.
+///
 pub opaque type UILoginBasic {
   UILoginBasic(
-    username: String,
-    password: String,
+    username: input.UIInput,
+    password: input.UIInput,
+    submit: button.UIButton,
     password_visible: Bool,
     keep_logged_in: Bool,
     with_keep_logged_in: Bool,
@@ -34,6 +37,8 @@ pub opaque type UILoginBasic {
   )
 }
 
+/// Login basic render.
+///
 pub opaque type UILoginBasicRender(a) {
   UILoginBasicRender(
     in: Login,
@@ -45,19 +50,29 @@ pub opaque type UILoginBasicRender(a) {
   )
 }
 
-pub const data_empty = UILoginBasic(
-  username: "",
-  password: "",
-  password_visible: False,
-  keep_logged_in: False,
-  with_keep_logged_in: True,
-  with_forgot_password: True,
-)
+/// New login basic empty.
+///
+pub fn empty() -> Login {
+  UILoginBasic(
+    username: input.text("login-basic-username"),
+    password: input.password("login-basic-password"),
+    submit: button.new("login-basic-btn-submit"),
+    password_visible: False,
+    keep_logged_in: False,
+    with_keep_logged_in: True,
+    with_forgot_password: True,
+  )
+}
 
 /// New login basic super element.
 ///
-pub fn new(username: String, password: String) -> Login {
-  UILoginBasic(..data_empty, username:, password:)
+pub fn new(username: String, password: String, submit_text: String) -> Login {
+  let in = empty()
+  let username = input.label(in.username, username, [])
+  let password = input.label(in.password, password, [])
+  let submit = button.label(in.submit, uilabel(submit_text, []))
+
+  UILoginBasic(..empty(), username:, password:, submit:)
 }
 
 /// New login basic render.
@@ -115,11 +130,13 @@ pub fn render(at: Render(a)) {
     onkeep_logged_in:,
   ) = at
   let UILoginBasic(
+    username,
+    password,
+    submit,
     password_visible:,
     keep_logged_in:,
     with_forgot_password:,
     with_keep_logged_in:,
-    ..,
   ) = in
   let eye =
     form.eye(password_visible, [
@@ -127,18 +144,14 @@ pub fn render(at: Render(a)) {
       |> option.unwrap(a.none()),
     ])
   let username =
-    input.email("login-user")
+    username
     |> input.primary()
-    |> input.label("Usuário", [])
-    |> input.placeholder("Preencha seu usuário")
     |> input.at()
     |> input.on_change_opt(onchange_username)
     |> input.render()
   let password =
-    input.password("login-pass")
+    password
     |> input.primary()
-    |> input.label("Senha", [])
-    |> input.placeholder("Preencha sua senha")
     |> input.visible(password_visible)
     |> input.at_right([], [eye])
     |> input.on_change_opt(onchange_password)
@@ -168,9 +181,8 @@ pub fn render(at: Render(a)) {
     ])
   let submit =
     html.div([], [
-      button.new("form-basic-btn-submit")
+      submit
       |> button.primary()
-      |> button.label(uilabel("Sign In", []))
       |> button.at()
       |> button.on_click_opt(onsubmit)
       |> button.render(),
