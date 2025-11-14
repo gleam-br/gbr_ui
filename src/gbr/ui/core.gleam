@@ -26,6 +26,12 @@ pub type UIRenders(a) =
 pub type UIRenderOpts(a) =
   List(UIRenderOpt(a))
 
+pub type UIAttribute(a) =
+  a.Attribute(a)
+
+pub type UIAttributes(a) =
+  List(UIAttribute(a))
+
 /// UI render option element of generic event `a`.
 ///
 /// Option to `gbr/ui.{type UIRender}`
