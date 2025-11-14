@@ -37,11 +37,71 @@ fn view(model: Model) -> Element(Msg) {
 
   ui.main(header:, sidebar:, content:)
 }
-
 // init, update ...
 ```
 
 Further documentation can be found at <https://hexdocs.pm/gbr_ui>.
+
+## ✍ Design
+
+In view element at render type show with render function.
+"No elemento de visualização no tipo de renderização mostrar com função de renderização." `pt-BR`
+
+Then, the module functions always reveice an element view.
+"Então, as funções dos módulos recebem sempre um elemento de visualização."
+
+Could be function to set attributes or others.
+"Poderiam ser funções para altera atributos ou outras coisas."
+
+Then, the element view by a transform function at a render type to render function return lustre element.
+"Então, o element de visualização por uma função de transformação em um tipo de renderização p/ a função de renderização retornar um elemento `lustre/element.{type Element}`."
+
+> Not is required, could be direct in element view to render function.
+> "Não é obrigatório, pode ser direto no elemento de visualização p/ a função de rederização"
+
+Supose, a button text and svg at left side:
+"Suponha, um botão de texto e um svg do lado esquerdo:"
+
+```gleam
+import gbr/ui/button
+import gbr/ui/svg
+import gbr/ui/svg/icons svg_icons
+import gbr/ui/core.{type UIRender, type UILabel, uilabel}
+
+pub fn show(id: String, text: UILabel, onclick: a) -> UIRender(a) {
+  // render inner details
+  let inner = [
+    // new element view svg
+    // "Novo elemento de visualização svg :)"
+    svg.new("btn-icon-back", 20, 20)
+    // set behavior to back icon
+    // "Altera o atributo class"
+    |> svg_icons.back()
+    // render function direct transform element view to lustre element
+    // "Função de renderização transforma p/ lustre"
+    |> svg.render(),
+  ]
+
+  // new element view
+  // "Novo elemento de visualização"
+  button.new(id)
+  // set attribute class
+  // "Altera o atributo class"
+  |> button.class(class_back)
+  // set attribute label
+  // "Altera o atributo label"
+  |> button.label(text)
+  // render type function
+  // "A função de tipo de renderização"
+  |> button.at_left(inner)
+  // set render type attribute on click event
+  // "Altera o tipo de renderização p/ evento on click"
+  |> button.on_click(onclick)
+  // render function transform to lustre element
+  // "Função de renderização transforma p/ lustre"
+  |> button.render()
+}
+```
 
 ## ✏️ Styling
 

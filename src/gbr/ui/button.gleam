@@ -181,7 +181,7 @@ pub fn class(in: Button, class: String) -> Button {
 /// Set button disabled.
 ///
 pub fn primary(in: Button) -> Button {
-  UIButton(..in, att: [#("class", primary_class), ..in.att])
+  class(in, primary_class)
 }
 
 /// New button render at right inner and onclick event.
@@ -249,7 +249,8 @@ pub fn back(id: String, text: Label, onclick: a) -> UIRender(a) {
     |> svg.render(),
   ]
 
-  UIButton(..new(id), att: [#("class", class_back)])
+  new(id)
+  |> class(class_back)
   |> label(text)
   |> at_left(inner)
   |> on_click(onclick)
@@ -273,7 +274,8 @@ pub fn sidebar(id: String, visible: Bool, onclick: a) -> UIRender(a) {
     False -> ""
   }
   let button =
-    UIButton(..new(id), att: [#("class", sidebar_class <> class_toggle)])
+    new(id)
+    |> class(sidebar_class <> class_toggle)
   let inner = [
     svg.new("btn-icon-sidebar-hamburguer-small", 12, 16)
       |> svg_icons.hamburguer_small()
@@ -297,7 +299,9 @@ pub fn sidebar(id: String, visible: Bool, onclick: a) -> UIRender(a) {
 /// Render dark mode toggle button.
 ///
 pub fn dark_mode(id: String, onclick: a) -> UIRender(a) {
-  let button = UIButton(..new(id), att: [#("class", darkmode_class)])
+  let button =
+    new(id)
+    |> class(darkmode_class)
   let inner = [
     svg.new("btn-icon-dark-mode-moon", 20, 20)
       |> svg_icons.moon()
@@ -317,7 +321,9 @@ pub fn dark_mode(id: String, onclick: a) -> UIRender(a) {
 /// Render app nav mobile toggle button.
 ///
 pub fn app_nav(id: String, onclick: a) -> UIRender(a) {
-  let button = UIButton(..new(id), att: [#("class", app_nav_class)])
+  let button =
+    new(id)
+    |> class(app_nav_class)
   let inner = [
     svg.new("btn-icon-app-nav", 24, 24)
     |> svg_icons.app_nav()
