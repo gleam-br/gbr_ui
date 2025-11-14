@@ -13,14 +13,14 @@ import gbr/ui/core.{type UIRender, to_id}
 import gbr/ui/svg
 import gbr/ui/svg/icons as svg_icons
 
+type Select =
+  UISelect
+
 type Item =
   UISelectItem
 
 type Items =
   List(Item)
-
-type Select =
-  UISelect
 
 type Render(a) =
   UISelectRender(a)

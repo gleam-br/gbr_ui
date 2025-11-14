@@ -88,10 +88,16 @@ type State {
   // Active
 }
 
+type Button =
+  UIButton
+
+type Render(a) =
+  UIButtonRender(a)
+
 /// Button super element.
 ///
-pub opaque type Button {
-  Button(
+pub opaque type UIButton {
+  UIButton(
     id: String,
     att: Attrs,
     kind: Type,
@@ -104,14 +110,14 @@ pub opaque type Button {
 
 /// Button render type.
 ///
-pub type ButtonRender(a) {
-  ButtonRender(inner: List(Element(a)), onclick: Option(a))
+pub type UIButtonRender(a) {
+  UIButtonRender(inner: List(Element(a)), onclick: Option(a))
 }
 
 /// New button super element.
 ///
 pub fn new(id: String) -> Button {
-  Button(
+  UIButton(
     id: to_id(id),
     att: [],
     kind: Text,
@@ -125,72 +131,73 @@ pub fn new(id: String) -> Button {
 /// Set button label.
 ///
 pub fn label(in: Button, label: Label) -> Button {
-  Button(..in, label: Some(label))
+  UIButton(..in, label: Some(label))
 }
 
 /// Set button disabled.
 ///
 pub fn disabled(in: Button, disabled: Bool) -> Button {
   case disabled {
-    False -> Button(..in, state: Enabled, att: attrs_remove(in.att, "disabled"))
+    False ->
+      UIButton(..in, state: Enabled, att: attrs_remove(in.att, "disabled"))
     True ->
-      Button(..in, state: Disabled, att: [#("disabled", "true"), ..in.att])
+      UIButton(..in, state: Disabled, att: [#("disabled", "true"), ..in.att])
   }
 }
 
 /// Set button disabled.
 ///
 pub fn primary(in: Button) -> Button {
-  Button(..in, att: [#("class", primary_class), ..in.att])
+  UIButton(..in, att: [#("class", primary_class), ..in.att])
 }
 
 /// New button render at right inner and onclick event.
 ///
-pub fn at_right(in: Button, inner: List(Element(a))) -> ButtonRender(a) {
-  let Button(label:, ..) = in
+pub fn at_right(in: Button, inner: List(Element(a))) -> Render(a) {
+  let UIButton(label:, ..) = in
   let inner = case label {
     Some(UILabel(text:, ..)) -> list.append(inner, [html.text(text)])
     None -> inner
   }
 
-  ButtonRender(inner:, onclick: None)
+  UIButtonRender(inner:, onclick: None)
 }
 
 /// New button render at left inner and onclick event.
 ///
-pub fn at_left(in: Button, inner: List(Element(a))) -> ButtonRender(a) {
-  let Button(label:, ..) = in
+pub fn at_left(in: Button, inner: List(Element(a))) -> Render(a) {
+  let UIButton(label:, ..) = in
   let inner = case label {
     Some(UILabel(text:, ..)) -> [html.text(text), ..inner]
     None -> inner
   }
 
-  ButtonRender(inner:, onclick: None)
+  UIButtonRender(inner:, onclick: None)
 }
 
 /// New button render at default.
 ///
-pub fn at(in: Button) -> ButtonRender(a) {
-  let Button(label:, ..) = in
+pub fn at(in: Button) -> Render(a) {
+  let UIButton(label:, ..) = in
   let inner = case label {
     Some(UILabel(text:, ..)) -> [html.text(text)]
     None -> []
   }
 
-  ButtonRender(inner:, onclick: None)
+  UIButtonRender(inner:, onclick: None)
 }
 
 /// Set button render onclick event.
 ///
-pub fn at_onclick(in: ButtonRender(a), onclick: a) -> ButtonRender(a) {
-  ButtonRender(..in, onclick: Some(onclick))
+pub fn at_onclick(in: Render(a), onclick: a) -> Render(a) {
+  UIButtonRender(..in, onclick: Some(onclick))
 }
 
 /// Render button super element to `lustre/element.{type Element}`.
 ///
-pub fn render(in: Button, render: ButtonRender(a)) -> Element(a) {
-  let Button(id:, att:, ..) = in
-  let ButtonRender(inner:, ..) = render
+pub fn render(in: Button, render: Render(a)) -> Element(a) {
+  let UIButton(id:, att:, ..) = in
+  let UIButtonRender(inner:, ..) = render
   let attrs = [a.id(id), ..attrs_to_lustre(att)]
 
   html.button(attrs, inner)
@@ -199,7 +206,7 @@ pub fn render(in: Button, render: ButtonRender(a)) -> Element(a) {
 /// Render app nav mobile button.
 ///
 pub fn app_nav(id: String, onclick: a) -> Element(a) {
-  let button = Button(..new(id), att: [#("class", app_nav_class)])
+  let button = UIButton(..new(id), att: [#("class", app_nav_class)])
   let inner = [
     svg.new("btn-icon-app-nav", 24, 24)
     |> svg_icons.app_nav()
@@ -226,7 +233,7 @@ pub fn sidebar(id: String, visible: Bool, onclick: a) -> Element(a) {
     False -> ""
   }
   let button =
-    Button(..new(id), att: [#("class", sidebar_class <> class_toggle)])
+    UIButton(..new(id), att: [#("class", sidebar_class <> class_toggle)])
   let inner = [
     svg.new("btn-icon-sidebar-hamburguer-small", 12, 16)
       |> svg_icons.hamburguer_small()
@@ -248,7 +255,7 @@ pub fn sidebar(id: String, visible: Bool, onclick: a) -> Element(a) {
 /// Render dark mode button.
 ///
 pub fn dark_mode(id: String, onclick: a) -> Element(a) {
-  let button = Button(..new(id), att: [#("class", darkmode_class)])
+  let button = UIButton(..new(id), att: [#("class", darkmode_class)])
   let inner = [
     svg.new("btn-icon-dark-mode-moon", 20, 20)
       |> svg_icons.moon()
@@ -266,8 +273,8 @@ pub fn dark_mode(id: String, onclick: a) -> Element(a) {
 // PRIVATE
 //
 
-fn do_inner(inner: List(Element(a)), onclick: a) -> ButtonRender(a) {
-  ButtonRender(inner:, onclick: Some(onclick))
+fn do_inner(inner: List(Element(a)), onclick: a) -> Render(a) {
+  UIButtonRender(inner:, onclick: Some(onclick))
 }
 
 const primary_class = "inline-flex items-center justify-center w-full gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 disabled:bg-gray-400 disabled:cursor-not-allowed"

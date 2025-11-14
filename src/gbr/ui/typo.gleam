@@ -5,11 +5,12 @@
 import gleam/list
 
 import lustre/attribute as a
-import lustre/element.{type Element}
+import lustre/element
 import lustre/element/html
 
 import gbr/ui/core.{
-  type UIAttrs, type UILabel, UILabel, attrs_to_lustre, uilabel,
+  type UIAttrs, type UILabel, type UIRender, type UIRenders, UILabel,
+  attrs_to_lustre, uilabel,
 }
 
 type Label =
@@ -141,7 +142,7 @@ pub fn strong(in: UITypo) -> UITypo {
 
 /// Render inline typos layout.
 ///
-pub fn inline(in: UITypos) -> Element(a) {
+pub fn inline(in: UITypos) -> UIRender(a) {
   case group_reduce(in) {
     Ok(inline) -> render(inline)
     Error(Nil) -> element.none()
@@ -150,19 +151,19 @@ pub fn inline(in: UITypos) -> Element(a) {
 
 /// Render horizontal typos layout.
 ///
-pub fn horizontal(in: UITypos) -> Element(a) {
+pub fn horizontal(in: UITypos) -> UIRender(a) {
   styled(in, "flex items-center gap-2 text-gray-500 dark:text-gray-400")
 }
 
 /// Render horizontal typos layout.
 ///
-pub fn styled(in: UITypos, class: String) -> Element(a) {
+pub fn styled(in: UITypos, class: String) -> UIRender(a) {
   html.span([a.class(class)], grouped(in))
 }
 
 /// Render grouped typos layout.
 ///
-pub fn grouped(in: UITypos) -> List(Element(a)) {
+pub fn grouped(in: UITypos) -> UIRenders(a) {
   use typo <- list.map(in)
 
   render(typo)
@@ -170,7 +171,7 @@ pub fn grouped(in: UITypos) -> List(Element(a)) {
 
 /// Render typo super element to `lustre/element.{type Element}`.
 ///
-pub fn render(in: UITypo) -> Element(a) {
+pub fn render(in: UITypo) -> UIRender(a) {
   case in {
     Text(UILabel(text:, att:)) -> render_text(text, att)
     Paragraph(UILabel(text:, att:)) -> render_p(text, att)

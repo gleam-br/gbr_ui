@@ -13,6 +13,12 @@ import gbr/ui/input
 import gbr/ui/svg
 import gbr/ui/svg/form as svg_form
 
+type Checkbox =
+  UICheckbox
+
+type Render(a) =
+  UICheckboxRender(a)
+
 type Label =
   UILabel
 
@@ -21,39 +27,44 @@ type Attrs =
 
 /// Checkbox super element.
 ///
-pub opaque type Checkbox {
-  Checkbox(id: String, att: Attrs, checked: Option(Bool), label: Option(Label))
+pub opaque type UICheckbox {
+  UICheckbox(
+    id: String,
+    att: Attrs,
+    checked: Option(Bool),
+    label: Option(Label),
+  )
 }
 
 /// Checkbox render type.
 ///
-pub opaque type CheckboxRender(a) {
-  CheckboxRender(onclick: Option(a))
+pub type UICheckboxRender(a) {
+  UICheckboxRender(onclick: Option(a))
 }
 
 /// New checkbox super element.
 ///
 pub fn new(id: String) -> Checkbox {
-  Checkbox(id: to_id(id), att: [], checked: None, label: None)
+  UICheckbox(id: to_id(id), att: [], checked: None, label: None)
 }
 
 /// Set checkbox checked or not.
 ///
 pub fn checked(in: Checkbox, checked: Bool) -> Checkbox {
-  Checkbox(..in, checked: Some(checked))
+  UICheckbox(..in, checked: Some(checked))
 }
 
 /// Set checkbox label.
 ///
 pub fn label(in: Checkbox, label: Label) -> Checkbox {
-  Checkbox(..in, label: Some(label))
+  UICheckbox(..in, label: Some(label))
 }
 
 /// Render checkbox super element to `lustre/element.{type Element}`.
 ///
-pub fn render(in: Checkbox, render: CheckboxRender(a)) -> Element(a) {
-  let Checkbox(id:, label:, checked:, att:) = in
-  let CheckboxRender(onclick:) = render
+pub fn render(in: Checkbox, render: Render(a)) -> Element(a) {
+  let UICheckbox(id:, label:, checked:, att:) = in
+  let UICheckboxRender(onclick:) = render
   let to_render = case onclick {
     Some(onclick) -> input.at_none() |> input.onclick(onclick)
     None -> input.at_none()

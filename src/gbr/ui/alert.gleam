@@ -14,8 +14,9 @@ import gbr/ui/core.{
 import gbr/ui/svg
 import gbr/ui/svg/alert as svg_alert
 
-/// Alert status.
-///
+type Alert =
+  UIAlert
+
 type Status {
   Success
   Warning
@@ -23,8 +24,6 @@ type Status {
   Info
 }
 
-/// Alert link.
-///
 type Link =
   option.Option(UILink)
 
@@ -36,7 +35,7 @@ pub opaque type UIAlert {
 
 /// New alert super element pass title and description.
 ///
-pub fn new(id: String, title: String, desc: String) -> UIAlert {
+pub fn new(id: String, title: String, desc: String) -> Alert {
   UIAlert(
     id: to_id(id),
     info: UIDesc(title:, desc:),
@@ -48,37 +47,37 @@ pub fn new(id: String, title: String, desc: String) -> UIAlert {
 
 /// Set visible to alert element.
 ///
-pub fn visible(in: UIAlert, visible: Bool) -> UIAlert {
+pub fn visible(in: Alert, visible: Bool) -> Alert {
   UIAlert(..in, visible:)
 }
 
 /// Set info behavior to alert element.
 ///
-pub fn info(in: UIAlert) -> UIAlert {
+pub fn info(in: Alert) -> Alert {
   UIAlert(..in, status: Info)
 }
 
 /// Set success behavior to alert element.
 ///
-pub fn success(in: UIAlert) -> UIAlert {
+pub fn success(in: Alert) -> Alert {
   UIAlert(..in, status: Success)
 }
 
 /// Set warning behavior to alert element.
 ///
-pub fn warning(in: UIAlert) -> UIAlert {
+pub fn warning(in: Alert) -> Alert {
   UIAlert(..in, status: Warning)
 }
 
 /// Set error behavior to alert element.
 ///
-pub fn error(in: UIAlert) -> UIAlert {
+pub fn error(in: Alert) -> Alert {
   UIAlert(..in, status: Error)
 }
 
 /// Set link behavior to alert element.
 ///
-pub fn link(in: UIAlert, href: String, title: String) -> UIAlert {
+pub fn link(in: Alert, href: String, title: String) -> Alert {
   let link = UILink(href:, title:)
 
   UIAlert(..in, link: option.Some(link))
@@ -86,7 +85,7 @@ pub fn link(in: UIAlert, href: String, title: String) -> UIAlert {
 
 /// Render super alert element to `lustre/element/html.{div}`.
 ///
-pub fn render(in: UIAlert) -> UIRender(a) {
+pub fn render(in: Alert) -> UIRender(a) {
   let UIAlert(id:, info:, status:, link:, visible:) = in
 
   use <- bool.guard(!visible, html.text(""))

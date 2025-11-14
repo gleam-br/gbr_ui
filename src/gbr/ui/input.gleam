@@ -8,17 +8,28 @@ import gleam/list
 import gleam/option.{type Option, None, Some}
 
 import lustre/attribute.{type Attribute} as a
-import lustre/element.{type Element}
 import lustre/element/html
 import lustre/element/keyed
 import lustre/event
 
 import gbr/ui/core.{
-  type UIAttrs, type UILabel, UILabel, attrs_any, attrs_remove, attrs_to_lustre,
-  to_id, uilabel,
+  type UIAttrs, type UILabel, type UIRender, type UIRenders, UILabel, attrs_any,
+  attrs_remove, attrs_to_lustre, to_id, uilabel,
 }
 import gbr/ui/svg
 import gbr/ui/svg/form as svg_form
+
+type Input =
+  UIInput
+
+type Size =
+  UIInputSize
+
+type State =
+  UIInputState
+
+type Render(a) =
+  UIInputRender(a)
 
 type Label =
   UILabel
@@ -28,7 +39,7 @@ type Attrs =
 
 /// Input size.
 ///
-pub type InputSize {
+pub type UIInputSize {
   Max(Int)
   Min(Int)
   Size(Int)
@@ -36,7 +47,7 @@ pub type InputSize {
 
 /// Input state.
 ///
-pub type InputState {
+pub type UIInputState {
   Success(Label)
   Alert(Label)
   Error(Label)
@@ -44,22 +55,22 @@ pub type InputState {
 
 /// Input super element.
 ///
-pub opaque type Input {
-  Input(
+pub opaque type UIInput {
+  UIInput(
     id: String,
     kind: String,
     att: Attrs,
     relative: Bool,
     label: Option(Label),
-    state: Option(InputState),
+    state: Option(State),
   )
 }
 
 /// Input super element.
 ///
-pub opaque type InputRender(a) {
-  InputRender(
-    inner: List(Element(a)),
+pub type UIInputRender(a) {
+  UIInputRender(
+    inner: UIRenders(a),
     onclick: Option(a),
     onpaste: Option(a),
     oninput: Option(fn(String) -> a),
@@ -94,7 +105,7 @@ pub fn checkbox(id: String) -> Input {
 /// New input super element.
 ///
 pub fn new(id: String, kind: String) -> Input {
-  Input(
+  UIInput(
     id: to_id(id),
     kind:,
     att: [],
@@ -106,7 +117,7 @@ pub fn new(id: String, kind: String) -> Input {
 
 /// New input state behavior.
 ///
-pub fn new_state(state: InputState, text: String) -> InputState {
+pub fn new_state(state: State, text: String) -> State {
   case state {
     Success(_) ->
       Success(uilabel(text:, att: [#("class", state_success_label)]))
@@ -118,19 +129,19 @@ pub fn new_state(state: InputState, text: String) -> InputState {
 /// Set input label with text and attributes.
 ///
 pub fn label(in: Input, text: String, att: Attrs) -> Input {
-  Input(..in, label: Some(uilabel(text, att:)))
+  UIInput(..in, label: Some(uilabel(text, att:)))
 }
 
 /// Set input attributes.
 ///
 pub fn attrs(in: Input, att: Attrs) -> Input {
-  Input(..in, att: list.append(in.att, att))
+  UIInput(..in, att: list.append(in.att, att))
 }
 
 /// Set input relative.
 ///
 pub fn relative(in: Input, relative: Bool) -> Input {
-  Input(..in, relative:)
+  UIInput(..in, relative:)
 }
 
 /// Append input class sr-only .
@@ -168,13 +179,13 @@ pub fn required(in: Input, value: String) -> Input {
 pub fn disabled(in: Input, disabled: Bool) -> Input {
   case disabled {
     True -> attrs(in, [#("class", disabled_class), #("disabled", "true")])
-    False -> Input(..in, att: attrs_remove(in.att, "disabled"))
+    False -> UIInput(..in, att: attrs_remove(in.att, "disabled"))
   }
 }
 
 /// Set input length.
 ///
-pub fn length(in: Input, length: InputSize) -> Input {
+pub fn length(in: Input, length: Size) -> Input {
   let attr = case length {
     Min(value) -> #("minlength", int.to_string(value))
     Max(value) -> #("maxlength", int.to_string(value))
@@ -186,14 +197,14 @@ pub fn length(in: Input, length: InputSize) -> Input {
 
 /// Set input state
 ///
-pub fn state(in: Input, state: InputState) -> Input {
+pub fn state(in: Input, state: State) -> Input {
   let state_color_class = case state {
     Success(_) -> state_success_class
     Alert(_) -> state_alert_class
     Error(_) -> state_error_class
   }
 
-  Input(..in, state: Some(state))
+  UIInput(..in, state: Some(state))
   |> attrs([#("class", state_class <> state_color_class)])
   |> relative(True)
 }
@@ -212,30 +223,24 @@ pub fn search(in: Input) {
 
 /// New input render at right inner.
 ///
-pub fn at_right(
-  attrs: List(Attribute(a)),
-  inner: List(Element(a)),
-) -> InputRender(a) {
+pub fn at_right(attrs: List(Attribute(a)), inner: UIRenders(a)) -> Render(a) {
   [a.class(class_right), ..attrs]
   |> at(inner)
 }
 
 /// New input render at left inner.
 ///
-pub fn at_left(
-  attrs: List(Attribute(a)),
-  inner: List(Element(a)),
-) -> InputRender(a) {
+pub fn at_left(attrs: List(Attribute(a)), inner: UIRenders(a)) -> Render(a) {
   [a.class(class_left), ..attrs]
   |> at(inner)
 }
 
 /// New input render at inner.
 ///
-pub fn at(attrs: List(Attribute(a)), inner: List(Element(a))) -> InputRender(a) {
+pub fn at(attrs: List(Attribute(a)), inner: UIRenders(a)) -> Render(a) {
   let inner = [html.span(attrs, inner)]
 
-  InputRender(
+  UIInputRender(
     inner:,
     onpaste: None,
     onkeypress: None,
@@ -246,8 +251,8 @@ pub fn at(attrs: List(Attribute(a)), inner: List(Element(a))) -> InputRender(a) 
 
 /// New input render at default behavior.
 ///
-pub fn at_none() -> InputRender(a) {
-  InputRender(
+pub fn at_none() -> Render(a) {
+  UIInputRender(
     inner: [],
     onpaste: None,
     onkeypress: None,
@@ -258,14 +263,14 @@ pub fn at_none() -> InputRender(a) {
 
 /// Set input render event onclick.
 ///
-pub fn onclick(in: InputRender(a), onclick: a) -> InputRender(a) {
-  InputRender(..in, onclick: Some(onclick))
+pub fn onclick(in: Render(a), onclick: a) -> Render(a) {
+  UIInputRender(..in, onclick: Some(onclick))
 }
 
 /// Render input super element to `lustre/element.{type Element}`.
 ///
-pub fn render(in: Input, render: InputRender(a)) -> Element(a) {
-  let Input(id, label:, att:, ..) = in
+pub fn render(in: Input, render: Render(a)) -> UIRender(a) {
+  let UIInput(id, label:, att:, ..) = in
   let required = attrs_any(att, "required")
   let disabled = attrs_any(att, "disabled")
   let input = input_state(id, in, render)
@@ -313,8 +318,8 @@ const class_right = "absolute z-30 text-gray-500 -translate-y-1/2 cursor-pointer
 const class_left = "absolute top-1/2 left-0 flex h-11 -translate-y-1/2 items-center justify-center border-r border-gray-200 dark:border-gray-800 inline-flex gap-1 px-3"
 
 fn input_state(id, in, render) {
-  let Input(kind:, relative:, state:, att:, ..) = in
-  let InputRender(inner:, ..) = render
+  let UIInput(kind:, relative:, state:, att:, ..) = in
+  let UIInputRender(inner:, ..) = render
 
   case state {
     Some(state) -> [
@@ -328,7 +333,7 @@ fn input_state(id, in, render) {
 }
 
 fn input_render(id, kind, relative, att, inner, render) {
-  let InputRender(onpaste:, onkeypress:, oninput:, onclick:, ..) = render
+  let UIInputRender(onpaste:, onkeypress:, oninput:, onclick:, ..) = render
   let relative_class = case relative {
     True -> "relative"
     False -> ""
