@@ -8,7 +8,9 @@ import gleam/option
 import lustre/attribute as a
 import lustre/element/html
 
-import gbr/ui/core.{type UIDesc, type UILink, type UIRender, UIDesc, UILink}
+import gbr/ui/core.{
+  type UIDesc, type UILink, type UIRender, UIDesc, UILink, to_id,
+}
 import gbr/ui/svg
 import gbr/ui/svg/alert as svg_alert
 
@@ -29,13 +31,14 @@ type Link =
 /// UI super alert element.
 ///
 pub opaque type UIAlert {
-  UIAlert(info: UIDesc, status: Status, visible: Bool, link: Link)
+  UIAlert(id: String, info: UIDesc, status: Status, visible: Bool, link: Link)
 }
 
-/// Constructor of new super alert element with title and description.
+/// New alert super element pass title and description.
 ///
-pub fn of(title: String, desc: String) -> UIAlert {
+pub fn new(id: String, title: String, desc: String) -> UIAlert {
   UIAlert(
+    id: to_id(id),
     info: UIDesc(title:, desc:),
     status: Info,
     visible: False,
@@ -84,7 +87,7 @@ pub fn link(in: UIAlert, href: String, title: String) -> UIAlert {
 /// Render super alert element to `lustre/element/html.{div}`.
 ///
 pub fn render(in: UIAlert) -> UIRender(a) {
-  let UIAlert(info:, status:, link:, visible:) = in
+  let UIAlert(id:, info:, status:, link:, visible:) = in
 
   use <- bool.guard(!visible, html.text(""))
 
@@ -92,29 +95,29 @@ pub fn render(in: UIAlert) -> UIRender(a) {
     Info -> #(
       classes_main_info,
       classes_icon_info,
-      svg.of(24, 24) |> svg_alert.info(),
+      svg.new("el-alert-info", 24, 24) |> svg_alert.info(),
     )
     Success -> #(
       classes_main_success,
       classes_icon_success,
-      svg.of(24, 24) |> svg_alert.success(),
+      svg.new("el-alert-success", 24, 24) |> svg_alert.success(),
     )
     Warning -> #(
       classes_main_warning,
       classes_icon_warning,
-      svg.of(24, 24) |> svg_alert.warning(),
+      svg.new("el-alert-warn", 24, 24) |> svg_alert.warning(),
     )
     Error -> #(
       classes_main_error,
       classes_icon_error,
-      svg.of(24, 24) |> svg_alert.error(),
+      svg.new("el-alert-error", 24, 24) |> svg_alert.error(),
     )
   }
 
   let main_class = classes_main <> " " <> status.0
   let icon_class = classes_icon <> " " <> status.1
 
-  html.div([a.class(main_class)], [
+  html.div([a.id(id), a.class(main_class)], [
     html.div([a.class(classes_content)], [
       html.div([a.class(icon_class)], [
         status.2 |> svg.render(),

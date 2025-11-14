@@ -8,10 +8,11 @@ import gleam/option.{None, Some}
 import gleam/string
 
 import lustre/attribute
-import lustre/element.{type Element}
+import lustre/element
 import lustre/element/html
 import lustre/element/svg
 
+import gbr/ui/core.{type UIRender} as uicore
 import gbr/ui/svg/core.{type Svg, Circle, Path, Svg}
 import gbr/ui/svg/util.{
   to_animate, to_att, to_attrs_circle, to_attrs_rect, to_path,
@@ -24,8 +25,9 @@ pub type Identity =
 
 /// Constructor of super svg element `gbr/ui/svg/core.{type Svg}`.
 ///
-pub fn of(height h, width w) -> Svg {
+pub fn new(id: String, height h, width w) -> Svg {
   Svg(
+    id: uicore.to_id(id),
     h:,
     w:,
     att: [],
@@ -46,8 +48,9 @@ pub fn classes(in: Svg, classes: List(String)) -> Svg {
 
 /// Render super svg element in `lustre/element/html.{svg}`.
 ///
-pub fn render(in: Svg) -> Element(a) {
-  let Svg(h:, w:, att:, path:, rect:, circle:, classes:, animate:, mask:) = in
+pub fn render(in: Svg) -> UIRender(a) {
+  let Svg(id:, h:, w:, att:, path:, rect:, circle:, classes:, animate:, mask:) =
+    in
   let view_port = "0 0 " <> int.to_string(w) <> " " <> int.to_string(h)
   let att = to_att(att)
   let path = to_path(path)
@@ -65,6 +68,7 @@ pub fn render(in: Svg) -> Element(a) {
 
   html.svg(
     [
+      attribute.id(id),
       attribute.height(h),
       attribute.width(w),
       attribute.attribute("viewBox", view_port),

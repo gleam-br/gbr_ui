@@ -2,13 +2,12 @@
 //// Gleam UI core type and functinos.
 ////
 
+import gleam/int
 import gleam/list
 import gleam/option.{type Option}
 
 import lustre/attribute as a
 import lustre/element
-
-pub const id_prefix = "gbr-ui-"
 
 /// UI render required element of generic event `a`.
 ///
@@ -75,6 +74,16 @@ pub fn uilink(href href, title title) {
   UILink(href:, title:)
 }
 
+/// To id random identification, avoid id conflicts.
+///
+pub fn to_id(id: String) -> String {
+  let random =
+    int.random(1_000_000_000)
+    |> int.to_string()
+
+  id_prefix <> random <> "-" <> id
+}
+
 /// Attributes exists any name.
 ///
 pub fn attrs_any(att: UIAttrs, any_name: String) -> Bool {
@@ -98,3 +107,8 @@ pub fn attrs_to_lustre(att: UIAttrs) -> List(a.Attribute(a)) {
 
   a.attribute(name, value)
 }
+
+// PRIVATE
+//
+
+const id_prefix = "gbr-ui-"

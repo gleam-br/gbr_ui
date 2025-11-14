@@ -1,7 +1,5 @@
 ////
-//// Gleam UI login basic using only username and password layout.
-////
-//// Better choise to work with legacy basic login layout with:
+//// Gleam UI login basic super element.
 ////
 //// - (required) callbacks on events
 //// - (optional) sign up regiter new basic credentials

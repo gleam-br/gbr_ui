@@ -8,9 +8,7 @@ import lustre/attribute as a
 import lustre/element.{type Element}
 import lustre/element/html
 
-import gbr/ui/core.{
-  type UIAttrs, type UILabel, UILabel, attrs_to_lustre, id_prefix,
-}
+import gbr/ui/core.{type UIAttrs, type UILabel, UILabel, attrs_to_lustre, to_id}
 import gbr/ui/input
 import gbr/ui/svg
 import gbr/ui/svg/form as svg_form
@@ -33,10 +31,10 @@ pub opaque type CheckboxRender(a) {
   CheckboxRender(onclick: Option(a))
 }
 
-/// Constructor of checkbox super element.
+/// New checkbox super element.
 ///
 pub fn new(id: String) -> Checkbox {
-  Checkbox(id: id_prefix <> id, att: [], checked: None, label: None)
+  Checkbox(id: to_id(id), att: [], checked: None, label: None)
 }
 
 /// Set checkbox checked or not.
@@ -100,7 +98,7 @@ fn decorator(checked) {
 
   html.div([a.class(class_decorator <> class_checked)], [
     html.span([a.class(class_span)], [
-      svg.of(14, 14)
+      svg.new("checkbox-icon", 14, 14)
       |> svg_form.checkbox()
       |> svg.render(),
     ]),

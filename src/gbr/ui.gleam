@@ -44,9 +44,9 @@ import lustre/element/html
 import gbr/ui/core.{type UIRender, type UIRenderOpt, type UIRenders}
 import gbr/ui/svg
 
-/// Construct new super svg element `gbr/ui/svg.{of}`.
+/// Construct new super svg element `gbr/ui/svg.{new}`.
 ///
-pub const svg = svg.of
+pub const svg = svg.new
 
 /// UI loader layout with ui screen full blur and a center spin loader.
 ///

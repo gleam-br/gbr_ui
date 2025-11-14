@@ -29,6 +29,7 @@ pub type Mask {
 ///
 pub type Svg {
   Svg(
+    id: String,
     h: Int,
     w: Int,
     att: Properties,

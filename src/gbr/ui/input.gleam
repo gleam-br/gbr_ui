@@ -15,7 +15,7 @@ import lustre/event
 
 import gbr/ui/core.{
   type UIAttrs, type UILabel, UILabel, attrs_any, attrs_remove, attrs_to_lustre,
-  id_prefix, uilabel,
+  to_id, uilabel,
 }
 import gbr/ui/svg
 import gbr/ui/svg/form as svg_form
@@ -67,35 +67,35 @@ pub opaque type InputRender(a) {
   )
 }
 
-/// Input type text super element.
+/// New input type text super element.
 ///
 pub fn text(id: String) -> Input {
   new(id, "text")
 }
 
-/// Input type email super element.
+/// New input type email super element.
 ///
 pub fn email(id: String) -> Input {
   new(id, "email")
 }
 
-/// Input type password super element.
+/// New input type password super element.
 ///
 pub fn password(id: String) -> Input {
   new(id, "password")
 }
 
-/// Input type checkbox super element.
+/// New input type checkbox super element.
 ///
 pub fn checkbox(id: String) -> Input {
   new(id, "checkbox")
 }
 
-/// Constructor of input super element.
+/// New input super element.
 ///
 pub fn new(id: String, kind: String) -> Input {
   Input(
-    id: id_prefix <> id,
+    id: to_id(id),
     kind:,
     att: [],
     relative: False,
@@ -104,7 +104,7 @@ pub fn new(id: String, kind: String) -> Input {
   )
 }
 
-/// Contructor of input state type.
+/// New input state behavior.
 ///
 pub fn new_state(state: InputState, text: String) -> InputState {
   case state {
@@ -210,7 +210,7 @@ pub fn search(in: Input) {
   attrs(in, [#("class", search_class)])
 }
 
-/// Constructor of input render type.
+/// New input render at right inner.
 ///
 pub fn at_right(
   attrs: List(Attribute(a)),
@@ -220,7 +220,7 @@ pub fn at_right(
   |> at(inner)
 }
 
-/// Constructor of input render type.
+/// New input render at left inner.
 ///
 pub fn at_left(
   attrs: List(Attribute(a)),
@@ -230,7 +230,7 @@ pub fn at_left(
   |> at(inner)
 }
 
-/// Constructor of input render type.
+/// New input render at inner.
 ///
 pub fn at(attrs: List(Attribute(a)), inner: List(Element(a))) -> InputRender(a) {
   let inner = [html.span(attrs, inner)]
@@ -244,7 +244,7 @@ pub fn at(attrs: List(Attribute(a)), inner: List(Element(a))) -> InputRender(a) 
   )
 }
 
-/// Constructor of input render type.
+/// New input render at default behavior.
 ///
 pub fn at_none() -> InputRender(a) {
   InputRender(
@@ -375,15 +375,15 @@ fn state_render(id, state) {
 }
 
 fn state_svg(state) {
-  let transform = case state {
-    Success(_) -> svg_form.success
-    Alert(_) -> svg_form.alert
-    Error(_) -> svg_form.error
+  let #(id, transform) = case state {
+    Success(_) -> #("success", svg_form.success)
+    Alert(_) -> #("alert", svg_form.alert)
+    Error(_) -> #("error", svg_form.error)
   }
 
   [
     html.span([a.class(state_icon_class)], [
-      svg.of(16, 16)
+      svg.new("input-icon-state-" <> id, 16, 16)
       |> transform()
       |> svg.render(),
     ]),
