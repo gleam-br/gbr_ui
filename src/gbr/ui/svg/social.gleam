@@ -3,7 +3,6 @@
 ////
 
 import gbr/ui/svg/core.{type Svg, Svg, classes}
-import gbr/ui/svg/util
 
 pub fn microsoft(in: Svg) -> Svg {
   Svg(..in, rect: [
@@ -39,7 +38,7 @@ pub fn microsoft(in: Svg) -> Svg {
 }
 
 pub fn twitter(svg: Svg) -> Svg {
-  util.draw_filless(
+  core.draw_filless(
     svg,
     "M15.6705 1.875H18.4272L12.4047 8.75833L19.4897 18.125H13.9422L9.59717 12.4442L4.62554 18.125H1.86721L8.30887 10.7625L1.51221 1.875H7.20054L11.128 7.0675L15.6705 1.875ZM14.703 16.475H16.2305L6.37054 3.43833H4.73137L14.703 16.475Z",
   )

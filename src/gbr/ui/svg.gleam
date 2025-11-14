@@ -12,11 +12,16 @@ import lustre/element
 import lustre/element/html
 import lustre/element/svg
 
-import gbr/ui/core.{type UIRender} as uicore
-import gbr/ui/svg/core.{type Svg, Circle, Path, Svg}
-import gbr/ui/svg/util.{
-  to_animate, to_att, to_attrs_circle, to_attrs_rect, to_path,
+import gbr/ui/svg/core.{
+  Circle, Path, Svg, to_animate, to_att, to_attrs_circle, to_attrs_rect, to_path,
 }
+
+import gbr/ui/core.{type UIRender} as uicore
+
+/// Svg super element.
+///
+pub type Svg =
+  core.Svg
 
 /// Function identity to `gbr/ui/svg/core.{type Svg}`.
 ///
