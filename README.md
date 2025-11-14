@@ -464,9 +464,7 @@ gleam test  # Run the tests
 - [ ] Unit tests
 - [ ] More docs
 - [ ] UI form
-- [ ] UI button
 - [ ] UI select
-- [ ] UI checkbox
 - [ ] UI box
 - [ ] UI header
 - [ ] UI sidebar
@@ -483,6 +481,8 @@ gleam test  # Run the tests
 - [x] UI typo
 - [x] UI alert
 - [x] UI svg
+- [x] UI button
+- [x] UI checkbox
 - [x] GH workflow
   - [x] test & build
   - [x] changelog & issue to doc
