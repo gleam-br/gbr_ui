@@ -12,20 +12,18 @@
 //// import gbr/ui/core.{type UIRender, uilabel}
 ////
 //// fn render(id: String) -> UIRender(a) {
+////   label = uilabel("Button w/ icon back!", [])
 ////   let inner = [
 ////     svg.new("id-svg", 20, 20)
 ////       |> icons.back()
 ////       |> svg.render()
 ////     ]
 ////   ]
-////   let label = uilabel("Button w/ icon back!", [])
-////   let in = button.new(id)
+////   button.new(id)
 ////     |> button.label(label)
-////   let at =
-////     at_left(in, inner)
-////     |> on_click(onclick)
-////
-////   button.render(in, at)
+////     |> button.at_left(inner)
+////     |> button.on_click(onclick)
+////     |> button.render()
 //// }
 ////```
 ////
@@ -140,7 +138,7 @@ pub opaque type UIButton {
 /// Button render type.
 ///
 pub type UIButtonRender(a) {
-  UIButtonRender(inner: UIRenders(a), onclick: Option(a))
+  UIButtonRender(in: Button, inner: UIRenders(a), onclick: Option(a))
 }
 
 /// New button super element.
@@ -195,7 +193,7 @@ pub fn at_right(in: Button, inner: UIRenders(a)) -> Render(a) {
     None -> inner
   }
 
-  UIButtonRender(inner:, onclick: None)
+  UIButtonRender(in:, inner:, onclick: None)
 }
 
 /// New button render at left inner and onclick event.
@@ -207,7 +205,7 @@ pub fn at_left(in: Button, inner: UIRenders(a)) -> Render(a) {
     None -> inner
   }
 
-  UIButtonRender(inner:, onclick: None)
+  UIButtonRender(in:, inner:, onclick: None)
 }
 
 /// New button render at default.
@@ -219,20 +217,24 @@ pub fn at(in: Button) -> Render(a) {
     None -> []
   }
 
-  UIButtonRender(inner:, onclick: None)
+  UIButtonRender(in:, inner:, onclick: None)
 }
 
 /// Set button render onclick event.
 ///
+pub fn on_click_opt(in: Render(a), onclick: Option(a)) -> Render(a) {
+  UIButtonRender(..in, onclick:)
+}
+
 pub fn on_click(in: Render(a), onclick: a) -> Render(a) {
-  UIButtonRender(..in, onclick: Some(onclick))
+  on_click_opt(in, Some(onclick))
 }
 
 /// Render button super element to `lustre/element.{type Element}`.
 ///
-pub fn render(in: Button, render: Render(a)) -> UIRender(a) {
+pub fn render(at: Render(a)) -> UIRender(a) {
+  let UIButtonRender(in:, inner:, ..) = at
   let UIButton(id:, att:, ..) = in
-  let UIButtonRender(inner:, ..) = render
   let attrs = [a.id(id), ..attrs_to_lustre(att)]
 
   html.button(attrs, inner)
@@ -241,19 +243,17 @@ pub fn render(in: Button, render: Render(a)) -> UIRender(a) {
 /// Render back history button.
 ///
 pub fn back(id: String, text: Label, onclick: a) -> UIRender(a) {
-  let in =
-    UIButton(..new(id), att: [#("class", class_back)])
-    |> label(text)
   let inner = [
     svg.new("btn-icon-back", 20, 20)
     |> svg_icons.back()
     |> svg.render(),
   ]
-  let at =
-    at_left(in, inner)
-    |> on_click(onclick)
 
-  render(in, at)
+  UIButton(..new(id), att: [#("class", class_back)])
+  |> label(text)
+  |> at_left(inner)
+  |> on_click(onclick)
+  |> render()
 }
 
 /// Render sidebar toggle button.
@@ -289,7 +289,9 @@ pub fn sidebar(id: String, visible: Bool, onclick: a) -> UIRender(a) {
       |> svg.render(),
   ]
 
-  render(button, do_inner(inner, onclick))
+  button
+  |> do_inner(inner, onclick)
+  |> render()
 }
 
 /// Render dark mode toggle button.
@@ -307,7 +309,9 @@ pub fn dark_mode(id: String, onclick: a) -> UIRender(a) {
       |> svg.render(),
   ]
 
-  render(button, do_inner(inner, onclick))
+  button
+  |> do_inner(inner, onclick)
+  |> render()
 }
 
 /// Render app nav mobile toggle button.
@@ -320,14 +324,16 @@ pub fn app_nav(id: String, onclick: a) -> UIRender(a) {
     |> svg.render(),
   ]
 
-  render(button, do_inner(inner, onclick))
+  button
+  |> do_inner(inner, onclick)
+  |> render()
 }
 
 // PRIVATE
 //
 
-fn do_inner(inner: UIRenders(a), onclick: a) -> Render(a) {
-  UIButtonRender(inner:, onclick: Some(onclick))
+fn do_inner(in: Button, inner: UIRenders(a), onclick: a) -> Render(a) {
+  UIButtonRender(in:, inner:, onclick: Some(onclick))
 }
 
 const primary_class = "inline-flex items-center justify-center w-full gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 disabled:bg-gray-400 disabled:cursor-not-allowed"

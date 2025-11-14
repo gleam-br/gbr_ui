@@ -2,6 +2,7 @@
 //// ✅ Gleam UI input type checkbox super element.
 ////
 
+import gleam/bool
 import gleam/option.{type Option, None, Some}
 
 import lustre/attribute as a
@@ -39,7 +40,7 @@ pub opaque type UICheckbox {
 /// Checkbox render type.
 ///
 pub type UICheckboxRender(a) {
-  UICheckboxRender(onclick: Option(a))
+  UICheckboxRender(in: Checkbox, onclick: Option(a))
 }
 
 /// New checkbox super element.
@@ -60,32 +61,50 @@ pub fn label(in: Checkbox, label: Label) -> Checkbox {
   UICheckbox(..in, label: Some(label))
 }
 
+/// New checkbox render.
+///
+pub fn at(in: Checkbox) -> Render(a) {
+  UICheckboxRender(in:, onclick: None)
+}
+
+/// Set checkbox render onclick event.
+///
+pub fn on_click_opt(in: Render(a), onclick: Option(a)) -> Render(a) {
+  UICheckboxRender(..in, onclick:)
+}
+
+pub fn on_click(in: Render(a), onclick: a) -> Render(a) {
+  on_click_opt(in, Some(onclick))
+}
+
 /// Render checkbox super element to `lustre/element.{type Element}`.
 ///
-pub fn render(in: Checkbox, render: Render(a)) -> Element(a) {
+pub fn render(at: Render(a)) -> Element(a) {
+  let UICheckboxRender(in:, onclick:) = at
   let UICheckbox(id:, label:, checked:, att:) = in
-  let UICheckboxRender(onclick:) = render
-  let to_render = case onclick {
-    Some(onclick) -> input.at_none() |> input.onclick(onclick)
-    None -> input.at_none()
-  }
-  let el =
+  let checkbox =
+    input.checkbox(id)
+    |> input.attrs(att)
+    |> input.sr_only()
+    |> input.at()
+  let inner =
     html.div([a.class("relative")], [
-      input.checkbox(id)
-        |> input.attrs(att)
-        |> input.sr_only()
-        |> input.render(to_render),
+      case onclick {
+        Some(onclick) ->
+          input.on_click(checkbox, onclick)
+          |> input.render()
+        None -> input.render(checkbox)
+      },
       decorator(checked),
     ])
 
-  case label {
-    None -> html.div([], [el])
-    Some(UILabel(text:, att:)) ->
-      html.label([a.class(class_label), ..attrs_to_lustre(att)], [
-        el,
-        html.text(text),
-      ])
-  }
+  use <- bool.guard(option.is_none(label), html.div([], [inner]))
+  let assert Some(UILabel(text:, att:)) = label
+
+  html.label([a.class(class_label), ..attrs_to_lustre(att)], [
+    inner,
+    html.text(text),
+  ])
 }
 
 // PRIVATE

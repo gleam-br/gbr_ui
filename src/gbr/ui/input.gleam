@@ -12,12 +12,13 @@ import lustre/element/html
 import lustre/element/keyed
 import lustre/event
 
-import gbr/ui/core.{
-  type UIAttrs, type UILabel, type UIRender, type UIRenders, UILabel, attrs_any,
-  attrs_remove, attrs_to_lustre, to_id, uilabel,
-}
 import gbr/ui/svg
 import gbr/ui/svg/form as svg_form
+
+import gbr/ui/core.{
+  type UIAttributes, type UIAttrs, type UILabel, type UIRender, type UIRenders,
+  UILabel, attrs_any, attrs_remove, attrs_to_lustre, to_id, uilabel,
+}
 
 type Input =
   UIInput
@@ -58,8 +59,9 @@ pub type UIInputState {
 pub opaque type UIInput {
   UIInput(
     id: String,
-    kind: String,
     att: Attrs,
+    kind: String,
+    visible: Bool,
     relative: Bool,
     label: Option(Label),
     state: Option(State),
@@ -70,10 +72,12 @@ pub opaque type UIInput {
 ///
 pub type UIInputRender(a) {
   UIInputRender(
+    in: Input,
     inner: UIRenders(a),
     onclick: Option(a),
-    onpaste: Option(a),
     oninput: Option(fn(String) -> a),
+    onchange: Option(fn(String) -> a),
+    onpaste: Option(a),
     onkeypress: Option(fn(String) -> a),
   )
 }
@@ -107,8 +111,9 @@ pub fn checkbox(id: String) -> Input {
 pub fn new(id: String, kind: String) -> Input {
   UIInput(
     id: to_id(id),
-    kind:,
     att: [],
+    kind:,
+    visible: True,
     relative: False,
     label: None,
     state: None,
@@ -223,57 +228,134 @@ pub fn search(in: Input) {
 
 /// New input render at right inner.
 ///
-pub fn at_right(attrs: List(Attribute(a)), inner: UIRenders(a)) -> Render(a) {
-  [a.class(class_right), ..attrs]
-  |> at(inner)
+pub fn at_right(
+  in: Input,
+  attrs: List(Attribute(a)),
+  inner: UIRenders(a),
+) -> Render(a) {
+  at_attrs(in, [a.class(class_right), ..attrs], inner)
 }
 
 /// New input render at left inner.
 ///
-pub fn at_left(attrs: List(Attribute(a)), inner: UIRenders(a)) -> Render(a) {
-  [a.class(class_left), ..attrs]
-  |> at(inner)
+pub fn at_left(
+  in: Input,
+  attrs: List(Attribute(a)),
+  inner: UIRenders(a),
+) -> Render(a) {
+  at_attrs(in, [a.class(class_left), ..attrs], inner)
 }
 
 /// New input render at inner.
 ///
-pub fn at(attrs: List(Attribute(a)), inner: UIRenders(a)) -> Render(a) {
+pub fn at_attrs(
+  in: Input,
+  attrs: UIAttributes(a),
+  inner: UIRenders(a),
+) -> Render(a) {
   let inner = [html.span(attrs, inner)]
 
   UIInputRender(
+    in:,
     inner:,
     onpaste: None,
     onkeypress: None,
     oninput: None,
     onclick: None,
+    onchange: None,
   )
 }
 
 /// New input render at default behavior.
 ///
-pub fn at_none() -> Render(a) {
+pub fn at(in: Input) -> Render(a) {
   UIInputRender(
+    in:,
     inner: [],
-    onpaste: None,
-    onkeypress: None,
     oninput: None,
     onclick: None,
+    onpaste: None,
+    onkeypress: None,
+    onchange: None,
   )
+}
+
+pub fn visible(in: Input, visible: Bool) -> Input {
+  let kind = case visible {
+    True -> "text"
+    False -> "password"
+  }
+
+  UIInput(..in, kind:, visible:)
 }
 
 /// Set input render event onclick.
 ///
-pub fn onclick(in: Render(a), onclick: a) -> Render(a) {
-  UIInputRender(..in, onclick: Some(onclick))
+pub fn on_click(in: Render(a), onclick: a) -> Render(a) {
+  on_click_opt(in, Some(onclick))
+}
+
+/// Set input render event onchange.
+///
+pub fn on_change(in: Render(a), onchange: fn(String) -> a) -> Render(a) {
+  on_change_opt(in, Some(onchange))
+}
+
+/// Set input render event onclick.
+///
+pub fn on_paste(in: Render(a), onpaste: a) -> Render(a) {
+  on_paste_opt(in, Some(onpaste))
+}
+
+/// Set input render event onclick.
+///
+pub fn on_input(in: Render(a), oninput: fn(String) -> a) -> Render(a) {
+  on_input_opt(in, Some(oninput))
+}
+
+/// Set input render event onclick.
+///
+pub fn on_keypress(in: Render(a), onkeypress: fn(String) -> a) -> Render(a) {
+  on_keypress_opt(in, Some(onkeypress))
+}
+
+pub fn on_click_opt(in: Render(a), onclick: Option(a)) -> Render(a) {
+  UIInputRender(..in, onclick:)
+}
+
+pub fn on_change_opt(
+  in: Render(a),
+  onchange: Option(fn(String) -> a),
+) -> Render(a) {
+  UIInputRender(..in, onchange:)
+}
+
+pub fn on_paste_opt(in: Render(a), onpaste: Option(a)) -> Render(a) {
+  UIInputRender(..in, onpaste:)
+}
+
+pub fn on_input_opt(
+  in: Render(a),
+  oninput: Option(fn(String) -> a),
+) -> Render(a) {
+  UIInputRender(..in, oninput:)
+}
+
+pub fn on_keypress_opt(
+  in: Render(a),
+  onkeypress: Option(fn(String) -> a),
+) -> Render(a) {
+  UIInputRender(..in, onkeypress:)
 }
 
 /// Render input super element to `lustre/element.{type Element}`.
 ///
-pub fn render(in: Input, render: Render(a)) -> UIRender(a) {
+pub fn render(at: Render(a)) -> UIRender(a) {
+  let UIInputRender(in:, ..) = at
   let UIInput(id, label:, att:, ..) = in
   let required = attrs_any(att, "required")
   let disabled = attrs_any(att, "disabled")
-  let input = input_state(id, in, render)
+  let input = input_state(id, in, at)
 
   case label {
     None -> keyed.fragment(input)
@@ -333,7 +415,8 @@ fn input_state(id, in, render) {
 }
 
 fn input_render(id, kind, relative, att, inner, render) {
-  let UIInputRender(onpaste:, onkeypress:, oninput:, onclick:, ..) = render
+  let UIInputRender(onchange:, onpaste:, onkeypress:, oninput:, onclick:, ..) =
+    render
   let relative_class = case relative {
     True -> "relative"
     False -> ""
@@ -341,10 +424,18 @@ fn input_render(id, kind, relative, att, inner, render) {
   let attrs = [
     a.type_(kind),
     a.id(id),
-    event_unwrap(onclick, event.on_click),
-    event_unwrap_(onkeypress, event.on_keypress),
-    event_unwrap_(oninput, event.on_input),
-    event_unwrap(onpaste, fn(evt) { event.on("onpaste", decode.success(evt)) }),
+    option.map(onclick, event.on_click)
+      |> option.unwrap(a.none()),
+    option.map(onkeypress, event.on_keypress)
+      |> option.unwrap(a.none()),
+    option.map(oninput, event.on_input)
+      |> option.unwrap(a.none()),
+    option.map(onchange, event.on_change)
+      |> option.unwrap(a.none()),
+    option.map(onpaste, fn(onpaste) {
+      event.on("onpaste", decode.success(onpaste))
+    })
+      |> option.unwrap(a.none()),
     ..attrs_to_lustre(att)
   ]
 
@@ -393,24 +484,4 @@ fn state_svg(state) {
       |> svg.render(),
     ]),
   ]
-}
-
-fn event_unwrap_(
-  evt: Option(fn(String) -> a),
-  apply: fn(fn(String) -> a) -> a.Attribute(a),
-) -> a.Attribute(a) {
-  case evt {
-    Some(evt) -> apply(evt)
-    None -> a.none()
-  }
-}
-
-fn event_unwrap(
-  evt: Option(a),
-  apply: fn(a) -> a.Attribute(a),
-) -> a.Attribute(a) {
-  case evt {
-    Some(evt) -> apply(evt)
-    None -> a.none()
-  }
 }
