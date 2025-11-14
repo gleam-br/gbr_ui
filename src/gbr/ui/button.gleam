@@ -1,9 +1,37 @@
 ////
 //// ⚉ Gleam UI button super element.
 ////
-//// 🚧 **Work in progress** not production ready.
+//// Supose button text and svg at left side:
+////
+////```gleam
+//// import gbr/ui/button
+////
+//// import gbr/ui/svg
+//// import gbr/ui/svg/icons
+////
+//// import gbr/ui/core.{type UIRender, uilabel}
+////
+//// fn render(id: String) -> UIRender(a) {
+////   let inner = [
+////     svg.new("id-svg", 20, 20)
+////       |> icons.back()
+////       |> svg.render()
+////     ]
+////   ]
+////   let label = uilabel("Button w/ icon back!", [])
+////   let in = button.new(id)
+////     |> button.label(label)
+////   let at =
+////     at_left(in, inner)
+////     |> on_click(onclick)
+////
+////   button.render(in, at)
+//// }
+////```
 ////
 //// ### Roadmap
+////
+//// 🚧 **Work in progress**
 ////
 //// - [ ] type behavior
 //// - [ ] size behavior
@@ -21,14 +49,15 @@ import gleam/list
 import gleam/option.{type Option, None, Some}
 
 import lustre/attribute as a
-import lustre/element.{type Element}
 import lustre/element/html
 
-import gbr/ui/core.{
-  type UIAttrs, type UILabel, UILabel, attrs_remove, attrs_to_lustre, to_id,
-}
 import gbr/ui/svg
 import gbr/ui/svg/icons as svg_icons
+
+import gbr/ui/core.{
+  type UIAttrs, type UILabel, type UIRender, type UIRenders, UILabel,
+  attrs_remove, attrs_to_lustre, to_id,
+}
 
 type Label =
   UILabel
@@ -111,7 +140,7 @@ pub opaque type UIButton {
 /// Button render type.
 ///
 pub type UIButtonRender(a) {
-  UIButtonRender(inner: List(Element(a)), onclick: Option(a))
+  UIButtonRender(inner: UIRenders(a), onclick: Option(a))
 }
 
 /// New button super element.
@@ -145,6 +174,12 @@ pub fn disabled(in: Button, disabled: Bool) -> Button {
   }
 }
 
+/// Set button class.
+///
+pub fn class(in: Button, class: String) -> Button {
+  UIButton(..in, att: [#("class", class), ..in.att])
+}
+
 /// Set button disabled.
 ///
 pub fn primary(in: Button) -> Button {
@@ -153,7 +188,7 @@ pub fn primary(in: Button) -> Button {
 
 /// New button render at right inner and onclick event.
 ///
-pub fn at_right(in: Button, inner: List(Element(a))) -> Render(a) {
+pub fn at_right(in: Button, inner: UIRenders(a)) -> Render(a) {
   let UIButton(label:, ..) = in
   let inner = case label {
     Some(UILabel(text:, ..)) -> list.append(inner, [html.text(text)])
@@ -165,7 +200,7 @@ pub fn at_right(in: Button, inner: List(Element(a))) -> Render(a) {
 
 /// New button render at left inner and onclick event.
 ///
-pub fn at_left(in: Button, inner: List(Element(a))) -> Render(a) {
+pub fn at_left(in: Button, inner: UIRenders(a)) -> Render(a) {
   let UIButton(label:, ..) = in
   let inner = case label {
     Some(UILabel(text:, ..)) -> [html.text(text), ..inner]
@@ -189,13 +224,13 @@ pub fn at(in: Button) -> Render(a) {
 
 /// Set button render onclick event.
 ///
-pub fn at_onclick(in: Render(a), onclick: a) -> Render(a) {
+pub fn on_click(in: Render(a), onclick: a) -> Render(a) {
   UIButtonRender(..in, onclick: Some(onclick))
 }
 
 /// Render button super element to `lustre/element.{type Element}`.
 ///
-pub fn render(in: Button, render: Render(a)) -> Element(a) {
+pub fn render(in: Button, render: Render(a)) -> UIRender(a) {
   let UIButton(id:, att:, ..) = in
   let UIButtonRender(inner:, ..) = render
   let attrs = [a.id(id), ..attrs_to_lustre(att)]
@@ -203,22 +238,27 @@ pub fn render(in: Button, render: Render(a)) -> Element(a) {
   html.button(attrs, inner)
 }
 
-/// Render app nav mobile button.
+/// Render back history button.
 ///
-pub fn app_nav(id: String, onclick: a) -> Element(a) {
-  let button = UIButton(..new(id), att: [#("class", app_nav_class)])
+pub fn back(id: String, text: Label, onclick: a) -> UIRender(a) {
+  let in =
+    UIButton(..new(id), att: [#("class", class_back)])
+    |> label(text)
   let inner = [
-    svg.new("btn-icon-app-nav", 24, 24)
-    |> svg_icons.app_nav()
+    svg.new("btn-icon-back", 20, 20)
+    |> svg_icons.back()
     |> svg.render(),
   ]
+  let at =
+    at_left(in, inner)
+    |> on_click(onclick)
 
-  render(button, do_inner(inner, onclick))
+  render(in, at)
 }
 
 /// Render sidebar toggle button.
 ///
-pub fn sidebar(id: String, visible: Bool, onclick: a) -> Element(a) {
+pub fn sidebar(id: String, visible: Bool, onclick: a) -> UIRender(a) {
   let cross_toggle = case visible {
     True -> "block lg:hidden"
     False -> "hidden"
@@ -252,9 +292,9 @@ pub fn sidebar(id: String, visible: Bool, onclick: a) -> Element(a) {
   render(button, do_inner(inner, onclick))
 }
 
-/// Render dark mode button.
+/// Render dark mode toggle button.
 ///
-pub fn dark_mode(id: String, onclick: a) -> Element(a) {
+pub fn dark_mode(id: String, onclick: a) -> UIRender(a) {
   let button = UIButton(..new(id), att: [#("class", darkmode_class)])
   let inner = [
     svg.new("btn-icon-dark-mode-moon", 20, 20)
@@ -270,10 +310,23 @@ pub fn dark_mode(id: String, onclick: a) -> Element(a) {
   render(button, do_inner(inner, onclick))
 }
 
+/// Render app nav mobile toggle button.
+///
+pub fn app_nav(id: String, onclick: a) -> UIRender(a) {
+  let button = UIButton(..new(id), att: [#("class", app_nav_class)])
+  let inner = [
+    svg.new("btn-icon-app-nav", 24, 24)
+    |> svg_icons.app_nav()
+    |> svg.render(),
+  ]
+
+  render(button, do_inner(inner, onclick))
+}
+
 // PRIVATE
 //
 
-fn do_inner(inner: List(Element(a)), onclick: a) -> Render(a) {
+fn do_inner(inner: UIRenders(a), onclick: a) -> Render(a) {
   UIButtonRender(inner:, onclick: Some(onclick))
 }
 
@@ -284,3 +337,5 @@ const darkmode_class = "hover:text-dark-900 relative flex h-11 w-11 items-center
 const app_nav_class = "z-99999 flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100 xl:hidden dark:text-gray-400 dark:hover:bg-gray-800"
 
 const sidebar_class = "z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 lg:h-11 lg:w-11 lg:border dark:border-gray-800 dark:text-gray-400"
+
+const class_back = "inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"

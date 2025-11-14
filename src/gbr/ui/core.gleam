@@ -46,6 +46,9 @@ pub type UIAttrs =
 
 /// Label is text and attributes.
 ///
+/// - text: Text to show.
+/// - att: Attributes to render.
+///
 pub type UILabel {
   UILabel(text: String, att: UIAttrs)
 }
