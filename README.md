@@ -165,6 +165,15 @@ My style file `main.css`:
 
 > Use alias `@gleam`, the dev team greatful 😊.
 
+#### gleam.toml
+
+Add this property:
+
+```toml
+[javascript]
+typescript_declarations = true
+```
+
 ### Font
 
 Default is google `Outfit`:
