@@ -138,17 +138,18 @@ Using tailwind in vite project with [@tailwindcss/vite](https://tailwindcss.com/
 Vite config `vite.config.js`:
 
 ```js
-import path from 'path'
+import { resolve } from 'path'
 import { defineConfig } from 'vite'
+
 // plugins
-import tailwindcss from "@tailwindcss/vite"
 import gleam from 'vite-plugin-gleam'
+import tailwindcss from "@tailwindcss/vite"
 
 export default defineConfig({
-	plugins: [vite_plugin(), tailwindcss()],
+	plugins: [gleam(), tailwindcss()],
 	resolve: {
 		alias: {
-			'@gleam': path.resolve(__dirname, "./build/dev/javascript")
+			'@gleam': resolve(__dirname, "./build/dev/javascript")
 		}
 	}
 })
@@ -159,14 +160,14 @@ My style file `main.css`:
 ```css
 @import "@gleam/gbr_ui/priv/gbr/ui.css";
 
-/* my styles here */
+/* my custom styles here */
 ```
 
-> Using alias `@gleam`, the dev team greatful.
+> Use alias `@gleam`, the dev team greatful 😊.
 
 ### Font
 
-Default:
+Default is google `Outfit`:
 
 ```css
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
