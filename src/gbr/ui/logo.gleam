@@ -18,7 +18,8 @@ pub type UILogo {
   UILogo(
     id: String,
     img: String,
-    img_dark: String,
+    img_dark: Option(String),
+    icon: Option(String),
     href: Option(String),
     alt: Option(String),
   )
@@ -26,8 +27,23 @@ pub type UILogo {
 
 /// New logotype image super element.
 ///
-pub fn new(id: String, img img: String, img_dark img_dark: String) -> Logo {
-  UILogo(id: to_id(id), img:, img_dark:, href: None, alt: None)
+/// - id
+/// - img: href
+///
+pub fn new(id: String, img: String) -> Logo {
+  UILogo(id: to_id(id), img:, img_dark: None, icon: None, href: None, alt: None)
+}
+
+/// Set logo icon to dark mode.
+///
+pub fn icon(in: Logo, icon) -> Logo {
+  UILogo(..in, icon: Some(icon))
+}
+
+/// Set logo img to dark mode.
+///
+pub fn dark(in: Logo, dark: String) -> Logo {
+  UILogo(..in, img_dark: Some(dark))
 }
 
 /// Set logotype href link.
@@ -45,7 +61,13 @@ pub fn alt(in: Logo, alt: String) -> Logo {
 /// Render logo super element to `lustre/element.{type Element}`.
 ///
 pub fn render(in: Logo) -> UIRender(a) {
-  let UILogo(id:, img:, img_dark:, href:, alt:) = in
+  // todo icon
+  let UILogo(id:, img:, img_dark:, href:, alt:, ..) = in
+  let img = a.src(img)
+  let img_dark =
+    img_dark
+    |> option.map(a.src)
+    |> option.unwrap(a.none())
   let href =
     option.unwrap(href, "_blank")
     |> a.href()
@@ -56,12 +78,12 @@ pub fn render(in: Logo) -> UIRender(a) {
   html.a([a.id(id), a.class(logo_class), href], [
     html.img([
       a.class(logo_img_class),
-      a.src(img),
+      img,
       alt,
     ]),
     html.img([
       a.class(logo_img_dark_class),
-      a.src(img_dark),
+      img_dark,
       alt,
     ]),
   ])
