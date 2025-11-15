@@ -2,7 +2,7 @@
 
 [Gleam](https://gleam.run/) UI [lustre](https://lustre.build/) library by @gleam-br
 
-🌝 Nothing stateful only stateless this uses only render functions.
+🌝 Nothing stateful only stateless uses only lustre render functions.
 
 [![Package Version](https://img.shields.io/hexpm/v/gbr_ui)](https://hex.pm/packages/gbr_ui)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/gbr_ui/)
@@ -45,21 +45,27 @@ Further documentation can be found at <https://hexdocs.pm/gbr_ui>.
 ## ✍ Design
 
 In view element at render type show with render function.
+
 "No elemento de visualização no tipo de renderização mostrar com função de renderização." `pt-BR`
 
 Then, the module functions always reveice an element view.
+
 "Então, as funções dos módulos recebem sempre um elemento de visualização."
 
 Could be function to set attributes or others.
+
 "Poderiam ser funções para altera atributos ou outras coisas."
 
 Then, the element view by a transform function at a render type to render function return lustre element.
+
 "Então, o element de visualização por uma função de transformação em um tipo de renderização p/ a função de renderização retornar um elemento `lustre/element.{type Element}`."
 
 > Not is required, could be direct in element view to render function.
+>
 > "Não é obrigatório, pode ser direto no elemento de visualização p/ a função de rederização"
 
 Supose, a button text and svg at left side:
+
 "Suponha, um botão de texto e um svg do lado esquerdo:"
 
 ```gleam
