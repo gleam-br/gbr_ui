@@ -10,12 +10,12 @@ import lustre/element/html
 import lustre/event
 
 import gbr/ui/button
-import gbr/ui/checkbox
 import gbr/ui/form
 import gbr/ui/input
+import gbr/ui/input/checkbox
 import gbr/ui/link
 
-import gbr/ui/core.{uilabel, uilink}
+import gbr/ui/core/model.{uilabel, uilink}
 
 type Login =
   UILoginBasic

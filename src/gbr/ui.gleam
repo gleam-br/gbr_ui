@@ -29,7 +29,7 @@
 //// pub fn render(in: AdminHome) -> Element(AdminEvent) {
 ////   let AdminHome(sidebar:, header:, content:, breadcrumb:) = in
 ////
-////   ui.main(header:, sidebar:, content:, breadcrumb:)
+////   ui.primary(header:, sidebar:, content:, breadcrumb:)
 //// }
 //// ```
 ////
@@ -41,7 +41,7 @@ import lustre/attribute.{class}
 import lustre/element
 import lustre/element/html
 
-import gbr/ui/core.{type UIRender, type UIRenderOpt, type UIRenders}
+import gbr/ui/core/model.{type UIRender, type UIRenderOpt, type UIRenders}
 import gbr/ui/svg
 
 /// Construct new super svg element `gbr/ui/svg.{new}`.
@@ -115,20 +115,20 @@ pub fn horizontal(inner: UIRenders(a)) -> UIRender(a) {
 
 /// UI layout partial with header and sidebar only.
 ///
-/// Better choise when you need only partial main layout.
+/// Better choise when you need only partial primary layout.
 ///
 /// ### Fn desc: Transform two `2 -> 1`
 ///
-/// Two elements to one element with partial main layout ui.
+/// Two elements to one element with partial primary layout ui.
 ///
 pub fn partial(
   header header: UIRender(a),
   sidebar sidebar: UIRender(a),
 ) -> UIRender(a) {
-  main(header:, sidebar:, content: None)
+  primary(header:, sidebar:, content: None)
 }
 
-/// UI main layout with header, sidebar, breadcrumb and content.
+/// UI primary layout with header, sidebar, breadcrumb and content.
 ///
 /// Excelent layout to admin home page.
 ///
@@ -140,50 +140,20 @@ pub fn partial(
 /// pub fn render(in: AdminHome) -> Element(AdminEvent) {
 ///   let AdminHome(sidebar:, header:, content:, breadcrumb:) = in
 ///
-///   ui.main(header:, sidebar:, content:, breadcrumb:)
+///   ui.primary(header:, sidebar:, content:, breadcrumb:)
 /// }
 /// ```
 ///
 /// ### Fn desc: Transform three `3 -> 1`
 ///
-/// Three elements to one element with main layout.
+/// Three elements to one element with primary layout.
 ///
-pub fn main(
+pub fn primary(
   header header: UIRender(a),
   sidebar sidebar: UIRender(a),
   content content: UIRenderOpt(a),
 ) -> UIRender(a) {
-  main_with_breadcrumb(header:, sidebar:, content:, breadcrumb: None)
-}
-
-/// Same of `gbr/ui.{main}` with optional breadcrumb element.
-///
-pub fn main_with_breadcrumb(
-  header header: UIRender(a),
-  sidebar sidebar: UIRender(a),
-  content content: UIRenderOpt(a),
-  breadcrumb breadcrumb: UIRenderOpt(a),
-) -> UIRender(a) {
-  let breadcrumb = option.unwrap(breadcrumb, element.none())
-  let content = option.unwrap(content, element.none())
-
-  // page wrapper
-  html.div([class(main_class)], [
-    // sidebar area
-    sidebar,
-    // content area
-    html.div([class(main_content_class)], [
-      //element.none(), overlay mobile, close when outside menu ... todo ...
-      // header area
-      header,
-      // main area
-      html.main([class(main_body_class)], [
-        breadcrumb,
-        content,
-      ]),
-      //element.none(), footer area ... todo ...
-    ]),
-  ])
+  primary_with_breadcrumb(header:, sidebar:, content:, breadcrumb: None)
 }
 
 /// UI grid layout with left, right, inner elements.
@@ -217,6 +187,36 @@ pub fn grid(
       html.div([class(grid_left_class)], left),
       html.div([class(grid_right_class)], right),
       ..inner
+    ]),
+  ])
+}
+
+/// Same of `gbr/ui.{main}` with optional breadcrumb element.
+///
+fn primary_with_breadcrumb(
+  header header: UIRender(a),
+  sidebar sidebar: UIRender(a),
+  content content: UIRenderOpt(a),
+  breadcrumb breadcrumb: UIRenderOpt(a),
+) -> UIRender(a) {
+  let breadcrumb = option.unwrap(breadcrumb, element.none())
+  let content = option.unwrap(content, element.none())
+
+  // page wrapper
+  html.div([class(main_class)], [
+    // sidebar area
+    sidebar,
+    // content area
+    html.div([class(main_content_class)], [
+      //element.none(), overlay mobile, close when outside menu ... todo ...
+      // header area
+      header,
+      // main area
+      html.main([class(main_body_class)], [
+        breadcrumb,
+        content,
+      ]),
+      //element.none(), footer area ... todo ...
     ]),
   ])
 }

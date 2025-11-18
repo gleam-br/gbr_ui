@@ -16,7 +16,7 @@ import gbr/ui/svg/core.{
   Circle, Path, Svg, to_animate, to_att, to_attrs_circle, to_attrs_rect, to_path,
 }
 
-import gbr/ui/core.{type UIRender} as uicore
+import gbr/ui/core/model.{type UIRender} as uicore
 
 /// Svg super element.
 ///

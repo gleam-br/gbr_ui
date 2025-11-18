@@ -8,7 +8,7 @@ import lustre/attribute as a
 import lustre/element
 import lustre/element/html
 
-import gbr/ui/core.{
+import gbr/ui/core/model.{
   type UIAttrs, type UILabel, type UIRender, type UIRenders, UILabel,
   attrs_to_lustre, uilabel,
 }

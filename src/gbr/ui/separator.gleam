@@ -6,7 +6,7 @@ import lustre/attribute.{class}
 import lustre/element
 import lustre/element/html
 
-import gbr/ui/core.{type UIRender}
+import gbr/ui/core/model.{type UIRender}
 
 type Separator =
   UISeparator

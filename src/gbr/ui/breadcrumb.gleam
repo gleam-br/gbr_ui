@@ -14,7 +14,7 @@ import lustre/element
 import lustre/attribute as a
 import lustre/element/html
 
-import gbr/ui/core.{type UIRender, to_id}
+import gbr/ui/core/model.{type UIRender, to_id}
 import gbr/ui/svg
 import gbr/ui/svg/icons as svg_icons
 

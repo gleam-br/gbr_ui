@@ -15,7 +15,7 @@ import lustre/event
 import gbr/ui/svg
 import gbr/ui/svg/form as svg_form
 
-import gbr/ui/core.{
+import gbr/ui/core/model.{
   type UIAttributes, type UIAttrs, type UILabel, type UIRender, type UIRenders,
   UILabel, attrs_any, attrs_remove, attrs_to_lustre, to_id, uilabel,
 }

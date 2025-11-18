@@ -7,7 +7,7 @@ import gleam/option.{type Option, None, Some}
 import lustre/attribute as a
 import lustre/element/html
 
-import gbr/ui/core.{type UIRender, to_id}
+import gbr/ui/core/model.{type UIRender, to_id}
 
 type Logo =
   UILogo

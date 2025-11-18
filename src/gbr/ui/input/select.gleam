@@ -12,7 +12,7 @@ import lustre/event
 import gbr/ui/svg
 import gbr/ui/svg/icons as svg_icons
 
-import gbr/ui/core.{type UIRender, to_id}
+import gbr/ui/core/model.{type UIRender, to_id}
 
 type Select =
   UISelect

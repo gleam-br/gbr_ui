@@ -9,7 +9,9 @@ import lustre/attribute as a
 import lustre/element.{type Element}
 import lustre/element/html
 
-import gbr/ui/core.{type UIAttrs, type UILabel, UILabel, attrs_to_lustre, to_id}
+import gbr/ui/core/model.{
+  type UIAttrs, type UILabel, UILabel, attrs_to_lustre, to_id,
+}
 import gbr/ui/input
 import gbr/ui/svg
 import gbr/ui/svg/form as svg_form

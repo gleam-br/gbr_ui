@@ -8,7 +8,7 @@ import gleam/option
 import lustre/attribute as a
 import lustre/element/html
 
-import gbr/ui/core.{
+import gbr/ui/core/model.{
   type UIDesc, type UILink, type UIRender, UIDesc, UILink, to_id,
 }
 import gbr/ui/svg

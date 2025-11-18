@@ -7,7 +7,7 @@ import gleam/list
 import lustre/attribute as a
 import lustre/element/html
 
-import gbr/ui/core.{
+import gbr/ui/core/model.{
   type UIAttributes, type UILink as LinkCore, type UIRender, type UIRenders,
 }
 

@@ -13,7 +13,7 @@ import lustre/element/html
 import gbr/ui/link
 import gbr/ui/svg.{type Svg}
 
-import gbr/ui/core.{type UILink, type UIRender, UILink, uilink}
+import gbr/ui/core/model.{type UILink, type UIRender, UILink, uilink}
 
 type Provider =
   UIProvider

@@ -9,7 +9,7 @@
 //// import gbr/ui/svg
 //// import gbr/ui/svg/icons
 ////
-//// import gbr/ui/core.{type UIRender, uilabel}
+//// import gbr/ui/core/model.{type UIRender, uilabel}
 ////
 //// fn render(id: String) -> UIRender(a) {
 ////   label = uilabel("Button w/ icon back!", [])
@@ -52,7 +52,7 @@ import lustre/element/html
 import gbr/ui/svg
 import gbr/ui/svg/icons as svg_icons
 
-import gbr/ui/core.{
+import gbr/ui/core/model.{
   type UIAttrs, type UILabel, type UIRender, type UIRenders, UILabel,
   attrs_remove, attrs_to_lustre, to_id,
 }

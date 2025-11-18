@@ -12,7 +12,7 @@ import lustre/event
 import gbr/ui/svg
 import gbr/ui/svg/form
 
-import gbr/ui/core.{
+import gbr/ui/core/model.{
   type UIAttributes, type UIAttrs, type UIRender, type UIRenders,
   attrs_to_lustre, to_id,
 }
