@@ -39,6 +39,20 @@ pub type UIAttributes(a) =
 pub type UIRenderOpt(a) =
   Option(UIRender(a))
 
+// Box ui layout
+//
+pub type UIBox(a) {
+  UIBox(
+    title: UIRender(a),
+    content: UIRender(a),
+    footer: UIRender(a),
+    attrs: UIAttributes(a),
+  )
+}
+
+pub type UIBoxes(a) =
+  List(UIBox(a))
+
 /// Attributes is list of two string tuple.
 ///
 pub type UIAttrs =

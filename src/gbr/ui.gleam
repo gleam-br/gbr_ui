@@ -35,14 +35,19 @@
 ////
 
 import gleam/bool
+import gleam/list
 import gleam/option.{None}
 
 import lustre/attribute.{class}
 import lustre/element
 import lustre/element/html
 
-import gbr/ui/core/model.{type UIRender, type UIRenderOpt, type UIRenders}
 import gbr/ui/svg
+
+import gbr/ui/core/model.{
+  type UIAttributes, type UIBoxes, type UIRender, type UIRenderOpt,
+  type UIRenders, UIBox,
+}
 
 /// Construct new super svg element `gbr/ui/svg.{new}`.
 ///
@@ -191,9 +196,18 @@ pub fn grid(
   ])
 }
 
+/// UI boxes layout
+///
+pub fn box(in: UIBoxes(a), attrs: UIAttributes(a)) -> UIRender(a) {
+  let attrs = [class(box_class), ..attrs]
+  let inner = box_inner(in)
+
+  html.div(attrs, inner)
+}
+
 /// Same of `gbr/ui.{main}` with optional breadcrumb element.
 ///
-fn primary_with_breadcrumb(
+pub fn primary_with_breadcrumb(
   header header: UIRender(a),
   sidebar sidebar: UIRender(a),
   content content: UIRenderOpt(a),
@@ -224,6 +238,17 @@ fn primary_with_breadcrumb(
 // PRIVATE
 //
 
+fn box_inner(in) {
+  use box <- list.map(list.reverse(in))
+  let UIBox(title:, content:, footer:, attrs:) = box
+
+  html.div(attrs, [
+    html.h3([class(box_title_class)], [title]),
+    html.p([class(box_body_class)], [content]),
+    html.div([class(box_footer_class)], [footer]),
+  ])
+}
+
 const loader_class = "fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black"
 
 const loader_spin_class = "h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent"
@@ -245,3 +270,11 @@ const grid_main_class = "flex items-center justify-center z-1"
 const grid_left_class = "absolute right-0 top-0 -z-1 w-full max-w-[250px] xl:max-w-[450px]"
 
 const grid_right_class = "absolute bottom-0 left-0 -z-1 w-full max-w-[250px] rotate-180 xl:max-w-[450px]"
+
+const box_class = "mx-auto mb-10 w-full max-w-60 rounded-2xl bg-gray-50 px-4 py-5 text-center dark:bg-white/[0.03]"
+
+const box_title_class = "mb-2 font-semibold text-gray-900 dark:text-white"
+
+const box_body_class = "mb-4 text-theme-sm text-gray-500 dark:text-gray-400"
+
+const box_footer_class = "flex items-center justify-center rounded-lg bg-brand-500 p-3 text-theme-sm font-medium text-white hover:bg-brand-600"
