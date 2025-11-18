@@ -105,7 +105,7 @@ fn inline(at: Render(a)) {
       |> svg.classes([search_icon_svg_class])
       |> svg.render(),
     ]),
-    input.text("falcon-ui-input-search")
+    input.text("ui-input-search")
       |> input.search()
       |> input.placeholder("Buscar por...")
       |> input.at()

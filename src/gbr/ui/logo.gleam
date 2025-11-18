@@ -3,6 +3,7 @@
 ////
 
 import gleam/option.{type Option, None, Some}
+import lustre/element
 
 import lustre/attribute as a
 import lustre/element/html
@@ -56,6 +57,13 @@ pub fn href(in: Logo, href: String) -> Logo {
 ///
 pub fn alt(in: Logo, alt: String) -> Logo {
   UILogo(..in, alt: Some(alt))
+}
+
+pub fn render_opt(opt: Option(Logo)) -> UIRender(a) {
+  case opt {
+    Some(in) -> render(in)
+    None -> element.none()
+  }
 }
 
 /// Render logo super element to `lustre/element.{type Element}`.

@@ -14,7 +14,7 @@ import gbr/ui/logo.{type UILogo}
 import gbr/ui/notify.{type UINotify}
 import gbr/ui/user.{type UIUser}
 
-import gbr/ui/core/model.{type UIRender}
+import gbr/ui/core/model.{type UIRender, to_id}
 
 type Header =
   UIHeader
@@ -31,21 +31,22 @@ type User =
 type Notify =
   UINotify
 
-pub type Events {
-  OnApp
-  OnSidebar
-  OnSignOut
-  OnSearch(String)
-  OnNotify(Bool)
-  OnDarkMode
-}
-
+/// Header super element
+///
+/// - id: Identification html element
+/// - user: User info (required)
+/// - sidebar: Sidebar visible
+/// - app_nav: App nav visible to mobile responsive
+/// - logo: Logotype info (optional)
+/// - notify: Notify info (optional)
+///
 pub opaque type UIHeader {
   UIHeader(
-    logo: Logo,
+    id: String,
     user: User,
-    app: Bool,
     sidebar: Bool,
+    app_nav: Bool,
+    logo: Option(Logo),
     notify: Option(Notify),
   )
 }
@@ -62,8 +63,31 @@ pub opaque type UIHeaderRender(a) {
   )
 }
 
-pub fn new(logo logo: Logo, user user: User) {
-  UIHeader(logo:, user:, sidebar: False, app: False, notify: None)
+/// New header super element
+///
+/// - id: Identification html element
+///
+pub fn new(id: String) {
+  UIHeader(
+    id:,
+    user: user.new(""),
+    sidebar: False,
+    app_nav: False,
+    logo: None,
+    notify: None,
+  )
+}
+
+/// Set profile info
+///
+pub fn logo(in: Header, logo: Logo) -> Header {
+  UIHeader(..in, logo: Some(logo))
+}
+
+/// Set user info
+///
+pub fn user(in: Header, user: User) -> Header {
+  UIHeader(..in, user:)
 }
 
 pub fn at(in: Header) -> Render(a) {
@@ -122,7 +146,7 @@ pub fn toggle_notify(in: Header, force: Bool) {
 }
 
 pub fn toggle_app(in: Header) -> Header {
-  UIHeader(..in, app: !in.app)
+  UIHeader(..in, app_nav: !in.app_nav)
 }
 
 pub fn toggle_sidebar(in: Header) -> Header {
@@ -137,9 +161,9 @@ pub fn render(at: Render(a)) -> UIRender(a) {
     on_notify:,
     on_sidebar:,
     on_darkmode:,
-    on_submit:,
+    ..,
   ) = at
-  let UIHeader(logo:, user:, app:, sidebar:, notify:) = in
+  let UIHeader(id, logo:, user:, app_nav:, sidebar:, notify:) = in
   let notify = case notify {
     Some(notify) ->
       notify.at(notify)
@@ -147,26 +171,25 @@ pub fn render(at: Render(a)) -> UIRender(a) {
       |> notify.render()
     None -> element.none()
   }
-  let header_left_toggle_class = case app {
+  let header_left_toggle_class = case app_nav {
     False -> "hidden"
     True -> "flex"
   }
-  let app_class = case app {
+  let app_class = case app_nav {
     True -> "bg-gray-100 dark:bg-gray-800"
     False -> ""
   }
 
-  html.header([a.class(header_class)], [
+  html.header([a.id(to_id(id)), a.class(header_class)], [
     html.div([a.class(header_content_class)], [
       html.div([a.class(header_right_class)], [
         button.sidebar("header-btn-toggle-sidebar", sidebar, on_sidebar),
-        logo.render(logo),
+        logo.render_opt(logo),
         button.app_nav("header-btn-toggle-appmobile", app_class, on_app),
       ]),
       html.div(
         [
-          a.class(header_left_toggle_class),
-          a.class(header_left_class),
+          a.class(header_left_toggle_class <> " " <> header_left_class),
         ],
         [
           html.div([a.class(header_left_content_class)], [

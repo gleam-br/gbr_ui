@@ -28,7 +28,7 @@ type Profile =
 type Dropdown =
   UIDropdown
 
-pub opaque type UIProfile {
+pub type UIProfile {
   UIProfile(
     username: String,
     email: String,
@@ -39,7 +39,7 @@ pub opaque type UIProfile {
 }
 
 pub opaque type UIUser {
-  UIUser(profile: Profile, dropdown: Option(Dropdown))
+  UIUser(id: String, profile: Profile, dropdown: Option(Dropdown))
 }
 
 pub opaque type UIUserRender(a) {
@@ -51,8 +51,8 @@ pub opaque type UIUserRender(a) {
   )
 }
 
-pub fn new(profile: Profile) -> User {
-  UIUser(profile:, dropdown: None)
+pub fn new(id: String) -> User {
+  UIUser(id:, profile: default_profile, dropdown: None)
 }
 
 pub fn profile(in: User, profile: Profile) -> User {
@@ -99,7 +99,7 @@ pub fn on_dropdown_leave_opt(at: Render(a), on_dropdown: Option(a)) -> Render(a)
 
 pub fn render(at: Render(a)) -> UIRender(a) {
   let UIUserRender(in:, on_submit:, on_dropdown:, on_dropdown_leave:) = at
-  let UIUser(profile:, dropdown:) = in
+  let UIUser(id:, profile:, dropdown:) = in
   let UIProfile(username:, email:, department:, full_name:, picture:) = profile
 
   // dropdown toggle
@@ -130,6 +130,7 @@ pub fn render(at: Render(a)) -> UIRender(a) {
 
   html.div(
     [
+      a.id(to_id(id)),
       a.class("relative"),
     ],
     [
@@ -285,3 +286,11 @@ const user_dropdown_email_class = "text-theme-xs mt-0.5 block text-gray-500 dark
 const user_dropdown_username_class = "text-theme-sm block ont-medium text-gray-700 dark:text-gray-400"
 
 const user_btn_class = "group text-theme-sm mt-3 flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+
+const default_profile = UIProfile(
+  username: "user.test",
+  email: "user.test@gleam-br.dev.br",
+  department: "GTSUP",
+  full_name: "User Test",
+  picture: "/user-02.jpg",
+)

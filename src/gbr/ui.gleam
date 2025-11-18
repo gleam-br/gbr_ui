@@ -226,9 +226,11 @@ pub fn primary_with_breadcrumb(
       // header area
       header,
       // main area
-      html.main([class(main_body_class)], [
-        breadcrumb,
-        content,
+      html.main([], [
+        html.div([class(main_body_class)], [
+          breadcrumb,
+          content,
+        ]),
       ]),
       //element.none(), footer area ... todo ...
     ]),

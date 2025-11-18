@@ -1,15 +1,13 @@
 ////
-//// Sidebar component module
+//// ☰ Gleam UI sidebar super element
 ////
 
-// IMPORTS ---------------------------------------------------------------------
-//
 import gleam/bool
 import gleam/list
 import gleam/option.{type Option, None, Some}
-import lustre/element
 
 import lustre/attribute as a
+import lustre/element
 import lustre/element/html
 import lustre/element/keyed
 
@@ -36,15 +34,12 @@ type Inner =
 type Logo =
   UILogo
 
-type Head =
-  Option(Logo)
-
 pub opaque type UISidebar {
   UISidebar(
     id: String,
-    head: Head,
     visible: Bool,
     menu: Option(Menu),
+    head: Option(Logo),
     selected: Option(String),
   )
 }
@@ -63,8 +58,10 @@ pub fn new(id: String) -> Sidebar {
   )
 }
 
-// UPDATE > RENDER -------------------------------------------------------------
-//
+pub fn at(in: Sidebar) -> Render(a) {
+  UISidebarRender(in:)
+}
+
 pub fn render(at: Render(a)) -> UIRender(a) {
   let UISidebarRender(in:) = at
   let UISidebar(head:, visible:, ..) = in
@@ -75,9 +72,8 @@ pub fn render(at: Render(a)) -> UIRender(a) {
 
   html.aside(
     [
-      a.id("falcon-ui-sidebar"),
-      a.class(sidebar_class),
-      a.class(toggle_class),
+      a.id("ui-sidebar"),
+      a.class(sidebar_class <> " " <> toggle_class),
     ],
     [
       menu_head(head, visible),
@@ -93,18 +89,28 @@ pub fn render(at: Render(a)) -> UIRender(a) {
   )
 }
 
-// PUBLICS ---------------------------------------------------------------------
-//
 pub fn visible(in: Sidebar, visible: Bool) {
   UISidebar(..in, visible:)
 }
 
-pub fn head(in: Sidebar, head: Head) -> Sidebar {
-  UISidebar(..in, head:)
+/// Set head with logo
+///
+/// - head: Logo info
+///
+pub fn head(in: Sidebar, head: Logo) -> Sidebar {
+  UISidebar(..in, head: Some(head))
 }
 
-pub fn menu(in: Sidebar, menu: Menu) -> Sidebar {
-  UISidebar(..in, menu: Some(menu))
+/// Set sidebar root menu
+///
+/// menu: Root menu to sidebar
+///
+pub fn root(in: Sidebar, menu: Menu) -> Sidebar {
+  let menu =
+    menu.root(menu, True)
+    |> Some()
+
+  UISidebar(..in, menu:)
 }
 
 pub fn toggle_visible(in: Sidebar) {
@@ -116,8 +122,9 @@ pub fn get_all(in: Sidebar) -> List(Menu) {
   do_all(menu, [])
 }
 
-// PRIVATES --------------------------------------------------------------------
+// PRIVATE
 //
+
 fn do_all(menu, acc) -> List(Menu) {
   use <- bool.guard(option.is_none(menu), [])
   let assert Some(menu) = menu
@@ -125,8 +132,8 @@ fn do_all(menu, acc) -> List(Menu) {
   use _, _, _, inner, _ <- menu.in(menu)
 
   case inner {
-    Some(inner) -> list.append(acc, inner)
-    None -> acc
+    [] -> acc
+    inner -> list.append(acc, inner)
   }
 }
 
@@ -153,8 +160,7 @@ fn menu_head(head, visible) -> UIRender(a) {
     html.a([a.href(href)], [
       html.span(
         [
-          a.class("logo"),
-          a.class(logo_class),
+          a.class("logo " <> logo_class),
         ],
         [
           html.img([
@@ -170,8 +176,7 @@ fn menu_head(head, visible) -> UIRender(a) {
         ],
       ),
       html.img([
-        a.class("logo-icon"),
-        a.class(logo_icon_class),
+        a.class("logo-icon " <> logo_icon_class),
         a.src(icon),
         a.alt(alt),
       ]),
@@ -196,19 +201,21 @@ fn menu_main(in: Sidebar) -> UIRender(a) {
 
   use id, text, root, inner, _svg <- menu.in(menu)
 
-  case root, inner {
-    True, Some(inner) ->
+  use <- bool.guard(!root, element.none())
+
+  case inner {
+    [] -> element.none()
+    inner ->
       html.div([a.id(to_id(id))], [
         html.h3(
           [
-            a.id("falcon-ui-sidebar-menu-title-" <> text),
+            a.id("ui-sidebar-menu-title-" <> text),
             a.class(menu_class),
           ],
           [
             html.span(
               [
-                a.class("menu-group-title"),
-                a.class(menu_group_title_class),
+                a.class("menu-group-title " <> menu_group_title_class),
               ],
               [html.text(text)],
             ),
@@ -223,13 +230,12 @@ fn menu_main(in: Sidebar) -> UIRender(a) {
         ),
         html.ul(
           [
-            a.id("falcon-ui-sidebar-menu-" <> text),
+            a.id("ui-sidebar-menu-" <> text),
             a.class(menu_item_class),
           ],
           [keyed.fragment(menu_inner(in, inner))],
         ),
       ])
-    _, _ -> element.none()
   }
 }
 
@@ -238,14 +244,14 @@ fn menu_inner(in: Sidebar, menus: Inner) -> List(UIKeyed(a)) {
   use id, text, _, inner, svg <- menu.in(menu)
 
   case inner {
-    Some(inner) -> menu_group(in, id, text, svg, inner)
-    None -> menu_item(in, text, id)
+    [] -> menu_item(in, text, id)
+    inner -> menu_group(in, id, text, svg, inner)
   }
 }
 
 fn menu_group(in: Sidebar, id, title, svg, inner) -> UIKeyed(a) {
   let UISidebar(visible:, selected:, ..) = in
-  let name = "falcon-ui-sidebar-menu-group-" <> title
+  let name = "ui-sidebar-menu-group-" <> title
   let is_selected = case selected {
     None -> False
     Some(selected) ->
@@ -288,8 +294,7 @@ fn menu_group(in: Sidebar, id, title, svg, inner) -> UIKeyed(a) {
           [
             // TODO: onclick
             a.href(id),
-            a.class("menu-item group"),
-            a.class(menu_item_class),
+            a.class("menu-item group " <> menu_item_class),
           ],
           [
             html.div(
@@ -305,19 +310,22 @@ fn menu_group(in: Sidebar, id, title, svg, inner) -> UIKeyed(a) {
             ),
             html.span(
               [
-                a.class("menu-item-text"),
                 case visible {
-                  True -> a.none()
-                  False -> a.class("lg:hidden")
+                  True -> a.class("menu-item-text")
+                  False -> a.class("menu-item-text lg:hidden")
                 },
               ],
               [html.text(title)],
             ),
             html.div(
               [
-                a.class(menu_item_arrow_class),
-                a.class(menu_item_arrow_display),
-                a.class(menu_item_arrow_toggle),
+                a.class(
+                  menu_item_arrow_class
+                  <> " "
+                  <> menu_item_arrow_display
+                  <> " "
+                  <> menu_item_arrow_toggle,
+                ),
               ],
               [
                 svg.new("sidebar-menu-item-icon-arrow", 20, 20)
@@ -329,8 +337,9 @@ fn menu_group(in: Sidebar, id, title, svg, inner) -> UIKeyed(a) {
         ),
         html.div(
           [
-            a.class("translate transform overflow-hidden"),
-            a.class(menu_item_dropdown_class),
+            a.class(
+              "translate transform overflow-hidden " <> menu_item_dropdown_class,
+            ),
           ],
           case inner {
             [] -> []
@@ -339,8 +348,12 @@ fn menu_group(in: Sidebar, id, title, svg, inner) -> UIKeyed(a) {
                 [
                   a.class("menu-dropdown mt-2 flex flex-col gap-1 pl-9"),
                   case visible {
-                    False -> a.class("lg:hidden")
-                    True -> a.none()
+                    False ->
+                      a.class(
+                        "menu-dropdown mt-2 flex flex-col gap-1 pl-9 lg:hidden",
+                      )
+                    True ->
+                      a.class("menu-dropdown mt-2 flex flex-col gap-1 pl-9")
                   },
                 ],
                 [keyed.fragment(menu_inner(in, inner))],
@@ -354,7 +367,7 @@ fn menu_group(in: Sidebar, id, title, svg, inner) -> UIKeyed(a) {
 }
 
 fn menu_item(model: Sidebar, title, id) -> UIKeyed(a) {
-  let name = "falcon-ui-sidebar-menu-item-" <> title
+  let name = "ui-sidebar-menu-item-" <> title
   let is_selected = case model.selected {
     Some(selected) -> id == selected
     None -> False
@@ -373,8 +386,7 @@ fn menu_item(model: Sidebar, title, id) -> UIKeyed(a) {
       [
         html.a(
           [
-            a.class("menu-dropdown-item group"),
-            a.class(menu_item_dropdown_class),
+            a.class("menu-dropdown-item group " <> menu_item_dropdown_class),
             // TODO: onsubmit
             a.href(id),
           ],
