@@ -140,6 +140,12 @@ pub fn strong(in: UITypo) -> UITypo {
   text_attr(in, #("class", "font-semibold"))
 }
 
+/// Set style behavior to typo.
+///
+pub fn class(in: UITypo, class: String) -> UITypo {
+  text_attr(in, #("class", class))
+}
+
 /// Render inline typos layout.
 ///
 pub fn inline(in: UITypos) -> UIRender(a) {
