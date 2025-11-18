@@ -39,6 +39,9 @@ pub type UIAttributes(a) =
 pub type UIRenderOpt(a) =
   Option(UIRender(a))
 
+pub type UIKeyed(a) =
+  #(String, UIRender(a))
+
 // Box ui layout
 //
 pub type UIBox(a) {
