@@ -2,7 +2,6 @@
 //// Gleam UI user info super element.
 ////
 
-import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/string
 
@@ -13,8 +12,9 @@ import lustre/event
 
 import gbr/ui/svg
 import gbr/ui/svg/icons as svg_icons
+import gbr/ui/user/dropdown.{type UIDropdown}
 
-import gbr/ui/core/model.{type UIRender, type UIRenders}
+import gbr/ui/core/model.{type UIRender, type UIRenders, to_id}
 
 type User =
   UIUser
@@ -28,9 +28,6 @@ type Profile =
 type Dropdown =
   UIDropdown
 
-type Icon =
-  Option(svg.Identity)
-
 pub opaque type UIProfile {
   UIProfile(
     username: String,
@@ -41,25 +38,7 @@ pub opaque type UIProfile {
   )
 }
 
-pub type UIDropdown {
-  UIDropdown(visible: Bool, menu_list: MenuList, button_list: ButtonList)
-}
-
-pub type Menu {
-  Menu(label: String, href: String, icon: Icon)
-}
-
-pub type MenuList =
-  List(Menu)
-
-pub type Button {
-  Button(id: String, label: String, icon: Icon)
-}
-
-pub type ButtonList =
-  List(Button)
-
-pub type UIUser {
+pub opaque type UIUser {
   UIUser(profile: Profile, dropdown: Option(Dropdown))
 }
 
@@ -76,6 +55,14 @@ pub fn new(profile: Profile) -> User {
   UIUser(profile:, dropdown: None)
 }
 
+pub fn profile(in: User, profile: Profile) -> User {
+  UIUser(..in, profile:)
+}
+
+pub fn dropdown(in: User, dropdown: Dropdown) -> User {
+  UIUser(..in, dropdown: Some(dropdown))
+}
+
 pub fn at(in: User) -> Render(a) {
   UIUserRender(in:, on_dropdown: None, on_dropdown_leave: None, on_submit: None)
 }
@@ -84,11 +71,11 @@ pub fn on_submit(at: Render(a), onsubmit: fn(String) -> a) -> Render(a) {
   UIUserRender(..at, on_submit: Some(onsubmit))
 }
 
-pub fn on_dropdown(at: Render(a), ondropdown: a) {
+pub fn on_dropdown(at: Render(a), ondropdown: a) -> Render(a) {
   UIUserRender(..at, on_dropdown: Some(ondropdown))
 }
 
-pub fn on_dropdown_leave(at: Render(a), ondropdown: a) {
+pub fn on_dropdown_leave(at: Render(a), ondropdown: a) -> Render(a) {
   UIUserRender(..at, on_dropdown: Some(ondropdown))
 }
 
@@ -96,32 +83,29 @@ pub fn render(at: Render(a)) -> UIRender(a) {
   let UIUserRender(in:, on_submit:, on_dropdown:, on_dropdown_leave:) = at
   let UIUser(profile:, dropdown:) = in
   let UIProfile(username:, email:, department:, full_name:, picture:) = profile
-  let #(user_arrow_toggle_class, user_dropdown_toggle_class) =
-    option.map(dropdown, fn(dropdown) {
-      let UIDropdown(visible:, ..) = dropdown
 
-      case visible {
+  // dropdown toggle
+  let #(user_arrow_toggle_class, user_dropdown_toggle_class) = case dropdown {
+    Some(dropdown) -> {
+      case dropdown.is_visible(dropdown) {
         True -> #("rotate-180", "block")
         False -> #("", "hidden")
       }
-    })
-    |> option.unwrap(#("", "hidden"))
+    }
+    None -> #("", "hidden")
+  }
 
-  // let UIDropdown(visible:, menu_list:, button_list:) = dropdown
-
-  let on_dropdown =
-    option.map(on_dropdown, event.on_click)
-    |> option.unwrap(a.none())
-  let on_dropdown_leave =
-    option.map(on_dropdown_leave, fn(a) {
-      [event.on_click(a), event.on_mouse_leave(a)]
-    })
-    |> option.unwrap([a.none()])
+  let on_dropdown = get_on_dropdown(on_dropdown)
+  let on_dropdown_click_out = get_on_dropdown(on_dropdown_leave)
+  let on_dropdown_mouse_out = get_on_dropdown_mouse(on_dropdown_leave)
 
   let dropdown = case dropdown {
-    Some(UIDropdown(button_list:, menu_list:, ..)) -> [
-      html.ul([a.class(user_dropdown_menugrp_class)], menu_list_(menu_list)),
-      ..button_list_(on_submit, button_list)
+    Some(dropdown) -> [
+      html.ul(
+        [a.class(user_dropdown_menugrp_class)],
+        menu_list_(dropdown, on_submit),
+      ),
+      ..button_list_(dropdown, on_submit)
     ]
     None -> [element.none()]
   }
@@ -153,7 +137,8 @@ pub fn render(at: Render(a)) -> UIRender(a) {
         [
           a.class(user_dropdown_toggle_class),
           a.class(string.join(user_dropdown_class, " ")),
-          ..on_dropdown_leave
+          on_dropdown_click_out,
+          on_dropdown_mouse_out,
         ],
         [
           html.div([a.class(user_dropdown_profile_class)], [
@@ -183,19 +168,11 @@ pub fn render(at: Render(a)) -> UIRender(a) {
   )
 }
 
-pub fn profile(in: User, profile: Profile) {
-  UIUser(..in, profile:)
-}
-
-pub fn dropdown(in: User, dropdown: Dropdown) {
-  UIUser(..in, dropdown: Some(dropdown))
-}
-
 // PRIVATE
 //
 
-fn menu_list_(menu_list: MenuList) -> UIRenders(a) {
-  use Menu(label:, href:, icon:) <- list.map(menu_list)
+fn menu_list_(dropdown: Dropdown, onsubmit) -> UIRenders(a) {
+  use id, text, icon <- dropdown.in_menus(dropdown)
 
   let item = case icon {
     Some(identity) -> [
@@ -203,24 +180,24 @@ fn menu_list_(menu_list: MenuList) -> UIRenders(a) {
         |> identity()
         |> svg.classes([user_menu_icon_class])
         |> svg.render(),
-      html.text(label),
+      html.text(text),
     ]
-    None -> [html.text(label)]
+    None -> [html.text(text)]
   }
 
-  html.li([], [
+  html.li([a.id(to_id(id))], [
     html.a(
       [
-        a.href(href),
         a.class(user_dropdown_menu_class),
+        get_on_submit(id, onsubmit),
       ],
       item,
     ),
   ])
 }
 
-fn button_list_(onsubmit, button_list: ButtonList) -> UIRenders(a) {
-  use Button(id:, label:, icon:) <- list.map(button_list)
+fn button_list_(dropdown: Dropdown, onsubmit) -> UIRenders(a) {
+  use id, label, icon <- dropdown.in_buttons(dropdown)
 
   let item = case icon {
     Some(identity) -> [
@@ -233,11 +210,34 @@ fn button_list_(onsubmit, button_list: ButtonList) -> UIRenders(a) {
     None -> [html.text(label)]
   }
 
-  let on_click =
-    option.map(onsubmit, fn(on) { event.on_click(on(id)) })
-    |> option.unwrap(a.none())
+  html.button(
+    [
+      a.class(user_btn_class),
+      get_on_submit(id, onsubmit),
+    ],
+    item,
+  )
+}
 
-  html.button([on_click, a.class(user_btn_class)], item)
+fn get_on_dropdown(ondropdown) {
+  case ondropdown {
+    Some(ondropdown) -> event.on_click(ondropdown)
+    None -> a.none()
+  }
+}
+
+fn get_on_dropdown_mouse(ondropdown) {
+  case ondropdown {
+    Some(ondropdown) -> event.on_mouse_leave(ondropdown)
+    None -> a.none()
+  }
+}
+
+fn get_on_submit(id, onsubmit) {
+  case onsubmit {
+    Some(onsubmit) -> event.on_click(onsubmit(id))
+    None -> a.none()
+  }
 }
 
 const user_arrow_class = ["stroke-gray-500 dark:stroke-gray-400"]
