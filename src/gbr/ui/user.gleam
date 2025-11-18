@@ -60,7 +60,17 @@ pub fn profile(in: User, profile: Profile) -> User {
 }
 
 pub fn dropdown(in: User, dropdown: Dropdown) -> User {
-  UIUser(..in, dropdown: Some(dropdown))
+  dropdown_opt(in, Some(dropdown))
+}
+
+pub fn dropdown_opt(in: User, dropdown: Option(Dropdown)) -> User {
+  UIUser(..in, dropdown:)
+}
+
+pub fn in_dropdown(in: User, callback: fn(Option(Dropdown)) -> a) -> a {
+  let UIUser(dropdown:, ..) = in
+
+  callback(dropdown)
 }
 
 pub fn at(in: User) -> Render(a) {
@@ -72,11 +82,19 @@ pub fn on_submit(at: Render(a), onsubmit: fn(String) -> a) -> Render(a) {
 }
 
 pub fn on_dropdown(at: Render(a), ondropdown: a) -> Render(a) {
-  UIUserRender(..at, on_dropdown: Some(ondropdown))
+  on_dropdown_opt(at, Some(ondropdown))
+}
+
+pub fn on_dropdown_opt(at: Render(a), on_dropdown: Option(a)) -> Render(a) {
+  UIUserRender(..at, on_dropdown:)
 }
 
 pub fn on_dropdown_leave(at: Render(a), ondropdown: a) -> Render(a) {
-  UIUserRender(..at, on_dropdown: Some(ondropdown))
+  on_dropdown_leave_opt(at, Some(ondropdown))
+}
+
+pub fn on_dropdown_leave_opt(at: Render(a), on_dropdown: Option(a)) -> Render(a) {
+  UIUserRender(..at, on_dropdown:)
 }
 
 pub fn render(at: Render(a)) -> UIRender(a) {

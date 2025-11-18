@@ -46,6 +46,12 @@ pub fn is_visible(in: UIDropdown) -> Bool {
   in.visible
 }
 
+pub fn toggle_visible(in: UIDropdown) -> UIDropdown {
+  let UIDropdown(visible:, ..) = in
+
+  UIDropdown(..in, visible: !visible)
+}
+
 pub fn in_menus(in: UIDropdown, callback: Callback(a)) -> List(a) {
   use menu <- list.map(in.menus)
   let Item(id, text:, icon:) = menu

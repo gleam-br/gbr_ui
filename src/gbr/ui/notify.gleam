@@ -5,7 +5,7 @@
 import gleam/bool
 import gleam/int
 import gleam/list
-import gleam/option.{None, Some}
+import gleam/option.{type Option, None, Some}
 
 import lustre/attribute as a
 import lustre/element
@@ -42,15 +42,29 @@ pub opaque type UINotify {
 
 pub opaque type UINotifyRender(a) {
   // fn(Bool) if force toggle or not
-  UINotifyRender(in: Notify, on_toggle: fn(Bool) -> a)
+  UINotifyRender(in: Notify, on_toggle: Option(fn(Bool) -> a))
 }
 
 pub fn new(id: String, visible: Bool) {
   UINotify(id:, visible:, title: [], footer: [], items: [])
 }
 
-pub fn at(in: Notify, on_toggle: fn(Bool) -> a) -> Render(a) {
-  UINotifyRender(in:, on_toggle:)
+pub fn toggle_visible(in: Notify, force: Bool) -> Notify {
+  case force {
+    True -> UINotify(..in, visible: False)
+    False -> UINotify(..in, visible: !in.visible)
+  }
+}
+
+pub fn at(in: Notify) -> Render(a) {
+  UINotifyRender(in:, on_toggle: None)
+}
+
+pub fn on_toggle_opt(
+  in: Render(a),
+  on_toggle: Option(fn(Bool) -> a),
+) -> Render(a) {
+  UINotifyRender(..in, on_toggle:)
 }
 
 pub fn title(in: Notify, title: UITypo) -> Notify {
@@ -73,14 +87,23 @@ pub fn render(at: Render(a)) -> UIRender(a) {
     False -> "hidden"
   }
 
+  let #(on_notify, on_click_out, on_mouse_out) = case on_toggle {
+    Some(on_toggle) -> #(
+      event.on_click(on_toggle(False)),
+      event.on_click(on_toggle(True)),
+      event.on_mouse_leave(on_toggle(True)),
+    )
+    None -> #(a.none(), a.none(), a.none())
+  }
+
   html.div([a.id(to_id(id)), a.class("relative")], [
-    btn_notification(list.length(items), on_toggle(False)),
+    btn_notification(list.length(items), on_notify),
     html.div(
       [
-        event.on_click(on_toggle(True)),
-        event.on_mouse_leave(on_toggle(True)),
         a.class(dropdown_visible_class),
         a.class(notify_dropdown_class),
+        on_click_out,
+        on_mouse_out,
       ],
       [
         html.div([a.class(notify_dropdown_title_class)], [
@@ -90,8 +113,8 @@ pub fn render(at: Render(a)) -> UIRender(a) {
           ]),
           html.button(
             [
-              event.on_click(on_toggle(True)),
               a.class(notify_dropdown_title_close_class),
+              on_click_out,
             ],
             [
               svg.new("notify-icon-cross", 24, 24)
@@ -158,10 +181,10 @@ fn items_(items: List(Item)) -> UIRenders(a) {
   ])
 }
 
-fn btn_notification(counter: Int, toggle_notification: msg) {
+fn btn_notification(counter: Int, toggle_notification) {
   html.button(
     [
-      event.on_click(toggle_notification),
+      toggle_notification,
       a.class(notification_class),
     ],
     [

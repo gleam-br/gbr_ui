@@ -259,7 +259,7 @@ pub fn back(id: String, text: Label, onclick: a) -> UIRender(a) {
 
 /// Render sidebar toggle button.
 ///
-pub fn sidebar(id: String, visible: Bool, onclick: a) -> UIRender(a) {
+pub fn sidebar(id: String, visible: Bool, onclick: Option(a)) -> UIRender(a) {
   let cross_toggle = case visible {
     True -> "block lg:hidden"
     False -> "hidden"
@@ -291,14 +291,13 @@ pub fn sidebar(id: String, visible: Bool, onclick: a) -> UIRender(a) {
       |> svg.render(),
   ]
 
-  button
-  |> do_inner(inner, onclick)
+  do_inner(button, inner, onclick)
   |> render()
 }
 
 /// Render dark mode toggle button.
 ///
-pub fn dark_mode(id: String, onclick: a) -> UIRender(a) {
+pub fn dark_mode(id: String, onclick: Option(a)) -> UIRender(a) {
   let button =
     new(id)
     |> class(darkmode_class)
@@ -320,10 +319,11 @@ pub fn dark_mode(id: String, onclick: a) -> UIRender(a) {
 
 /// Render app nav mobile toggle button.
 ///
-pub fn app_nav(id: String, onclick: a) -> UIRender(a) {
+pub fn app_nav(id: String, classes: String, onclick: Option(a)) -> UIRender(a) {
   let button =
     new(id)
     |> class(app_nav_class)
+    |> class(classes)
   let inner = [
     svg.new("btn-icon-app-nav", 24, 24)
     |> svg_icons.app_nav()
@@ -338,8 +338,8 @@ pub fn app_nav(id: String, onclick: a) -> UIRender(a) {
 // PRIVATE
 //
 
-fn do_inner(in: Button, inner: UIRenders(a), onclick: a) -> Render(a) {
-  UIButtonRender(in:, inner:, onclick: Some(onclick))
+fn do_inner(in: Button, inner: UIRenders(a), onclick: Option(a)) -> Render(a) {
+  UIButtonRender(in:, inner:, onclick:)
 }
 
 const primary_class = "inline-flex items-center justify-center w-full gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
