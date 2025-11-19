@@ -82,7 +82,14 @@ pub type UILink {
   UILink(href: String, title: String)
 }
 
-/// New super label element
+/// Attribute `lustre/attribute.class` toggle list
+///
+/// Perfect to toggle (on, off) one or more element class
+///
+pub type UIClass =
+  List(#(String, Bool))
+
+/// New label super element
 ///
 pub fn uilabel(text text, att att) {
   UILabel(text:, att:)

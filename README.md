@@ -72,7 +72,7 @@ Supose, a button text and svg at left side:
 import gbr/ui/button
 import gbr/ui/svg
 import gbr/ui/svg/icons svg_icons
-import gbr/ui/core.{type UIRender, type UILabel, uilabel}
+import gbr/ui/core/model.{type UIRender, type UILabel, uilabel}
 
 pub fn show(id: String, text: UILabel, onclick: a) -> UIRender(a) {
   // render inner details
