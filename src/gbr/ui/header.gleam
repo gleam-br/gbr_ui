@@ -2,17 +2,16 @@
 //// 🔝 Gleam UI header super element
 ////
 
-import gbr/ui/user/dropdown
 import gleam/option.{type Option, None, Some}
-import lustre/element
 
 import lustre/attribute as a
+import lustre/element
 import lustre/element/html
 
 import gbr/ui/button
 import gbr/ui/logo.{type UILogo}
-import gbr/ui/notify.{type UINotify}
-import gbr/ui/user.{type UIUser}
+import gbr/ui/notify.{type UINotifyRender}
+import gbr/ui/user.{type UIUserRender}
 
 import gbr/ui/core/model.{type UIRender, random_str}
 
@@ -25,39 +24,36 @@ type Render(a) =
 type Logo =
   UILogo
 
-type User =
-  UIUser
+type User(a) =
+  UIUserRender(a)
 
-type Notify =
-  UINotify
+type Notify(a) =
+  UINotifyRender(a)
 
 /// Header super element
 ///
 /// - id: Identification html element
-/// - user: User info (required)
 /// - sidebar: Sidebar visible
 /// - app_nav: App nav visible to mobile responsive
-/// - logo: Logotype info (optional)
-/// - notify: Notify info (optional)
 ///
 pub opaque type UIHeader {
-  UIHeader(
-    id: String,
-    logo: Logo,
-    user: User,
-    sidebar: Bool,
-    app_nav: Bool,
-    notify: Option(Notify),
-  )
+  UIHeader(id: String, sidebar: Bool, appnav: Bool)
 }
 
+/// Render header element
+///
+/// - user: User info
+/// - logo: Logotype info
+/// - notify: Notify render element (optional)
+/// - on_...: Events
+///
 pub opaque type UIHeaderRender(a) {
   UIHeaderRender(
     in: Header,
+    logo: Logo,
+    user: User(a),
+    notify: Option(Notify(a)),
     on_app: Option(a),
-    on_user: Option(a),
-    on_submit: Option(fn(String) -> a),
-    on_notify: Option(fn(Bool) -> a),
     on_sidebar: Option(a),
     on_darkmode: Option(a),
   )
@@ -66,42 +62,33 @@ pub opaque type UIHeaderRender(a) {
 /// New header super element
 ///
 /// - id: Identification html element
+/// - sidebar: Logo info
+/// - appnav: User info
+///
+pub fn new(id: String) {
+  UIHeader(id: random_str(id), sidebar: False, appnav: False)
+}
+
+/// New render header element
+///
+/// - in: Header info
 /// - logo: Logo info
-/// - user: User info
+/// - user: User render element
 ///
-pub fn new(id: String, logo: Logo, user: User) {
-  UIHeader(
-    id: random_str(id),
-    logo:,
-    user:,
-    sidebar: False,
-    app_nav: False,
-    notify: None,
-  )
-}
-
-/// Set profile info
-///
-pub fn logo(in: Header, logo: Logo) -> Header {
-  UIHeader(..in, logo:)
-}
-
-/// Set user info
-///
-pub fn user(in: Header, user: User) -> Header {
-  UIHeader(..in, user:)
-}
-
-pub fn at(in: Header) -> Render(a) {
+pub fn at(in: Header, logo: Logo, user: User(a)) -> Render(a) {
   UIHeaderRender(
     in:,
+    logo:,
+    user:,
+    notify: None,
     on_app: None,
-    on_submit: None,
-    on_user: None,
-    on_notify: None,
     on_sidebar: None,
     on_darkmode: None,
   )
+}
+
+pub fn notify(in: Render(a), notify: Notify(a)) -> Render(a) {
+  UIHeaderRender(..in, notify: Some(notify))
 }
 
 pub fn on_app_mobile(in: Render(a), on_app: a) -> Render(a) {
@@ -116,39 +103,8 @@ pub fn on_darkmode(in: Render(a), on_darkmode: a) -> Render(a) {
   UIHeaderRender(..in, on_darkmode: Some(on_darkmode))
 }
 
-pub fn on_notify(in: Render(a), on_notify: fn(Bool) -> a) -> Render(a) {
-  UIHeaderRender(..in, on_notify: Some(on_notify))
-}
-
-pub fn on_submit(in: Render(a), on_submit: fn(String) -> a) -> Render(a) {
-  UIHeaderRender(..in, on_submit: Some(on_submit))
-}
-
-pub fn on_user(in: Render(a), on_user: a) -> Render(a) {
-  UIHeaderRender(..in, on_user: Some(on_user))
-}
-
-// pub fn on_search(in: Render(a), on_search: fn(String) -> a) -> Render(a) {
-//   UIHeaderRender(..in, on_search: Some(on_search))
-// }
-
-pub fn toggle_user(in: Header) -> Header {
-  use dropdown <- user.in_dropdown(in.user)
-  let dropdown = option.map(dropdown, dropdown.toggle_visible)
-  let user = user.dropdown_opt(in.user, dropdown)
-
-  UIHeader(..in, user:)
-}
-
-pub fn toggle_notify(in: Header, force: Bool) {
-  let UIHeader(notify:, ..) = in
-  let notify = option.map(notify, notify.toggle_visible(_, force))
-
-  UIHeader(..in, notify:)
-}
-
 pub fn toggle_app(in: Header) -> Header {
-  UIHeader(..in, app_nav: !in.app_nav)
+  UIHeader(..in, appnav: !in.appnav)
 }
 
 pub fn toggle_sidebar(in: Header) -> Header {
@@ -158,33 +114,29 @@ pub fn toggle_sidebar(in: Header) -> Header {
 pub fn render(at: Render(a)) -> UIRender(a) {
   let UIHeaderRender(
     in:,
+    logo:,
+    user:,
+    notify:,
     on_app:,
-    on_user:,
-    on_notify:,
     on_sidebar:,
     on_darkmode:,
-    ..,
   ) = at
-  let UIHeader(id, logo:, user:, app_nav:, sidebar:, notify:) = in
-  let notify = case notify {
-    Some(notify) ->
-      notify.at(notify)
-      |> notify.on_toggle_opt(on_notify)
-      |> notify.render()
-    None -> element.none()
-  }
+  let UIHeader(id, appnav:, sidebar:) = in
+  let notify =
+    option.map(notify, notify.render)
+    |> option.unwrap(element.none())
 
   html.header([a.id(id), a.class(header_class)], [
     html.div([a.class(header_content_class)], [
       html.div([a.class(header_right_class)], [
         button.sidebar(id <> "header-btn-toggle-sidebar", sidebar, on_sidebar),
         logo.render(logo),
-        button.app_nav(id <> "header-btn-toggle-appmobile", app_nav, on_app),
+        button.app_nav(id <> "header-btn-toggle-appmobile", appnav, on_app),
       ]),
       html.div(
         [
           a.class(header_left_class),
-          a.classes([#("flex", !app_nav), #("hidden", app_nav)]),
+          a.classes([#("flex", !appnav), #("hidden", appnav)]),
         ],
         [
           html.div([a.class(header_left_content_class)], [
@@ -192,10 +144,7 @@ pub fn render(at: Render(a)) -> UIRender(a) {
             notify,
           ]),
           html.div([a.class(header_left_user_class)], [
-            user.at(user)
-            |> user.on_dropdown_opt(on_user)
-            |> user.on_dropdown_leave_opt(on_user)
-            |> user.render(),
+            user |> user.render(),
           ]),
         ],
       ),
