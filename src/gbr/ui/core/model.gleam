@@ -102,9 +102,9 @@ pub fn uilink(href href, title title) {
 
 /// To id random identification, avoid id conflicts.
 ///
-pub fn to_id(id: String) -> String {
+pub fn random_str(id: String) -> String {
   let random =
-    int.random(1_000_000_000)
+    int.random(100_000_000)
     |> int.to_string()
 
   id_prefix <> random <> "-" <> id

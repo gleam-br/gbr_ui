@@ -14,7 +14,7 @@ import gbr/ui/logo.{type UILogo}
 import gbr/ui/notify.{type UINotify}
 import gbr/ui/user.{type UIUser}
 
-import gbr/ui/core/model.{type UIRender, to_id}
+import gbr/ui/core/model.{type UIRender, random_str}
 
 type Header =
   UIHeader
@@ -43,10 +43,10 @@ type Notify =
 pub opaque type UIHeader {
   UIHeader(
     id: String,
+    logo: Logo,
     user: User,
     sidebar: Bool,
     app_nav: Bool,
-    logo: Option(Logo),
     notify: Option(Notify),
   )
 }
@@ -66,14 +66,16 @@ pub opaque type UIHeaderRender(a) {
 /// New header super element
 ///
 /// - id: Identification html element
+/// - logo: Logo info
+/// - user: User info
 ///
-pub fn new(id: String) {
+pub fn new(id: String, logo: Logo, user: User) {
   UIHeader(
-    id:,
-    user: user.new(""),
+    id: random_str(id),
+    logo:,
+    user:,
     sidebar: False,
     app_nav: False,
-    logo: None,
     notify: None,
   )
 }
@@ -81,7 +83,7 @@ pub fn new(id: String) {
 /// Set profile info
 ///
 pub fn logo(in: Header, logo: Logo) -> Header {
-  UIHeader(..in, logo: Some(logo))
+  UIHeader(..in, logo:)
 }
 
 /// Set user info
@@ -171,25 +173,18 @@ pub fn render(at: Render(a)) -> UIRender(a) {
       |> notify.render()
     None -> element.none()
   }
-  let header_left_toggle_class = case app_nav {
-    False -> "hidden"
-    True -> "flex"
-  }
-  let app_class = case app_nav {
-    True -> "bg-gray-100 dark:bg-gray-800"
-    False -> ""
-  }
 
-  html.header([a.id(to_id(id)), a.class(header_class)], [
+  html.header([a.id(id), a.class(header_class)], [
     html.div([a.class(header_content_class)], [
       html.div([a.class(header_right_class)], [
-        button.sidebar("header-btn-toggle-sidebar", sidebar, on_sidebar),
-        logo.render_opt(logo),
-        button.app_nav("header-btn-toggle-appmobile", app_class, on_app),
+        button.sidebar(id <> "header-btn-toggle-sidebar", sidebar, on_sidebar),
+        logo.render(logo),
+        button.app_nav(id <> "header-btn-toggle-appmobile", app_nav, on_app),
       ]),
       html.div(
         [
-          a.class(header_left_toggle_class <> " " <> header_left_class),
+          a.class(header_left_class),
+          a.classes([#("flex", !app_nav), #("hidden", app_nav)]),
         ],
         [
           html.div([a.class(header_left_content_class)], [

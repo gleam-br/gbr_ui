@@ -54,7 +54,7 @@ import gbr/ui/svg/icons as svg_icons
 
 import gbr/ui/core/model.{
   type UIAttrs, type UILabel, type UIRender, type UIRenders, UILabel,
-  attrs_remove, attrs_to_lustre, to_id,
+  attrs_remove, attrs_to_lustre, random_str,
 }
 
 type Label =
@@ -145,7 +145,7 @@ pub type UIButtonRender(a) {
 ///
 pub fn new(id: String) -> Button {
   UIButton(
-    id: to_id(id),
+    id: random_str(id),
     att: [],
     kind: Text,
     state: Enabled,
@@ -319,11 +319,15 @@ pub fn dark_mode(id: String, onclick: Option(a)) -> UIRender(a) {
 
 /// Render app nav mobile toggle button.
 ///
-pub fn app_nav(id: String, classes: String, onclick: Option(a)) -> UIRender(a) {
+pub fn app_nav(id: String, is_visible: Bool, onclick: Option(a)) -> UIRender(a) {
   let button =
     new(id)
     |> class(app_nav_class)
-    |> class(classes)
+  let button = case is_visible {
+    False -> button
+    True -> class(button, "bg-gray-100 dark:bg-gray-800")
+  }
+
   let inner = [
     svg.new("btn-icon-app-nav", 24, 24)
     |> svg_icons.app_nav()

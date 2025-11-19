@@ -9,7 +9,7 @@ import lustre/attribute as a
 import lustre/element/html
 
 import gbr/ui/core/model.{
-  type UIDesc, type UILink, type UIRender, UIDesc, UILink, to_id,
+  type UIDesc, type UILink, type UIRender, UIDesc, UILink, random_str,
 }
 import gbr/ui/svg
 import gbr/ui/svg/alert as svg_alert
@@ -37,7 +37,7 @@ pub opaque type UIAlert {
 ///
 pub fn new(id: String, title: String, desc: String) -> Alert {
   UIAlert(
-    id: to_id(id),
+    id: random_str(id),
     info: UIDesc(title:, desc:),
     status: Info,
     visible: False,

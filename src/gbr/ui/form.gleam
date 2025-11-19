@@ -14,7 +14,7 @@ import gbr/ui/svg/form
 
 import gbr/ui/core/model.{
   type UIAttributes, type UIAttrs, type UIRender, type UIRenders,
-  attrs_to_lustre, to_id,
+  attrs_to_lustre, random_str,
 }
 
 type Form =
@@ -44,7 +44,7 @@ pub opaque type UIFormRender(a) {
 /// New form super element.
 ///
 pub fn new(id: String) -> Form {
-  UIForm(id: to_id(id), att: [])
+  UIForm(id: random_str(id), att: [])
 }
 
 /// Set form class styles.

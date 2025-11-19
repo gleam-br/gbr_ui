@@ -17,7 +17,7 @@ import gbr/ui/svg/form as svg_form
 
 import gbr/ui/core/model.{
   type UIAttributes, type UIAttrs, type UILabel, type UIRender, type UIRenders,
-  UILabel, attrs_any, attrs_remove, attrs_to_lustre, to_id, uilabel,
+  UILabel, attrs_any, attrs_remove, attrs_to_lustre, random_str, uilabel,
 }
 
 type Input =
@@ -110,7 +110,7 @@ pub fn checkbox(id: String) -> Input {
 ///
 pub fn new(id: String, kind: String) -> Input {
   UIInput(
-    id: to_id(id),
+    id: random_str(id),
     att: [],
     kind:,
     visible: True,

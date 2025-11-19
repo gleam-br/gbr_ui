@@ -10,7 +10,7 @@ import lustre/element.{type Element}
 import lustre/element/html
 
 import gbr/ui/core/model.{
-  type UIAttrs, type UILabel, UILabel, attrs_to_lustre, to_id,
+  type UIAttrs, type UILabel, UILabel, attrs_to_lustre, random_str,
 }
 import gbr/ui/input
 import gbr/ui/svg
@@ -48,7 +48,7 @@ pub type UICheckboxRender(a) {
 /// New checkbox super element.
 ///
 pub fn new(id: String) -> Checkbox {
-  UICheckbox(id: to_id(id), att: [], checked: None, label: None)
+  UICheckbox(id: random_str(id), att: [], checked: None, label: None)
 }
 
 /// Set checkbox checked or not.

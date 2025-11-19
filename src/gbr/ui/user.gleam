@@ -3,7 +3,6 @@
 ////
 
 import gleam/option.{type Option, None, Some}
-import gleam/string
 
 import lustre/attribute as a
 import lustre/element
@@ -14,7 +13,7 @@ import gbr/ui/svg
 import gbr/ui/svg/icons as svg_icons
 import gbr/ui/user/dropdown.{type UIDropdown}
 
-import gbr/ui/core/model.{type UIRender, type UIRenders, to_id}
+import gbr/ui/core/model.{type UIRender, type UIRenders, random_str}
 
 type User =
   UIUser
@@ -28,7 +27,7 @@ type Profile =
 type Dropdown =
   UIDropdown
 
-pub type UIProfile {
+pub opaque type UIProfile {
   UIProfile(
     username: String,
     email: String,
@@ -51,12 +50,27 @@ pub opaque type UIUserRender(a) {
   )
 }
 
-pub fn new(id: String) -> User {
-  UIUser(id:, profile: default_profile, dropdown: None)
+pub fn new(id: String, username: String) -> User {
+  let profile =
+    UIProfile(username:, email: "", department: "", full_name: "", picture: "")
+
+  UIUser(id:, profile:, dropdown: None)
 }
 
-pub fn profile(in: User, profile: Profile) -> User {
-  UIUser(..in, profile:)
+pub fn email(in: User, email: String) -> User {
+  UIUser(..in, profile: UIProfile(..in.profile, email:))
+}
+
+pub fn department(in: User, department: String) -> User {
+  UIUser(..in, profile: UIProfile(..in.profile, department:))
+}
+
+pub fn name_full(in: User, full_name: String) -> User {
+  UIUser(..in, profile: UIProfile(..in.profile, full_name:))
+}
+
+pub fn picture(in: User, picture: String) -> User {
+  UIUser(..in, profile: UIProfile(..in.profile, picture:))
 }
 
 pub fn dropdown(in: User, dropdown: Dropdown) -> User {
@@ -101,17 +115,9 @@ pub fn render(at: Render(a)) -> UIRender(a) {
   let UIUserRender(in:, on_submit:, on_dropdown:, on_dropdown_leave:) = at
   let UIUser(id:, profile:, dropdown:) = in
   let UIProfile(username:, email:, department:, full_name:, picture:) = profile
-
-  // dropdown toggle
-  let #(user_arrow_toggle_class, user_dropdown_toggle_class) = case dropdown {
-    Some(dropdown) -> {
-      case dropdown.is_visible(dropdown) {
-        True -> #("rotate-180", "block")
-        False -> #("", "hidden")
-      }
-    }
-    None -> #("", "hidden")
-  }
+  let is_visible =
+    option.map(dropdown, dropdown.is_visible)
+    |> option.unwrap(False)
 
   let on_dropdown = get_on_dropdown(on_dropdown)
   let on_dropdown_click_out = get_on_dropdown(on_dropdown_leave)
@@ -130,7 +136,7 @@ pub fn render(at: Render(a)) -> UIRender(a) {
 
   html.div(
     [
-      a.id(to_id(id)),
+      random_str(id) |> a.id(),
       a.class("relative"),
     ],
     [
@@ -146,16 +152,22 @@ pub fn render(at: Render(a)) -> UIRender(a) {
           html.span([a.class(user_profile_username_class)], [
             html.text(username),
           ]),
-          svg.new("login-user-icon-arrow", 20, 18)
+          svg.new(id <> "user-icon-arrow", 20, 18)
             |> svg_icons.arrow()
-            |> svg.classes([user_arrow_toggle_class, ..user_arrow_class])
+            |> svg.classes([
+              case is_visible {
+                True -> "rotate-180"
+                False -> ""
+              },
+              ..user_arrow_class
+            ])
             |> svg.render(),
         ],
       ),
       html.div(
         [
-          a.class(user_dropdown_toggle_class),
-          a.class(string.join(user_dropdown_class, " ")),
+          a.class(user_dropdown_class),
+          a.classes([#("block", is_visible), #("hidden", !is_visible)]),
           on_dropdown_click_out,
           on_dropdown_mouse_out,
         ],
@@ -195,7 +207,7 @@ fn menu_list_(dropdown: Dropdown, onsubmit) -> UIRenders(a) {
 
   let item = case icon {
     Some(identity) -> [
-      svg.new("login-user-icon-menu", 24, 24)
+      svg.new(id <> "user-icon-menu", 24, 24)
         |> identity()
         |> svg.classes([user_menu_icon_class])
         |> svg.render(),
@@ -204,7 +216,7 @@ fn menu_list_(dropdown: Dropdown, onsubmit) -> UIRenders(a) {
     None -> [html.text(text)]
   }
 
-  html.li([a.id(to_id(id))], [
+  html.li([a.id(random_str(id))], [
     html.a(
       [
         a.class(user_dropdown_menu_class),
@@ -220,7 +232,7 @@ fn button_list_(dropdown: Dropdown, onsubmit) -> UIRenders(a) {
 
   let item = case icon {
     Some(identity) -> [
-      svg.new("logo-user-icon-btn", 24, 24)
+      svg.new("user-icon-btn", 24, 24)
         |> identity()
         |> svg.classes([user_btn_icon_class])
         |> svg.render(),
@@ -261,9 +273,7 @@ fn get_on_submit(id, onsubmit) {
 
 const user_arrow_class = ["stroke-gray-500 dark:stroke-gray-400"]
 
-const user_dropdown_class = [
-  "shadow-theme-lg dark:bg-gray-dark absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 dark:border-gray-800",
-]
+const user_dropdown_class = "shadow-theme-lg dark:bg-gray-dark absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 dark:border-gray-800"
 
 const user_profile_class = "flex items-center text-gray-700 dark:text-gray-400 cursor-pointer"
 
@@ -286,11 +296,3 @@ const user_dropdown_email_class = "text-theme-xs mt-0.5 block text-gray-500 dark
 const user_dropdown_username_class = "text-theme-sm block ont-medium text-gray-700 dark:text-gray-400"
 
 const user_btn_class = "group text-theme-sm mt-3 flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-
-const default_profile = UIProfile(
-  username: "user.test",
-  email: "user.test@gleam-br.dev.br",
-  department: "GTSUP",
-  full_name: "User Test",
-  picture: "/user-02.jpg",
-)

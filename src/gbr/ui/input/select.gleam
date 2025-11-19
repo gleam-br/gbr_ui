@@ -12,7 +12,7 @@ import lustre/event
 import gbr/ui/svg
 import gbr/ui/svg/icons as svg_icons
 
-import gbr/ui/core/model.{type UIRender, to_id}
+import gbr/ui/core/model.{type UIRender, random_str}
 
 type Select =
   UISelect
@@ -53,7 +53,13 @@ pub type UISelectItem {
 /// Constructor of select super element.
 ///
 pub fn new(id: String) -> Select {
-  Select(id: to_id(id), placeholder: "", title: "", multi: False, items: [])
+  Select(
+    id: random_str(id),
+    placeholder: "",
+    title: "",
+    multi: False,
+    items: [],
+  )
 }
 
 /// Set select title.

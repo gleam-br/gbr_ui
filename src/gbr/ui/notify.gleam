@@ -19,7 +19,7 @@ import gbr/ui/user/avatar
 
 import gbr/ui/notify/item.{type UINotifyItem}
 
-import gbr/ui/core/model.{type UIRender, type UIRenders, to_id}
+import gbr/ui/core/model.{type UIRender, type UIRenders, random_str}
 
 type Notify =
   UINotify
@@ -96,38 +96,44 @@ pub fn render(at: Render(a)) -> UIRender(a) {
     None -> #(a.none(), a.none(), a.none())
   }
 
-  html.div([a.id(to_id(id)), a.class("relative")], [
-    btn_notification(list.length(items), on_notify),
-    html.div(
-      [
-        a.class(dropdown_visible_class),
-        a.class(notify_dropdown_class),
-        on_click_out,
-        on_mouse_out,
-      ],
-      [
-        html.div([a.class(notify_dropdown_title_class)], [
-          // TODO: add func text.h5()
-          html.h5([a.class(notify_dropdown_title_h_class)], [
-            typo.inline(title),
+  html.div(
+    [
+      random_str(id) |> a.id(),
+      a.class("relative"),
+    ],
+    [
+      btn_notification(list.length(items), on_notify),
+      html.div(
+        [
+          a.class(dropdown_visible_class),
+          a.class(notify_dropdown_class),
+          on_click_out,
+          on_mouse_out,
+        ],
+        [
+          html.div([a.class(notify_dropdown_title_class)], [
+            // TODO: add func text.h5()
+            html.h5([a.class(notify_dropdown_title_h_class)], [
+              typo.inline(title),
+            ]),
+            html.button(
+              [
+                a.class(notify_dropdown_title_close_class),
+                on_click_out,
+              ],
+              [
+                svg.new("notify-icon-cross", 24, 24)
+                |> svg_icons.cross()
+                |> svg.render(),
+              ],
+            ),
           ]),
-          html.button(
-            [
-              a.class(notify_dropdown_title_close_class),
-              on_click_out,
-            ],
-            [
-              svg.new("notify-icon-cross", 24, 24)
-              |> svg_icons.cross()
-              |> svg.render(),
-            ],
-          ),
-        ]),
-        html.ul([a.class(notify_dropdown_list_class)], items_(items)),
-        footer_(id, footer),
-      ],
-    ),
-  ])
+          html.ul([a.class(notify_dropdown_list_class)], items_(items)),
+          footer_(id, footer),
+        ],
+      ),
+    ],
+  )
 }
 
 // PRIVATE
@@ -162,7 +168,7 @@ fn items_(items: List(Item)) -> UIRenders(a) {
     None -> element.none()
   }
 
-  html.li([a.id(to_id(id))], [
+  html.li([a.id(random_str(id))], [
     html.a(
       [
         // onclick

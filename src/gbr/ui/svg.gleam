@@ -16,7 +16,7 @@ import gbr/ui/svg/core.{
   Circle, Path, Svg, to_animate, to_att, to_attrs_circle, to_attrs_rect, to_path,
 }
 
-import gbr/ui/core/model.{type UIRender} as uicore
+import gbr/ui/core/model.{type UIRender, random_str}
 
 /// Svg super element.
 ///
@@ -32,7 +32,7 @@ pub type Identity =
 ///
 pub fn new(id: String, height h, width w) -> Svg {
   Svg(
-    id: uicore.to_id(id),
+    id: random_str(id),
     h:,
     w:,
     att: [],
