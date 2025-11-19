@@ -12,7 +12,7 @@ import gbr/ui/logo.{type UILogo}
 
 import gbr/ui/sidebar/menu.{type UISidebarMenuRender}
 
-import gbr/ui/core/model.{type UIRender, type UIRenders, random_str}
+import gbr/ui/core/model.{type UIRender, random_str}
 
 type Sidebar =
   UISidebar
@@ -51,6 +51,18 @@ pub opaque type UISidebarRender(a) {
 ///
 pub fn new(id: String) -> Sidebar {
   UISidebar(id: random_str(id), selected: None, open: True)
+}
+
+/// Set open sidebar visibility
+///
+pub fn open(in: Sidebar, open: Bool) -> Sidebar {
+  UISidebar(..in, open:)
+}
+
+/// Toggle open sidebar visibility
+///
+pub fn toggle_open(in: Sidebar) -> Sidebar {
+  UISidebar(..in, open: !in.open)
 }
 
 /// New render sidebar element
@@ -106,22 +118,10 @@ pub fn render(at: Render(a)) -> UIRender(a) {
   html.aside(attr, inner)
 }
 
-/// Set open sidebar visibility
-///
-pub fn open(in: Sidebar, open: Bool) {
-  UISidebar(..in, open:)
-}
-
-/// Toggle open sidebar visibility
-///
-pub fn toggle_open(in: Sidebar) {
-  UISidebar(..in, open: !in.open)
-}
-
 // PRIVATE
 //
 
-fn menu_roots(root: List(Menu(a)), open, selected) -> UIRenders(a) {
+fn menu_roots(root, open, selected) {
   use root <- list.map(root)
 
   menu.render(root, open, selected)
