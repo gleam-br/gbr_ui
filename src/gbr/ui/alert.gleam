@@ -2,20 +2,38 @@
 //// Gleam UI super alert elements.
 ////
 
+import gbr/ui/link
 import gleam/bool
-import gleam/option
+import gleam/list
+import gleam/option.{type Option, None, Some}
 
-import lustre/attribute as a
+import lustre/element
 import lustre/element/html
 
-import gbr/ui/core/model.{
-  type UIDesc, type UILink, type UIRender, UIDesc, UILink, random_str,
-}
 import gbr/ui/svg
 import gbr/ui/svg/alert as svg_alert
 
+import gbr/ui/core/el
+import gbr/ui/core/el/desc
+import gbr/ui/core/model.{type UIRender, type UISwitchs}
+
 type Alert =
   UIAlert
+
+type Render(a) =
+  UIAlertRender(a)
+
+type El =
+  el.UIEl
+
+type Desc =
+  desc.UIDesc
+
+type Link(a) =
+  Option(link.UILinkRender(a))
+
+type Switchs =
+  UISwitchs
 
 type Status {
   Success
@@ -24,146 +42,346 @@ type Status {
   Info
 }
 
-type Link =
-  option.Option(UILink)
-
 /// UI super alert element.
 ///
+/// - el: Element info
+/// - info: Alert description info
+/// - status: Alert status "info", "error"...
+/// - open: If alert is open or not.
+///
 pub opaque type UIAlert {
-  UIAlert(id: String, info: UIDesc, status: Status, visible: Bool, link: Link)
+  UIAlert(el: El, info: Desc, status: Status, open: Bool, icon_show: Bool)
+}
+
+/// Alert render element
+///
+/// in: Alert info
+///
+pub opaque type UIAlertRender(a) {
+  UIAlertRender(in: Alert, link: Link(a))
 }
 
 /// New alert super element pass title and description.
 ///
-pub fn new(id: String, title: String, desc: String) -> Alert {
-  UIAlert(
-    id: random_str(id),
-    info: UIDesc(title:, desc:),
-    status: Info,
-    visible: False,
-    link: option.None,
-  )
-}
-
-/// Set visible to alert element.
+/// - title: Alert title
+/// - desc: Alert description
 ///
-pub fn visible(in: Alert, visible: Bool) -> Alert {
-  UIAlert(..in, visible:)
+pub fn new(title: String, desc: String) -> Alert {
+  let el = el.new(const_key)
+  let info =
+    desc.new(el)
+    |> desc.text(title)
+    |> desc.desc(desc)
+
+  UIAlert(el:, info:, status: Info, open: False, icon_show: False)
 }
 
-/// Set info behavior to alert element.
+/// Replace alert title
+///
+pub fn title(in: Alert, title: String) -> Alert {
+  let info = desc.text(in.info, title)
+
+  UIAlert(..in, info:)
+}
+
+/// Replace alert title
+///
+pub fn desc(in: Alert, desc: String) -> Alert {
+  let info = desc.desc(in.info, desc)
+
+  UIAlert(..in, info:)
+}
+
+/// Set open alert element.
+///
+pub fn open(in: Alert, open: Bool) -> Alert {
+  UIAlert(..in, open:)
+}
+
+/// Set info behavior to alert
 ///
 pub fn info(in: Alert) -> Alert {
   UIAlert(..in, status: Info)
 }
 
-/// Set success behavior to alert element.
+/// Set success behavior to alert
 ///
 pub fn success(in: Alert) -> Alert {
   UIAlert(..in, status: Success)
 }
 
-/// Set warning behavior to alert element.
+/// Set warning behavior to alert
 ///
 pub fn warning(in: Alert) -> Alert {
   UIAlert(..in, status: Warning)
 }
 
-/// Set error behavior to alert element.
+/// Set error behavior to alert
 ///
 pub fn error(in: Alert) -> Alert {
   UIAlert(..in, status: Error)
 }
 
-/// Set link behavior to alert element.
+/// Set alert main class style
 ///
-pub fn link(in: Alert, href: String, title: String) -> Alert {
-  let link = UILink(href:, title:)
+/// in: Alert info
+/// class: Alert class
+///
+pub fn class(in: Alert, class: String) -> Alert {
+  let el = el.class(in.el, class)
 
-  UIAlert(..in, link: option.Some(link))
+  UIAlert(..in, el:)
 }
 
+/// Set alert content class style
+///
+/// in: Alert info
+/// class: Alert content class
+///
+pub fn class_content(in: Alert, class: String) -> Alert {
+  let el = el.class_key(in.el, const_key_content, class)
+
+  UIAlert(..in, el:)
+}
+
+/// Set alert title class style
+///
+/// in: Alert title info
+/// class: Alert title class
+///
+pub fn class_title(in: Alert, class: String) -> Alert {
+  let info = desc.class_text(in.info, class)
+
+  UIAlert(..in, info:)
+}
+
+/// Set alert description class style
+///
+/// in: Alert description info
+/// class: Alert description class
+///
+pub fn class_desc(in: Alert, class: String) -> Alert {
+  let info = desc.class_desc(in.info, class)
+
+  UIAlert(..in, info:)
+}
+
+/// Set alert icon class style
+///
+/// in: Alert info
+/// class: Alert icon class to set
+///
+pub fn class_icon(in: Alert, class: String) -> Alert {
+  let el = el.class_key(in.el, const_key_icon, class)
+
+  UIAlert(..in, el:)
+}
+
+/// Set alert status class style
+///
+/// - in: Alert info
+/// - class: Alert status class style
+/// - class_icon: Alert icon class style, only if `icon_show = True`
+///
+pub fn class_status_info(in: Alert, class: String, class_icon: String) {
+  class_status(in, Info, class, class_icon)
+}
+
+/// Set alert status class style
+///
+/// - in: Alert info
+/// - class: Alert status class style
+/// - class_icon: Alert icon class style, only if `icon_show = True`
+///
+pub fn class_status_success(in: Alert, class: String, class_icon: String) {
+  class_status(in, Success, class, class_icon)
+}
+
+/// Set alert status class style
+///
+/// - in: Alert info
+/// - class: Alert status class style
+/// - class_icon: Alert icon class style, only if `icon_show = True`
+///
+pub fn class_status_warn(in: Alert, class: String, class_icon: String) {
+  class_status(in, Warning, class, class_icon)
+}
+
+/// Set alert status class style
+///
+/// - in: Alert info
+/// - class: Alert status class style
+/// - class_icon: Alert icon class style, only if `icon_show = True`
+///
+pub fn class_status_error(in: Alert, class: String, class_icon: String) {
+  class_status(in, Error, class, class_icon)
+}
+
+/// Set alert status classes switch
+///
+/// - in: Alert info
+/// - classes: Alert status classes
+/// - classes_icon: Alert icon class style, only if `icon_show = True`
+///
+pub fn classes_status_info(in: Alert, classes: Switchs, classes_icon: Switchs) {
+  classes_status(in, Info, classes, classes_icon)
+}
+
+/// Set alert status classes switch
+///
+/// - in: Alert info
+/// - classes: Alert status classes
+/// - classes_icon: Alert icon class style, only if `icon_show = True`
+///
+pub fn classes_status_success(
+  in: Alert,
+  classes: Switchs,
+  classes_icon: Switchs,
+) {
+  classes_status(in, Success, classes, classes_icon)
+}
+
+/// Set alert status classes switch style
+///
+/// - in: Alert info
+/// - classes: Alert status classes
+/// - classes_icon: Alert icon class style, only if `icon_show = True`
+///
+pub fn classes_status_warn(in: Alert, classes: Switchs, classes_icon: Switchs) {
+  classes_status(in, Warning, classes, classes_icon)
+}
+
+/// Set alert status classes switch
+///
+/// - in: Alert info
+/// - classes: Alert status classes
+/// - classes_icon: Alert icon class style, only if `icon_show = True`
+///
+pub fn classes_status_error(in: Alert, classes: Switchs, classes_icon: Switchs) {
+  classes_status(in, Error, classes, classes_icon)
+}
+
+/// New alert render element.
+///
+/// - in: Alert info
+///
+pub fn at(in: Alert) -> Render(a) {
+  UIAlertRender(in:, link: None)
+}
+
+/// Replace alert link
+///
+pub fn link(in: Render(a), link: Link(a)) -> Render(a) {
+  UIAlertRender(..in, link: link)
+}
+
+/// Set attribute el.classes by status
+///
 /// Render super alert element to `lustre/element/html.{div}`.
 ///
-pub fn render(in: Alert) -> UIRender(a) {
-  let UIAlert(id:, info:, status:, link:, visible:) = in
+pub fn render(at: Render(a)) -> UIRender(a) {
+  let UIAlertRender(in:, link:) = at
+  let UIAlert(el:, info:, status:, open:, icon_show:) = in
 
-  use <- bool.guard(!visible, html.text(""))
+  use <- bool.guard(!open, element.none())
 
-  let status = case status {
-    Info -> #(
-      classes_main_info,
-      classes_icon_info,
-      svg.new("el-alert-info", 24, 24) |> svg_alert.info(),
-    )
-    Success -> #(
-      classes_main_success,
-      classes_icon_success,
-      svg.new("el-alert-success", 24, 24) |> svg_alert.success(),
-    )
-    Warning -> #(
-      classes_main_warning,
-      classes_icon_warning,
-      svg.new("el-alert-warn", 24, 24) |> svg_alert.warning(),
-    )
-    Error -> #(
-      classes_main_error,
-      classes_icon_error,
-      svg.new("el-alert-error", 24, 24) |> svg_alert.error(),
-    )
-  }
+  let #(status_key, status_key_icon) = status_key(status)
 
-  let main_class = classes_main <> " " <> status.0
-  let icon_class = classes_icon <> " " <> status.1
+  let el_attrs = el.attrs(el)
+  let el_attrs_content = el.attrs_key(el, const_key_content)
 
-  html.div([a.id(id), a.class(main_class)], [
-    html.div([a.class(classes_content)], [
-      html.div([a.class(icon_class)], [
-        status.2 |> svg.render(),
-      ]),
-      html.div([], [
-        html.h4([a.class(classes_title)], [html.text(info.title)]),
-        html.p([a.class(classes_desc)], [html.text(info.desc)]),
+  let el_attrs_icon = el.attrs_key(el, const_key_icon)
+  let el_attrs_status = el.attrs_key(el, status_key)
+  let el_attrs_status_icon = el.attrs_key(el, status_key_icon)
 
-        case link {
-          option.Some(link) ->
-            html.a([a.href(link.href), a.class(classes_link)], [
-              html.text(link.title),
-            ])
-          option.None -> html.text("")
-        },
-      ]),
+  let el_attrs =
+    el_attrs
+    |> list.append(el_attrs_status)
+  let el_attrs_icon =
+    el_attrs_icon
+    |> list.append(el_attrs_status_icon)
+
+  let status_icon = status_icon(status, el_attrs_icon, icon_show)
+  let status_info =
+    desc.at(info)
+    |> desc.link(link)
+    |> desc.render()
+
+  html.div(el_attrs, [
+    html.div(el_attrs_content, [
+      status_icon,
+      status_info,
     ]),
   ])
 }
 
-// PRIVATES
+// PRIVATE
 //
 
-const classes_main = "fixed top-10 right-10 z-999999 rounded-xl border p-4 animate-bounce"
+fn classes_status(
+  in: Alert,
+  status: Status,
+  classes: Switchs,
+  classes_icon: Switchs,
+) -> Alert {
+  let #(status_key, status_key_icon) = status_key(status)
+  let el =
+    el.classes_key(in.el, status_key, classes)
+    |> el.classes_key(status_key_icon, classes_icon)
 
-const classes_content = "flex items-start gap-3"
+  UIAlert(..in, el:)
+}
 
-const classes_icon = "-mt-0.5"
+fn class_status(
+  in: Alert,
+  status: Status,
+  class: String,
+  class_icon: String,
+) -> Alert {
+  let #(status_key, status_key_icon) = status_key(status)
 
-const classes_title = "mb-1 text-sm font-semibold text-gray-800 dark:text-white/90"
+  let el =
+    el.class_key(in.el, status_key, class)
+    |> el.class_key(status_key_icon, class_icon)
 
-const classes_desc = "text-sm text-gray-500 dark:text-gray-400"
+  UIAlert(..in, el:)
+}
 
-const classes_link = "mt-3 inline-block text-sm font-medium text-gray-500 underline dark:text-gray-400"
+fn status_key(status) {
+  let key = case status {
+    Info -> "info"
+    Success -> "success"
+    Warning -> "warning"
+    Error -> "error"
+  }
 
-const classes_main_info = "border-blue-light-500 bg-blue-light-50 dark:border-blue-light-500/30 dark:bg-blue-light-500/15"
+  let icon_key = key <> const_key_icon
 
-const classes_main_success = "border-success-500 bg-success-50 dark:border-success-500/30 dark:bg-success-500/15"
+  #(key, icon_key)
+}
 
-const classes_main_warning = "border-warning-500 bg-warning-50 dark:border-warning-500/30 dark:bg-warning-500/15"
+fn status_icon(status, attrs, show) {
+  use <- bool.guard(!show, element.none())
 
-const classes_main_error = "border-error-500 bg-error-50 dark:border-error-500/30 dark:bg-error-500/15"
+  // svg func to transform
+  let status = case status {
+    Info -> svg_alert.info
+    Success -> svg_alert.success
+    Warning -> svg_alert.warning
+    Error -> svg_alert.error
+  }
 
-const classes_icon_info = "text-blue-light-500"
+  html.div(attrs, [
+    svg.new(24, 24)
+    |> status()
+    |> svg.render(),
+  ])
+}
 
-const classes_icon_success = "text-success-500"
+const const_key = ".alert"
 
-const classes_icon_warning = "text-warning-500"
+const const_key_icon = ".alert-icon"
 
-const classes_icon_error = "text-error-500"
+const const_key_link = ".alert-link"
+
+const const_key_content = ".alert-content"

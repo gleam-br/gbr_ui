@@ -45,8 +45,8 @@ import lustre/element/html
 import gbr/ui/svg
 
 import gbr/ui/core/model.{
-  type UIAttributes, type UIBoxes, type UIRender, type UIRenderOpt,
-  type UIRenders, UIBox,
+  type UIAttrs, type UIBoxes, type UIOptRender, type UIRender, type UIRenders,
+  UIBox,
 }
 
 /// Construct new super svg element `gbr/ui/svg.{new}`.
@@ -156,7 +156,7 @@ pub fn partial(
 pub fn primary(
   header header: UIRender(a),
   sidebar sidebar: UIRender(a),
-  content content: UIRenderOpt(a),
+  content content: UIOptRender(a),
 ) -> UIRender(a) {
   primary_with_breadcrumb(header:, sidebar:, content:, breadcrumb: None)
 }
@@ -198,7 +198,7 @@ pub fn grid(
 
 /// UI boxes layout
 ///
-pub fn box(in: UIBoxes(a), attrs: UIAttributes(a)) -> UIRender(a) {
+pub fn box(in: UIBoxes(a), attrs: UIAttrs(a)) -> UIRender(a) {
   let attrs = [class(box_class), ..attrs]
   let inner = box_inner(in)
 
@@ -207,11 +207,13 @@ pub fn box(in: UIBoxes(a), attrs: UIAttributes(a)) -> UIRender(a) {
 
 /// Same of `gbr/ui.{main}` with optional breadcrumb element.
 ///
+/// TODO: WIP
+///
 pub fn primary_with_breadcrumb(
   header header: UIRender(a),
   sidebar sidebar: UIRender(a),
-  content content: UIRenderOpt(a),
-  breadcrumb breadcrumb: UIRenderOpt(a),
+  content content: UIOptRender(a),
+  breadcrumb breadcrumb: UIOptRender(a),
 ) -> UIRender(a) {
   let breadcrumb = option.unwrap(breadcrumb, element.none())
   let content = option.unwrap(content, element.none())

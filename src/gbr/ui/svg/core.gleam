@@ -11,11 +11,11 @@ import lustre/element
 import lustre/element/html
 import lustre/element/svg
 
-pub type Property =
-  #(String, String)
+import gbr/ui/core/el
+import gbr/ui/core/model.{type UIProperties}
 
 pub type Properties =
-  List(Property)
+  UIProperties
 
 pub type Rect =
   List(Properties)
@@ -35,25 +35,19 @@ pub type Mask {
 ///
 pub type Svg {
   Svg(
-    id: String,
-    h: Int,
-    w: Int,
-    att: Properties,
-    path: List(Properties),
+    el: el.UIEl,
     rect: Rect,
     circle: Circle,
+    path: List(Properties),
     mask: Option(Mask),
     animate: List(String),
-    classes: List(String),
   )
 }
 
+pub const svg_key = ".svg"
+
 pub fn animate(in: Svg, animate: List(String)) {
   Svg(..in, animate:)
-}
-
-pub fn classes(svg: Svg, classes: List(String)) -> Svg {
-  Svg(..svg, classes: list.append(classes, svg.classes))
 }
 
 pub fn to_path(path: Path) {
@@ -80,8 +74,10 @@ pub fn to_animate(in, animate) {
   }
 }
 
-pub fn draw(svg, value, fill) {
-  Svg(..svg, att: [#("fill", fill)], path: [[#("d", value)], ..svg.path])
+pub fn draw(svg: Svg, value, fill) {
+  let el = el.att(svg.el, [#("fill", fill)])
+
+  Svg(..svg, el:, path: [[#("d", value)], ..svg.path])
 }
 
 pub fn draw_filless(svg, value) {
@@ -92,22 +88,20 @@ pub fn stroke_none(svg, draw) {
   stroke(svg, draw, "none")
 }
 
-pub fn stroke(svg, draw, fill) {
-  Svg(..svg, att: [#("fill", fill), ..svg.att], path: [
-    [#("d", draw), ..stroke_()],
-    ..svg.path
-  ])
+pub fn stroke(svg: Svg, draw, fill) {
+  let el = el.att(svg.el, [#("fill", fill)])
+
+  Svg(..svg, el:, path: [[#("d", draw), ..stroke_()], ..svg.path])
 }
 
 pub fn evenodd_filless(svg, draw) {
   evenodd(svg, draw, "")
 }
 
-pub fn evenodd(svg, draw, fill) {
-  Svg(..svg, att: [#("fill", "none")], path: [
-    [#("d", draw), ..evenodd_(fill)],
-    ..svg.path
-  ])
+pub fn evenodd(svg: Svg, draw, fill) {
+  let el = el.att(svg.el, [#("fill", "none")])
+
+  Svg(..svg, el:, path: [[#("d", draw), ..evenodd_(fill)], ..svg.path])
 }
 
 pub fn to_attrs_rect(rect: Rect) {

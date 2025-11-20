@@ -2,146 +2,85 @@
 //// Gleam UI core type and functinos.
 ////
 
-import gleam/int
-import gleam/list
 import gleam/option.{type Option}
 
-import lustre/attribute as a
+import lustre/attribute
 import lustre/element
 
-/// UI render required element of generic event `a`.
+/// Render element of generic event `a`.
 ///
-/// Wrapper to `lustre/element.{type Elment}`
+/// Wrapper to `lustre/element.Elment`
 ///
 pub type UIRender(a) =
   element.Element(a)
+
+/// List of attribute to render an element
+///
+/// Wrapper to `lustre/element.Element`
+///
+pub type UIAttrs(a) =
+  List(attribute.Attribute(a))
 
 /// List of `gbr/ui.{type UIRender}`.
 ///
 pub type UIRenders(a) =
   List(UIRender(a))
 
-/// List of `gbr/ui.{type UIRenderOpt}`.
+/// Option `gbr/ui/core/model.UIRender`
 ///
-pub type UIRenderOpts(a) =
-  List(UIRenderOpt(a))
-
-pub type UIAttribute(a) =
-  a.Attribute(a)
-
-pub type UIAttributes(a) =
-  List(UIAttribute(a))
-
-/// UI render option element of generic event `a`.
-///
-/// Option to `gbr/ui.{type UIRender}`
-///
-pub type UIRenderOpt(a) =
+pub type UIOptRender(a) =
   Option(UIRender(a))
 
+/// List of option `gbr/ui/core/model.UIOptRender`.
+///
+pub type UIOptRenders(a) =
+  List(UIOptRender(a))
+
+/// Id keyed elements
+///
+/// To avoid conflict of element id into html.
+///
+/// Helper to `lustre/element/keyed`
+///
 pub type UIKeyed(a) =
   #(String, UIRender(a))
 
-// Box ui layout
-//
+/// Alias html property `<tag name="value"`
+///
+pub type UIProperty =
+  #(String, String)
+
+/// Alias to list of property
+///
+pub type UIProperties =
+  List(UIProperty)
+
+/// Alias to switch by identification
+///
+/// This type is a helper to `lustre.attribute.classes`
+///
+pub type UISwitch =
+  #(String, Bool)
+
+///
+///
+pub type UISwitchs =
+  List(UISwitch)
+
+// TODO:
+
+/// Box layout of generic event `a`
+///
 pub type UIBox(a) {
   UIBox(
     title: UIRender(a),
     content: UIRender(a),
     footer: UIRender(a),
-    attrs: UIAttributes(a),
+    attrs: UIAttrs(a),
   )
 }
 
+/// List of `gbr/ui/core/model.UIBox`
+///
 pub type UIBoxes(a) =
   List(UIBox(a))
-
-/// Attributes is list of two string tuple.
-///
-pub type UIAttrs =
-  List(#(String, String))
-
-/// Label is text and attributes.
-///
-/// - text: Text to show.
-/// - att: Attributes to render.
-///
-pub type UILabel {
-  UILabel(text: String, att: UIAttrs)
-}
-
-/// Desc is title and description.
-///
-pub type UIDesc {
-  UIDesc(title: String, desc: String)
-}
-
-/// Link is href and title.
-///
-pub type UILink {
-  UILink(href: String, title: String)
-}
-
-/// Attribute `lustre/attribute.class` toggle list
-///
-/// Perfect to toggle (on, off) one or more element class
-///
-pub type UIClass =
-  List(#(String, Bool))
-
-/// New label super element
-///
-pub fn uilabel(text text, att att) {
-  UILabel(text:, att:)
-}
-
-/// New super label element
-///
-pub fn uidesc(title title, desc desc) {
-  UIDesc(title:, desc:)
-}
-
-/// New super label element
-///
-pub fn uilink(href href, title title) {
-  UILink(href:, title:)
-}
-
-/// To id random identification, avoid id conflicts.
-///
-pub fn random_str(id: String) -> String {
-  let random =
-    int.random(100_000_000)
-    |> int.to_string()
-
-  id_prefix <> random <> "-" <> id
-}
-
-/// Attributes exists any name.
-///
-pub fn attrs_any(att: UIAttrs, any_name: String) -> Bool {
-  use #(name, _) <- list.any(att)
-
-  name == any_name
-}
-
-/// Attributes remove name, please.
-///
-pub fn attrs_remove(att: UIAttrs, to_remove: String) -> UIAttrs {
-  use #(name, _) <- list.filter(att)
-
-  name == to_remove
-}
-
-/// Attributes map to list of `lustre/attribute.{type Attribute}`, please.
-///
-pub fn attrs_to_lustre(att: UIAttrs) -> List(a.Attribute(a)) {
-  use #(name, value) <- list.map(att)
-
-  a.attribute(name, value)
-}
-
-// PRIVATE
-//
-
-const id_prefix = "gbr-ui-"

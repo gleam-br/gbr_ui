@@ -4,86 +4,102 @@
 
 import gleam/int
 import gleam/list
-import gleam/option.{None, Some}
+import gleam/option.{None}
 import gleam/string
 
-import lustre/attribute
-import lustre/element
 import lustre/element/html
 import lustre/element/svg
 
+import gbr/ui/core/el
+import gbr/ui/core/model.{type UIRender, type UISwitchs}
+
 import gbr/ui/svg/core.{
-  Circle, Path, Svg, to_animate, to_att, to_attrs_circle, to_attrs_rect, to_path,
+  Circle, Path, Svg, svg_key, to_animate, to_att, to_attrs_circle, to_attrs_rect,
+  to_path,
 }
 
-import gbr/ui/core/model.{type UIRender, random_str}
+type Switchs =
+  UISwitchs
 
 /// Svg super element.
 ///
 pub type Svg =
   core.Svg
 
-/// Function identity to `gbr/ui/svg/core.{type Svg}`.
+/// Function identity to `gbr/ui/svg.Svg`.
 ///
 pub type Identity =
   fn(Svg) -> Svg
 
-/// Constructor of super svg element `gbr/ui/svg/core.{type Svg}`.
+/// Constructor of super svg element `gbr/ui/svg.Svg`.
 ///
-pub fn new(id: String, height h, width w) -> Svg {
-  Svg(
-    id: random_str(id),
-    h:,
-    w:,
-    att: [],
-    path: [],
-    rect: [],
-    circle: [],
-    classes: [],
-    animate: [],
-    mask: None,
-  )
+pub fn new(height h, width w) -> Svg {
+  let height = int.to_string(h)
+  let width = int.to_string(w)
+  let view_port = "0 0 " <> string.join([width, height], " ")
+
+  let el =
+    el.new(svg_key)
+    |> el.att([
+      #("height", height),
+      #("width", width),
+      #("viewBox", view_port),
+      #("xmlns", "http://www.w3.org/2000/svg"),
+    ])
+
+  Svg(el:, path: [], rect: [], circle: [], animate: [], mask: None)
 }
 
-/// Append list in `gbr/ui/svg/core.{type Svg}` classes.
+/// Replace class
 ///
-pub fn classes(in: Svg, classes: List(String)) -> Svg {
-  Svg(..in, classes: list.append(in.classes, classes))
+pub fn class(in: Svg, class: String) -> Svg {
+  let el = el.class(in.el, class)
+
+  Svg(..in, el:)
+}
+
+/// Replace classes
+///
+pub fn classes(in: Svg, classes: Switchs) -> Svg {
+  let el = el.classes(in.el, classes)
+
+  Svg(..in, el:)
 }
 
 /// Render super svg element in `lustre/element/html.{svg}`.
 ///
 pub fn render(in: Svg) -> UIRender(a) {
-  let Svg(id:, h:, w:, att:, path:, rect:, circle:, classes:, animate:, mask:) =
-    in
-  let view_port = "0 0 " <> int.to_string(w) <> " " <> int.to_string(h)
-  let att = to_att(att)
+  let Svg(el:, path:, rect:, circle:, mask:, animate:) = in
   let path = to_path(path)
   let rect = to_attrs_rect(rect)
   let circle = to_attrs_circle(circle)
-  let mask = case mask {
-    Some(Path(path, att_mark)) -> {
-      [svg.mask(to_att(att_mark), to_path(path))]
-    }
-    Some(Circle(circle, att_mark)) -> {
-      [svg.mask(to_att(att_mark), to_attrs_circle(circle))]
-    }
-    None -> [element.none()]
-  }
+  let mask =
+    map_mask(mask)
+    |> option.unwrap([])
+
+  let attrs = el.attrs(el)
 
   html.svg(
-    [
-      attribute.id(id),
-      attribute.height(h),
-      attribute.width(w),
-      attribute.attribute("viewBox", view_port),
-      attribute.attribute("xmlns", "http://www.w3.org/2000/svg"),
-      attribute.class(string.join(classes, " ")),
-      ..att
-    ],
+    attrs,
     list.append(path, rect)
       |> list.append(circle)
       |> list.append(mask),
   )
   |> to_animate(animate)
+}
+
+// PRIVATE
+//
+
+fn map_mask(mask) {
+  use mask <- option.map(mask)
+
+  case mask {
+    Path(path, att_mark) -> {
+      [svg.mask(to_att(att_mark), to_path(path))]
+    }
+    Circle(circle, att_mark) -> {
+      [svg.mask(to_att(att_mark), to_attrs_circle(circle))]
+    }
+  }
 }

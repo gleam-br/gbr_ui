@@ -68,7 +68,7 @@ pub fn toggle_open(in: Sidebar) -> Sidebar {
 /// New render sidebar element
 ///
 pub fn at(in: Sidebar, logo: Logo, root: List(Menu(a))) -> Render(a) {
-  UISidebarRender(in:, logo:, root:)
+  UISidebarRender(in:, logo:, root: menu.roots(root))
 }
 
 /// Render sidebar element into lustre.element
@@ -77,7 +77,7 @@ pub fn render(at: Render(a)) -> UIRender(a) {
   let UISidebarRender(in:, root:, logo:) = at
   let UISidebar(id:, open:, selected:) = in
 
-  // from root
+  // menu root
   let root_menus = menu_roots(root, open, selected)
   // and nav
   let menu_nav = [html.nav([], root_menus)]

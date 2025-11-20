@@ -20,8 +20,14 @@ import gbr/ui/core/model.{type UIKeyed, type UIRender}
 type Menu =
   UISidebarMenu
 
+type Render(a) =
+  UISidebarMenuRender(a)
+
 type Inner =
   List(UISidebarMenu)
+
+type OnClick(a) =
+  fn(String) -> a
 
 /// Sidebar super element
 ///
@@ -47,7 +53,7 @@ pub opaque type UISidebarMenu {
 /// - onclick: Sidebar menu on click event
 ///
 pub opaque type UISidebarMenuRender(a) {
-  UISidebarMenuRender(in: UISidebarMenu, onclick: a)
+  UISidebarMenuRender(in: UISidebarMenu, onclick: OnClick(a))
 }
 
 /// New sidebar menu super element
@@ -66,6 +72,19 @@ pub fn title(in: Menu, text: String) -> Menu {
   UISidebarMenu(..in, text:)
 }
 
+/// Set list menus to root
+///
+/// - roots: List of menus to root
+///
+pub fn roots(roots: List(Render(a))) {
+  use render <- list.map(roots)
+  let UISidebarMenuRender(in:, ..) = render
+
+  let menu = root(in, True)
+
+  UISidebarMenuRender(..render, in: menu)
+}
+
 /// Set root menu
 ///
 /// - root: If is root menu
@@ -82,19 +101,17 @@ pub fn icon(in: Menu, svg: svg.Svg) -> Menu {
   UISidebarMenu(..in, svg: Some(svg))
 }
 
-/// Push one more inner menu
+/// Set list of menus inner parent menu
 ///
-/// - menu: Menu to push in menus
+/// - inner: List of menus inner parent menu
 ///
-pub fn inner(in: Menu, menu: Menu) -> Menu {
-  let menu = root(menu, False)
-
-  UISidebarMenu(..in, inner: [menu, ..in.inner])
+pub fn inner(in: Menu, inner: List(Menu)) -> Menu {
+  UISidebarMenu(..in, inner:)
 }
 
 /// New render sidebar menu element
 ///
-pub fn at(in: UISidebarMenu, onclick: a) -> UISidebarMenuRender(a) {
+pub fn at(in: UISidebarMenu, onclick: OnClick(a)) -> UISidebarMenuRender(a) {
   UISidebarMenuRender(in:, onclick:)
 }
 
@@ -169,7 +186,7 @@ fn menu_inner(menus: Inner, open, selected, onclick) -> List(UIKeyed(a)) {
   }
 }
 
-fn menu_group(menu: Menu, open, selected, onclick: a) {
+fn menu_group(menu: Menu, open, selected, onclick) {
   let UISidebarMenu(id, text, _, inner, svg) = menu
   let name = id <> "sidebar-menu-group"
 
@@ -184,7 +201,7 @@ fn menu_group(menu: Menu, open, selected, onclick: a) {
     html.li([a.id(id)], [
       html.a(
         [
-          event.on_click(onclick),
+          event.on_click(onclick(id)),
           a.class("menu-item group"),
           a.classes([
             #("menu-item-active", is_selected),
@@ -290,11 +307,7 @@ fn menu_item(menu_id, text, selected, onclick) -> UIKeyed(a) {
             #("menu-dropdown-item-active", is_selected),
             #("menu-dropdown-item-inactive", !is_selected),
           ]),
-          option.map(onclick, fn(on) {
-            on(menu_id)
-            |> event.on_click()
-          })
-            |> option.unwrap(a.none()),
+          event.on_click(onclick(menu_id)),
         ],
         [html.text(text)],
       ),
