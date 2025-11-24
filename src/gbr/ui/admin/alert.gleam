@@ -2,10 +2,11 @@
 //// Gleam UI admin alert element
 ////
 
-import gleam/option.{type Option}
-
 import gbr/ui/alert
+import lustre/element/html
+
 import gbr/ui/core/el/link
+import gbr/ui/core/model.{type UIRenders}
 
 type Alert =
   alert.UIAlert
@@ -13,12 +14,7 @@ type Alert =
 type Render(a) =
   alert.UIAlertRender(a)
 
-type Link(a) =
-  Option(link.UILinkRender(a))
-
-pub fn primary(in: Alert, link: Link(a)) -> Render(a) {
-  let link = option.map(link, link.at_class(_, class_link))
-
+pub fn primary(in: Alert, inner: UIRenders(a)) -> Render(a) {
   alert.class(in, class_main)
   |> alert.class_title(class_title)
   |> alert.class_desc(class_desc)
@@ -29,7 +25,17 @@ pub fn primary(in: Alert, link: Link(a)) -> Render(a) {
   |> alert.class_status_warn(class_main_warning, class_icon_warning)
   |> alert.class_status_error(class_main_error, class_icon_error)
   |> alert.at()
-  // |> alert.link(link)
+  |> alert.inner(inner)
+}
+
+pub fn primary_link(in: Alert, href: String, text: String) -> Render(a) {
+  primary(in, [
+    link.new(href)
+    |> link.class(class_link)
+    |> link.at()
+    |> link.inner([html.text(text)])
+    |> link.render(),
+  ])
 }
 
 const class_icon = "-mt-0.5"

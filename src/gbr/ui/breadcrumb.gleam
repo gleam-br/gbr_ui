@@ -14,7 +14,7 @@ import lustre/element
 import lustre/attribute as a
 import lustre/element/html
 
-import gbr/ui/core/model.{type UIRender, random_str}
+import gbr/ui/core/model.{type UIRender}
 import gbr/ui/svg
 import gbr/ui/svg/icons as svg_icons
 
@@ -37,7 +37,7 @@ pub opaque type UIBreadcrumb {
 /// - current (curent name)
 ///
 pub fn new(id: String, current: String) {
-  UIBreadcrumb(id: random_str(id), current:, parent: None)
+  UIBreadcrumb(id: id, current:, parent: None)
 }
 
 /// Set breadcrumb parent
@@ -84,7 +84,7 @@ fn render_parent(current, parent: Option(Parent)) {
     case current {
       "" -> element.none()
       _ ->
-        svg.new("breadcrumb-icon-greater", 16, 17)
+        svg.new(16, 17)
         |> svg_icons.greater()
         |> svg.render()
     },

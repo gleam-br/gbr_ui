@@ -1,27 +1,24 @@
 ////
-//// Gleam UI logotype super element.
+//// Gleam UI logo super element.
 ////
 
-import lustre/attribute as a
-import lustre/element/html
-
-import gbr/ui/core/model.{type UIRender, random_str}
+import gbr/ui/core/el/img
+import gbr/ui/core/el/link
+import gbr/ui/core/model.{type UIRender}
 
 type Logo =
   UILogo
 
+type Link =
+  link.UILink
+
+type Img =
+  img.UIImg
+
 /// Logotype super element.
 ///
 pub opaque type UILogo {
-  UILogo(
-    id: String,
-    img: String,
-    img_dark: String,
-    icon: String,
-    href: String,
-    alt: String,
-    icon_only: Bool,
-  )
+  UILogo(href: Link, img: Img)
 }
 
 /// New logotype image super element.
@@ -29,83 +26,56 @@ pub opaque type UILogo {
 /// - id
 /// - img: href
 ///
-pub fn new(id: String, img: String) -> Logo {
-  UILogo(
-    id: random_str(id),
-    img:,
-    img_dark: img,
-    icon: img,
-    href: "",
-    alt: "",
-    icon_only: False,
-  )
+pub fn new(href: String, src: String) -> Logo {
+  let href = link.new(href)
+  let img = img.new(src)
+
+  UILogo(href:, img:)
 }
 
 /// Set logo icon to dark mode.
 ///
-pub fn icon(in: Logo, icon) -> Logo {
-  UILogo(..in, icon:)
+pub fn icon(in: Logo, icon: String) -> Logo {
+  let img = img.small(in.img, icon)
+
+  UILogo(..in, img:)
 }
 
 /// Set logo img to dark mode.
 ///
-pub fn dark(in: Logo, img_dark: String) -> Logo {
-  UILogo(..in, img_dark:)
+pub fn dark(in: Logo, dark: String) -> Logo {
+  let img = img.dark(in.img, dark)
+
+  UILogo(..in, img:)
 }
 
 /// Set logotype href link.
 ///
 pub fn href(in: Logo, href: String) -> Logo {
+  let href = link.href(in.href, href)
+
   UILogo(..in, href:)
 }
 
-/// Set logo image alt.
-///
-pub fn alt(in: Logo, alt: String) -> Logo {
-  UILogo(..in, alt:)
+pub fn class(in: Logo, class: String) {
+  let href = link.class(in.href, class)
+
+  UILogo(..in, href:)
 }
 
-/// Set icon only to small logo
-///
-pub fn icon_only(in: Logo, icon_only: Bool) -> Logo {
-  UILogo(..in, icon_only:)
+pub fn class_small(in: Logo, class: String) {
+  let img = img.class_small(in.img, class)
+
+  UILogo(..in, img:)
 }
 
 /// Render logo super element to `lustre/element.{type Element}`.
 ///
 pub fn render(in: Logo) -> UIRender(a) {
-  let UILogo(id:, img:, img_dark:, href:, alt:, icon:, icon_only:) = in
+  let UILogo(href:, img:) = in
+  let img = img.at(img) |> img.render()
 
-  html.a(
-    [
-      a.id(id),
-      a.href(href),
-    ],
-    [
-      html.span(
-        [
-          a.class("logo"),
-          a.classes([#("hidden", icon_only)]),
-        ],
-        [
-          html.img([
-            a.alt(alt),
-            a.src(img),
-            a.class("dark:hidden"),
-          ]),
-          html.img([
-            a.alt(alt),
-            a.src(img_dark),
-            a.class("hidden dark:block"),
-          ]),
-        ],
-      ),
-      html.img([
-        a.alt(alt),
-        a.src(icon),
-        a.class("logo-icon"),
-        a.classes([#("lg:block", icon_only), #("hidden", !icon_only)]),
-      ]),
-    ],
-  )
+  link.at(href)
+  |> link.inner(img)
+  |> link.render()
 }

@@ -1,5 +1,7 @@
 # 🎨 Gleam UI lustre library
 
+🚧 **Work in progress** not production ready.
+
 [Gleam](https://gleam.run/) UI [lustre](https://lustre.build/) library by @gleam-br
 
 🌝 Nothing stateful only stateless uses only lustre render functions.
@@ -112,8 +114,6 @@ pub fn show(id: String, text: UILabel, onclick: a) -> UIRender(a) {
 ## ✏️ Styling
 
 #### Lustre [dev-tools](https://hexdocs.pm/lustre_dev_tools/toml-reference.html)
-
-🚧 **Work in progress** not production ready.
 
 Gleam config `gleam.toml`:
 

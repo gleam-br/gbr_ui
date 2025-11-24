@@ -55,8 +55,6 @@ pub fn new(href: String) -> Link {
   UILink(el:, href:)
 }
 
-/// Set href link attribute
-///
 pub fn href(in: Link, href: String) -> Link {
   UILink(..in, href:)
 }
@@ -77,12 +75,6 @@ pub fn inner(at: Render(a), inner: UIRenders(a)) -> Render(a) {
 
 pub fn onclick(at: Render(a), onclick: fn(String) -> a) -> Render(a) {
   UILinkRender(..at, onclick: Some(onclick))
-}
-
-pub fn at_class(at: Render(a), classes: String) -> Render(a) {
-  let in = class(at.in, classes)
-
-  UILinkRender(..at, in:)
 }
 
 /// Render link super element

@@ -46,26 +46,20 @@
 import gleam/list
 import gleam/option.{type Option, None, Some}
 
-import lustre/attribute as a
 import lustre/element/html
 
 import gbr/ui/svg
 import gbr/ui/svg/icons as svg_icons
 
-import gbr/ui/core/model.{
-  type UIAttrs, type UILabel, type UIRender, type UIRenders, UILabel,
-  attrs_remove, attrs_to_lustre, random_str,
-}
+import gbr/ui/core/el
+import gbr/ui/core/model.{type UIRender, type UIRenders}
 
-type Label =
-  UILabel
-
-type Attrs =
-  UIAttrs
+type El =
+  el.UIEl
 
 type Type {
   /// Typically used for less-pronounced actions, including those located: in dialogs, in cards
-  Text
+  Default
   // /// High-emphasis, distinguished by their use of elevation and fill. Actions that are primary.
   // Contained
   // /// Encourages a user to perform a specific action, such as "Shop Now", "Sign Up".
@@ -125,13 +119,12 @@ type Render(a) =
 ///
 pub opaque type UIButton {
   UIButton(
-    id: String,
-    att: Attrs,
+    el: El,
     kind: Type,
     size: Size,
     state: State,
     shape: Shape,
-    label: Option(Label),
+    text: Option(String),
   )
 }
 
@@ -145,37 +138,36 @@ pub type UIButtonRender(a) {
 ///
 pub fn new(id: String) -> Button {
   UIButton(
-    id: random_str(id),
-    att: [],
-    kind: Text,
+    el: el.new(id),
+    kind: Default,
     state: Enabled,
     shape: Rect,
     size: Md,
-    label: None,
+    text: None,
   )
 }
 
 /// Set button label.
 ///
-pub fn label(in: Button, label: Label) -> Button {
-  UIButton(..in, label: Some(label))
+pub fn label(in: Button, text: String) -> Button {
+  UIButton(..in, text: Some(text))
 }
 
 /// Set button disabled.
 ///
 pub fn disabled(in: Button, disabled: Bool) -> Button {
   case disabled {
-    False ->
-      UIButton(..in, state: Enabled, att: attrs_remove(in.att, "disabled"))
-    True ->
-      UIButton(..in, state: Disabled, att: [#("disabled", "true"), ..in.att])
+    False -> UIButton(..in, state: Enabled)
+    True -> UIButton(..in, state: Disabled)
   }
 }
 
 /// Set button class.
 ///
 pub fn class(in: Button, class: String) -> Button {
-  UIButton(..in, att: [#("class", class), ..in.att])
+  let el = el.class(in.el, class)
+
+  UIButton(..in, el:)
 }
 
 /// Set button disabled.
@@ -187,9 +179,10 @@ pub fn primary(in: Button) -> Button {
 /// New button render at right inner and onclick event.
 ///
 pub fn at_right(in: Button, inner: UIRenders(a)) -> Render(a) {
-  let UIButton(label:, ..) = in
-  let inner = case label {
-    Some(UILabel(text:, ..)) -> list.append(inner, [html.text(text)])
+  let UIButton(text:, ..) = in
+
+  let inner = case text {
+    Some(text) -> list.append(inner, [html.text(text)])
     None -> inner
   }
 
@@ -199,9 +192,9 @@ pub fn at_right(in: Button, inner: UIRenders(a)) -> Render(a) {
 /// New button render at left inner and onclick event.
 ///
 pub fn at_left(in: Button, inner: UIRenders(a)) -> Render(a) {
-  let UIButton(label:, ..) = in
-  let inner = case label {
-    Some(UILabel(text:, ..)) -> [html.text(text), ..inner]
+  let UIButton(text:, ..) = in
+  let inner = case text {
+    Some(text) -> [html.text(text), ..inner]
     None -> inner
   }
 
@@ -211,9 +204,9 @@ pub fn at_left(in: Button, inner: UIRenders(a)) -> Render(a) {
 /// New button render at default.
 ///
 pub fn at(in: Button) -> Render(a) {
-  let UIButton(label:, ..) = in
-  let inner = case label {
-    Some(UILabel(text:, ..)) -> [html.text(text)]
+  let UIButton(text:, ..) = in
+  let inner = case text {
+    Some(text) -> [html.text(text)]
     None -> []
   }
 
@@ -234,17 +227,17 @@ pub fn on_click(in: Render(a), onclick: a) -> Render(a) {
 ///
 pub fn render(at: Render(a)) -> UIRender(a) {
   let UIButtonRender(in:, inner:, ..) = at
-  let UIButton(id:, att:, ..) = in
-  let attrs = [a.id(id), ..attrs_to_lustre(att)]
+  let UIButton(el:, ..) = in
+  let attrs = el.attrs(el)
 
   html.button(attrs, inner)
 }
 
 /// Render back history button.
 ///
-pub fn back(id: String, text: Label, onclick: a) -> UIRender(a) {
+pub fn back(id: String, text: String, onclick: a) -> UIRender(a) {
   let inner = [
-    svg.new("btn-icon-back", 20, 20)
+    svg.new(20, 20)
     |> svg_icons.back()
     |> svg.render(),
   ]
@@ -277,17 +270,17 @@ pub fn sidebar(id: String, visible: Bool, onclick: Option(a)) -> UIRender(a) {
     new(id)
     |> class(sidebar_class <> class_toggle)
   let inner = [
-    svg.new("btn-icon-sidebar-hamburguer-small", 12, 16)
+    svg.new(12, 16)
       |> svg_icons.hamburguer_small()
-      |> svg.classes(["hidden lg:block"])
+      |> svg.class("hidden lg:block")
       |> svg.render(),
-    svg.new("btn-icon-sidebar-hamburguer", 20, 20)
+    svg.new(20, 20)
       |> svg_icons.hamburguer()
-      |> svg.classes([default_toggle])
+      |> svg.class(default_toggle)
       |> svg.render(),
-    svg.new("btn-icon-sidebar-cross", 24, 24)
+    svg.new(24, 24)
       |> svg_icons.cross()
-      |> svg.classes([cross_toggle])
+      |> svg.class(cross_toggle)
       |> svg.render(),
   ]
 
@@ -302,13 +295,13 @@ pub fn dark_mode(id: String, onclick: Option(a)) -> UIRender(a) {
     new(id)
     |> class(darkmode_class)
   let inner = [
-    svg.new("btn-icon-dark-mode-moon", 20, 20)
+    svg.new(20, 20)
       |> svg_icons.moon()
-      |> svg.classes(["hidden dark:block"])
+      |> svg.class("hidden dark:block")
       |> svg.render(),
-    svg.new("btn-icon-dark-mode-sun", 20, 20)
+    svg.new(20, 20)
       |> svg_icons.sun()
-      |> svg.classes(["dark:hidden"])
+      |> svg.class("dark:hidden")
       |> svg.render(),
   ]
 
@@ -329,7 +322,7 @@ pub fn app_nav(id: String, is_visible: Bool, onclick: Option(a)) -> UIRender(a) 
   }
 
   let inner = [
-    svg.new("btn-icon-app-nav", 24, 24)
+    svg.new(24, 24)
     |> svg_icons.app_nav()
     |> svg.render(),
   ]

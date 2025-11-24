@@ -2,7 +2,6 @@
 //// Gleam UI super alert elements.
 ////
 
-import gbr/ui/link
 import gleam/bool
 import gleam/list
 import gleam/option.{type Option, None, Some}
@@ -15,7 +14,7 @@ import gbr/ui/svg/alert as svg_alert
 
 import gbr/ui/core/el
 import gbr/ui/core/el/desc
-import gbr/ui/core/model.{type UIRender, type UISwitchs}
+import gbr/ui/core/model.{type UIRender, type UIRenders, type UISwitchs}
 
 type Alert =
   UIAlert
@@ -28,9 +27,6 @@ type El =
 
 type Desc =
   desc.UIDesc
-
-type Link(a) =
-  Option(link.UILinkRender(a))
 
 type Switchs =
   UISwitchs
@@ -58,7 +54,7 @@ pub opaque type UIAlert {
 /// in: Alert info
 ///
 pub opaque type UIAlertRender(a) {
-  UIAlertRender(in: Alert, link: Link(a))
+  UIAlertRender(in: Alert, inner: UIRenders(a))
 }
 
 /// New alert super element pass title and description.
@@ -266,13 +262,13 @@ pub fn classes_status_error(in: Alert, classes: Switchs, classes_icon: Switchs) 
 /// - in: Alert info
 ///
 pub fn at(in: Alert) -> Render(a) {
-  UIAlertRender(in:, link: None)
+  UIAlertRender(in:, inner: [])
 }
 
 /// Replace alert link
 ///
-pub fn link(in: Render(a), link: Link(a)) -> Render(a) {
-  UIAlertRender(..in, link: link)
+pub fn inner(in: Render(a), inner: UIRenders(a)) -> Render(a) {
+  UIAlertRender(..in, inner:)
 }
 
 /// Set attribute el.classes by status
@@ -280,7 +276,7 @@ pub fn link(in: Render(a), link: Link(a)) -> Render(a) {
 /// Render super alert element to `lustre/element/html.{div}`.
 ///
 pub fn render(at: Render(a)) -> UIRender(a) {
-  let UIAlertRender(in:, link:) = at
+  let UIAlertRender(in:, inner:) = at
   let UIAlert(el:, info:, status:, open:, icon_show:) = in
 
   use <- bool.guard(!open, element.none())
@@ -304,7 +300,7 @@ pub fn render(at: Render(a)) -> UIRender(a) {
   let status_icon = status_icon(status, el_attrs_icon, icon_show)
   let status_info =
     desc.at(info)
-    |> desc.link(link)
+    |> desc.inner(inner)
     |> desc.render()
 
   html.div(el_attrs, [

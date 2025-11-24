@@ -3,7 +3,6 @@
 ////
 
 import gleam/option.{type Option, None, Some}
-import gleam/string
 
 import lustre/attribute as a
 import lustre/element/html
@@ -12,10 +11,8 @@ import lustre/event
 import gbr/ui/svg
 import gbr/ui/svg/form
 
-import gbr/ui/core/model.{
-  type UIAttributes, type UIAttrs, type UIRender, type UIRenders,
-  attrs_to_lustre, random_str,
-}
+import gbr/ui/core/el
+import gbr/ui/core/model.{type UIProperties, type UIRender, type UIRenders}
 
 type Form =
   UIForm
@@ -23,17 +20,17 @@ type Form =
 type Render(a) =
   UIFormRender(a)
 
-type Att =
-  UIAttrs
+type El =
+  el.UIEl
+
+type OnSubmit(a) =
+  fn(UIProperties) -> a
 
 /// Form super element.
 ///
 pub opaque type UIForm {
-  UIForm(id: String, att: Att)
+  UIForm(el: El)
 }
-
-type OnSubmit(a) =
-  fn(Att) -> a
 
 /// Form render element.
 ///
@@ -44,13 +41,15 @@ pub opaque type UIFormRender(a) {
 /// New form super element.
 ///
 pub fn new(id: String) -> Form {
-  UIForm(id: random_str(id), att: [])
+  UIForm(el: el.new(id))
 }
 
 /// Set form class styles.
 ///
-pub fn classes(in: Form, classes: List(String)) -> Form {
-  UIForm(..in, att: [#("class", string.join(classes, " ")), ..in.att])
+pub fn class(in: Form, class: String) -> Form {
+  let el = el.class(in.el, class)
+
+  UIForm(el:)
 }
 
 /// New form render at default behavior.
@@ -75,27 +74,28 @@ pub fn on_submit(in: Render(a), onsubmit: OnSubmit(a)) -> Render(a) {
 ///
 pub fn render(at: Render(a)) -> UIRender(a) {
   let UIFormRender(in:, inner:, onsubmit:) = at
-  let UIForm(id:, att:) = in
-  let att = attrs_to_lustre(att)
+  let UIForm(el:) = in
+
+  let attrs = el.attrs(el)
   let onsubmit =
     option.map(onsubmit, event.on_submit)
     |> option.unwrap(a.none())
 
-  html.form([a.id(id), onsubmit], [html.div(att, inner)])
+  html.form([onsubmit, ..attrs], inner)
 }
 
 /// Render form input icon eye to password fields.
 /// - open: True is open or close.
 /// - attributes: `lustre/attribute.{*}` | `lustre.event.{*}`
 ///
-pub fn eye(open: Bool, attributes: UIAttributes(a)) {
-  let #(id, transform) = case open {
-    True -> #("form-icon-eye-open", form.eye_open)
-    False -> #("form-icon-eye-close", form.eye_close)
+pub fn eye(open: Bool, attributes: model.UIAttrs(a)) {
+  let transform = case open {
+    True -> form.eye_open
+    False -> form.eye_close
   }
 
   html.span(attributes, [
-    svg.new(id, 20, 20)
+    svg.new(20, 20)
     |> transform()
     |> svg.render(),
   ])

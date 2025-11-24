@@ -1,7 +1,12 @@
 ////
 //// Gleam UI notification super element
 ////
+//// btn-icon toggle dropdown
+//// dropdown -> title - btn_close
+//// items -> avatar -> desc -> footer
+//// footer -> btn controles
 
+import gbr/ui/core/el
 import gleam/bool
 import gleam/int
 import gleam/list
@@ -19,7 +24,7 @@ import gbr/ui/user/avatar
 
 import gbr/ui/notify/item.{type UINotifyItem}
 
-import gbr/ui/core/model.{type UIRender, type UIRenders, random_str}
+import gbr/ui/core/model.{type UIRender, type UIRenders}
 
 type Notify =
   UINotify
@@ -30,45 +35,34 @@ type Render(a) =
 type Item =
   UINotifyItem
 
+type OnToggle(a) =
+  fn(Bool) -> a
+
 pub opaque type UINotify {
   UINotify(
-    id: String,
-    title: UITypos,
+    el: el.UIEl,
+    title: String,
     footer: UITypos,
-    visible: Bool,
+    open: Bool,
     items: List(Item),
   )
 }
 
+// btn togglt onclick
+// title -> btn close onclick
+// items -> avatar -> text -> footer onclick
+// footer -> btn controle -> onclick
+
 pub opaque type UINotifyRender(a) {
-  // fn(Bool) if force toggle or not
-  UINotifyRender(in: Notify, on_toggle: Option(fn(Bool) -> a))
+  UINotifyRender(in: Notify, ontoggle: Option(OnToggle(a)))
 }
 
-pub fn new(id: String, visible: Bool) {
-  UINotify(id:, visible:, title: [], footer: [], items: [])
+pub fn new(id: String) {
+  UINotify(el: el.new(id), open: True, title: "", footer: [], items: [])
 }
 
-pub fn toggle_visible(in: Notify, force: Bool) -> Notify {
-  case force {
-    True -> UINotify(..in, visible: False)
-    False -> UINotify(..in, visible: !in.visible)
-  }
-}
-
-pub fn at(in: Notify) -> Render(a) {
-  UINotifyRender(in:, on_toggle: None)
-}
-
-pub fn on_toggle_opt(
-  in: Render(a),
-  on_toggle: Option(fn(Bool) -> a),
-) -> Render(a) {
-  UINotifyRender(..in, on_toggle:)
-}
-
-pub fn title(in: Notify, title: UITypo) -> Notify {
-  UINotify(..in, title: [title, ..in.title])
+pub fn title(in: Notify, title: String) -> Notify {
+  UINotify(..in, title:)
 }
 
 pub fn footer(in: Notify, footer: UITypo) -> Notify {
@@ -79,83 +73,221 @@ pub fn item(in: Notify, item: Item) {
   UINotify(..in, items: [item, ..in.items])
 }
 
+pub fn class(in: Notify, class: String) -> Notify {
+  let el = el.class(in.el, class)
+
+  UINotify(..in, el:)
+}
+
+pub fn class_button(in: Notify, class: String) -> Notify {
+  let el = el.class_key(in.el, "button", class)
+
+  UINotify(..in, el:)
+}
+
+pub fn class_content(in: Notify, class: String) -> Notify {
+  let el = el.class_key(in.el, "content", class)
+
+  UINotify(..in, el:)
+}
+
+pub fn class_title(in: Notify, class: String) -> Notify {
+  let el = el.class_key(in.el, "title", class)
+
+  UINotify(..in, el:)
+}
+
+pub fn class_title_text(in: Notify, class: String) -> Notify {
+  let el = el.class_key(in.el, "title-text", class)
+
+  UINotify(..in, el:)
+}
+
+pub fn class_close(in: Notify, class: String) -> Notify {
+  let el = el.class_key(in.el, "button-close", class)
+
+  UINotify(..in, el:)
+}
+
+pub fn class_items(in: Notify, class: String) -> Notify {
+  let el = el.class_key(in.el, "items", class)
+
+  UINotify(..in, el:)
+}
+
+pub fn class_item(in: Notify, class: String) -> Notify {
+  let el = el.class_key(in.el, "item", class)
+
+  UINotify(..in, el:)
+}
+
+pub fn class_item_desc(in: Notify, class: String) -> Notify {
+  let el = el.class_key(in.el, "item-desc", class)
+
+  UINotify(..in, el:)
+}
+
+pub fn class_item_footer(in: Notify, class: String) -> Notify {
+  let el = el.class_key(in.el, "item-footer", class)
+
+  UINotify(..in, el:)
+}
+
+pub fn class_footer(in: Notify, class: String) -> Notify {
+  let el = el.class_key(in.el, "footer", class)
+
+  UINotify(..in, el:)
+}
+
+// main -> [btn,dropdown]
+// - btn - class
+// - dropdown - class class_title class_title_text class_button_close
+// class_list class_item el_avatar class_item_desc class_item_footer
+
+pub fn toggle(in: Notify, close_force: Bool) -> Notify {
+  case close_force {
+    True -> open(in, False)
+    False -> open(in, !in.open)
+  }
+}
+
+pub fn open(in: Notify, open: Bool) -> Notify {
+  UINotify(..in, open:)
+}
+
+pub fn at(in: Notify) -> Render(a) {
+  UINotifyRender(in:, ontoggle: None)
+}
+
+pub fn ontoggle(in: Render(a), ontoggle: OnToggle(a)) {
+  UINotifyRender(..in, ontoggle: Some(ontoggle))
+}
+
+pub fn ontoggle_opt(in: Render(a), ontoggle: Option(fn(Bool) -> a)) -> Render(a) {
+  UINotifyRender(..in, ontoggle:)
+}
+
 pub fn render(at: Render(a)) -> UIRender(a) {
-  let UINotifyRender(in:, on_toggle:) = at
-  let UINotify(id:, title:, footer:, items:, visible:) = in
-  let dropdown_visible_class = case visible {
-    True -> "block"
-    False -> "hidden"
-  }
+  let UINotifyRender(in:, ontoggle:) = at
+  let UINotify(el:, title:, footer:, items:, open:) = in
 
-  let #(on_notify, on_click_out, on_mouse_out) = case on_toggle {
-    Some(on_toggle) -> #(
-      event.on_click(on_toggle(False)),
-      event.on_click(on_toggle(True)),
-      event.on_mouse_leave(on_toggle(True)),
+  let attrs = el.attrs(el)
+  let attrs_btn = el.attrs_key(el, "button")
+  let attrs_title = el.attrs_key(el, "title")
+  let attrs_title_text = el.attrs_key(el, "title-text")
+  let attrs_btn_close = el.attrs_key(el, "button-close")
+  let attrs_content = el.attrs_key(el, "footer")
+  let attrs_footer = el.attrs_key(el, "footer")
+  let attrs_items = el.attrs_key(el, "items")
+  let attrs_item = el.attrs_key(el, "item")
+  let attrs_item_desc = el.attrs_key(el, "item-desc")
+  let attrs_item_footer = el.attrs_key(el, "item-footer")
+
+  let #(onclick_btn, onclick_out, onmouse_out) =
+    map_ontoggle(ontoggle)
+    |> option.unwrap(#(a.none(), a.none(), a.none()))
+
+  let notify_btn =
+    html.button(
+      [
+        onclick_btn,
+        // ADMIN
+        //a.class(notification_class),
+        ..attrs_btn
+      ],
+      [
+        mark(list.length(items)),
+        svg.new(20, 20)
+          |> svg_icons.bell()
+          |> svg.render(),
+      ],
     )
-    None -> #(a.none(), a.none(), a.none())
+  let notify_title =
+    html.div(
+      //a.class(notify_dropdown_title_class)
+      attrs_title,
+      [
+        html.h5(
+          //a.class(notify_dropdown_title_h_class)
+          attrs_title_text,
+          [
+            html.text(title),
+          ],
+        ),
+        html.button(
+          [
+            onclick_out,
+            //a.class(notify_dropdown_title_close_class),
+            ..attrs_btn_close
+          ],
+          [
+            svg.new(24, 24)
+            |> svg_icons.cross()
+            |> svg.render(),
+          ],
+        ),
+      ],
+    )
+  let notify_items =
+    html.ul([a.class(notify_dropdown_list_class)], map_items(items))
+
+  let notify_footer = case footer {
+    [] -> element.none()
+    footer ->
+      html.a(
+        [
+          a.class(notify_dropdown_footer_class),
+        ],
+        [
+          footer
+          |> list.reverse()
+          |> typo.inline(),
+        ],
+      )
   }
 
-  html.div(
-    [
-      random_str(id) |> a.id(),
-      a.class("relative"),
-    ],
-    [
-      btn_notification(list.length(items), on_notify),
-      html.div(
-        [
-          a.class(dropdown_visible_class),
-          a.class(notify_dropdown_class),
-          on_click_out,
-          on_mouse_out,
-        ],
-        [
-          html.div([a.class(notify_dropdown_title_class)], [
-            // TODO: add func text.h5()
-            html.h5([a.class(notify_dropdown_title_h_class)], [
-              typo.inline(title),
-            ]),
-            html.button(
-              [
-                a.class(notify_dropdown_title_close_class),
-                on_click_out,
-              ],
-              [
-                svg.new("notify-icon-cross", 24, 24)
-                |> svg_icons.cross()
-                |> svg.render(),
-              ],
-            ),
-          ]),
-          html.ul([a.class(notify_dropdown_list_class)], items_(items)),
-          footer_(id, footer),
-        ],
-      ),
-    ],
-  )
+  let notify_content =
+    html.div(
+      [
+        a.classes([#("hidden", !open), #("block", open)]),
+        onclick_out,
+        onmouse_out,
+        //a.class(notify_dropdown_class),
+        ..attrs_content
+      ],
+      [
+        notify_title,
+        notify_items,
+        notify_footer,
+      ],
+    )
+
+  html.div([a.class("relative"), ..attrs], [
+    notify_btn,
+    notify_content,
+  ])
 }
 
 // PRIVATE
 //
 
-fn footer_(id, footer) {
-  use <- bool.guard(list.is_empty(footer), html.text(""))
+/// Map ontoggle to lustre events
+///
+/// - on_click: button to open/close
+/// - on_click: Out of dropdown
+/// - on_mouse_leave: Mouse leave dropdown
+///
+fn map_ontoggle(ontoggle) {
+  use ontoggle <- option.map(ontoggle)
 
-  html.a(
-    [
-      a.id(id),
-      a.class(notify_dropdown_footer_class),
-    ],
-    [
-      footer
-      |> list.reverse()
-      |> typo.inline(),
-    ],
+  #(
+    event.on_click(ontoggle(False)),
+    event.on_click(ontoggle(True)),
+    event.on_mouse_leave(ontoggle(True)),
   )
 }
 
-fn items_(items: List(Item)) -> UIRenders(a) {
+fn map_items(items: List(Item)) -> UIRenders(a) {
   use <- bool.guard(list.is_empty(items), [
     typo.text("Não há items")
     |> typo.class(notify_dropdown_desc_class)
@@ -168,7 +300,7 @@ fn items_(items: List(Item)) -> UIRenders(a) {
     None -> element.none()
   }
 
-  html.li([a.id(random_str(id))], [
+  html.li([a.id(id)], [
     html.a(
       [
         // onclick
@@ -180,7 +312,11 @@ fn items_(items: List(Item)) -> UIRenders(a) {
         avatar,
         html.span([a.class("block")], [
           typo.styled(desc, notify_dropdown_desc_class),
-          typo.horizontal(footer),
+          // TODO admin styled
+          footer
+            |> typo.styled(
+              "flex items-center gap-2 text-gray-500 dark:text-gray-400",
+            ),
         ]),
       ],
     ),
@@ -188,18 +324,7 @@ fn items_(items: List(Item)) -> UIRenders(a) {
 }
 
 fn btn_notification(counter: Int, toggle_notification) {
-  html.button(
-    [
-      toggle_notification,
-      a.class(notification_class),
-    ],
-    [
-      mark(counter),
-      svg.new("notify-btn-icon-bell", 20, 20)
-        |> svg_icons.bell()
-        |> svg.render(),
-    ],
-  )
+  todo
 }
 
 fn mark(counter: Int) {
