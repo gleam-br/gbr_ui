@@ -12,8 +12,8 @@ import gbr/ui/svg
 import gbr/ui/svg/alert as svg_alert
 
 import gbr/ui/core/el
-import gbr/ui/core/el/desc
 import gbr/ui/core/model.{type UIRender, type UIRenders, type UISwitches}
+import gbr/ui/desc
 
 type Alert =
   UIAlert
@@ -63,18 +63,14 @@ pub opaque type UIAlertRender(a) {
 ///
 pub fn new(title: String, desc: String) -> Alert {
   let el = el.new(const_key)
-  let info =
-    desc.new(el)
-    |> desc.text(title)
-    |> desc.desc(desc)
-
+  let info = desc.new(title, desc)
   UIAlert(el:, info:, status: Info, open: False, icon_show: False)
 }
 
 /// Replace alert title
 ///
 pub fn title(in: Alert, title: String) -> Alert {
-  let info = desc.text(in.info, title)
+  let info = desc.title(in.info, title)
 
   UIAlert(..in, info:)
 }
@@ -82,7 +78,7 @@ pub fn title(in: Alert, title: String) -> Alert {
 /// Replace alert title
 ///
 pub fn desc(in: Alert, desc: String) -> Alert {
-  let info = desc.desc(in.info, desc)
+  let info = desc.content(in.info, desc)
 
   UIAlert(..in, info:)
 }
@@ -145,7 +141,7 @@ pub fn class_content(in: Alert, class: String) -> Alert {
 /// class: Alert title class
 ///
 pub fn class_title(in: Alert, class: String) -> Alert {
-  let info = desc.class_text(in.info, class)
+  let info = desc.class_title(in.info, class)
 
   UIAlert(..in, info:)
 }
@@ -156,7 +152,7 @@ pub fn class_title(in: Alert, class: String) -> Alert {
 /// class: Alert description class
 ///
 pub fn class_desc(in: Alert, class: String) -> Alert {
-  let info = desc.class_desc(in.info, class)
+  let info = desc.class_content(in.info, class)
 
   UIAlert(..in, info:)
 }
@@ -292,6 +288,7 @@ pub fn render(at: Render(a)) -> UIRender(a) {
   let el_attrs_icon = el.attrs_key(el, const_key_icon)
   let el_attrs_status = el.attrs_key(el, status_key)
   let el_attrs_status_icon = el.attrs_key(el, status_key_icon)
+  echo el_attrs_status_icon
 
   let el_attrs =
     el_attrs
@@ -302,10 +299,9 @@ pub fn render(at: Render(a)) -> UIRender(a) {
 
   let status_icon = status_icon(status, el_attrs_icon, icon_show)
   let status_info =
-    desc.at(info)
-    |> desc.inner(inner)
+    desc.at(info, inner)
     |> desc.render()
-
+  echo status_icon
   html.div(el_attrs, [
     html.div(el_attrs_content, [
       status_icon,
@@ -377,8 +373,8 @@ fn status_icon(status, attrs, show) {
   ])
 }
 
-const const_key = ".alert"
+const const_key = "alert"
 
-const const_key_icon = ".alert-icon"
+const const_key_icon = "alert-icon"
 
-const const_key_content = ".alert-content"
+const const_key_content = "alert-content"

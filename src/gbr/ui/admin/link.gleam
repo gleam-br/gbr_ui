@@ -2,7 +2,7 @@
 //// Gleam UI admin link element.
 ////
 
-import gbr/ui/core/el/link
+import gbr/ui/link
 
 // Alias
 type Link =
@@ -15,19 +15,19 @@ type Render(a) =
 ///
 pub fn primary(in: Link) -> Render(a) {
   link.class(in, class_primary)
-  |> link.at()
+  |> link.at([])
 }
 
 /// Set link primary behavior
 ///
 pub fn signin(in: Link) -> Render(a) {
   link.class(in, class_signin)
-  |> link.at()
+  |> link.at([])
 }
 
 pub fn alert(in: Link) -> Render(a) {
   link.class(in, class_alert)
-  |> link.at()
+  |> link.at([])
 }
 
 const class_alert = "mt-3 inline-block text-sm font-medium text-gray-500"

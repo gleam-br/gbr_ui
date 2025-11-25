@@ -13,13 +13,14 @@ import gbr/ui/core/model.{type UIRender, type UIRenders}
 
 /// List of typos grouped.
 ///
-pub type UITypos =
-  List(UITypo)
-
-pub type Behavior {
+type Behavior {
+  H4
   Text
   Paragraph
 }
+
+pub type UITypos =
+  List(UITypo)
 
 /// Typo super element.
 ///
@@ -29,14 +30,24 @@ pub opaque type UITypo {
 
 /// Text super element.
 ///
-pub fn text(text: String) -> UITypo {
-  UITypo(el.new("text"), text:, behavior: Text)
+pub fn span(text: String) -> UITypo {
+  UITypo(el.new("span"), text:, behavior: Text)
+}
+
+/// Text super element.
+///
+pub fn h4(text: String) -> UITypo {
+  UITypo(el.new("h4"), text:, behavior: H4)
 }
 
 /// Paragraph super element.
 ///
 pub fn p(text: String) -> UITypo {
   UITypo(el.new("text-p"), text:, behavior: Paragraph)
+}
+
+pub fn text(in: UITypo, text: String) -> UITypo {
+  UITypo(..in, text:)
 }
 
 pub fn class(in: UITypo, class: String) -> UITypo {
@@ -76,6 +87,7 @@ pub fn render(in: UITypo) -> UIRender(a) {
   let attrs = el.attrs(el)
 
   case behavior {
+    H4 -> html.h4(attrs, [html.text(text)])
     Text -> html.span(attrs, [html.text(text)])
     Paragraph -> html.p(attrs, [html.text(text)])
   }

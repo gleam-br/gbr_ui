@@ -2,9 +2,9 @@
 //// Gleam UI logo super element.
 ////
 
-import gbr/ui/core/el/img
-import gbr/ui/core/el/link
 import gbr/ui/core/model.{type UIRender}
+import gbr/ui/img
+import gbr/ui/link
 
 type Logo =
   UILogo
@@ -87,7 +87,6 @@ pub fn render(in: Logo) -> UIRender(a) {
   let UILogo(href:, img:) = in
   let img = img.at(img) |> img.render()
 
-  link.at(href)
-  |> link.inner(img)
+  link.at(href, img)
   |> link.render()
 }

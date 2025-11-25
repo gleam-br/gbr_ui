@@ -65,12 +65,8 @@ pub fn class(in: Link, class: String) -> Link {
   UILink(..in, el:)
 }
 
-pub fn at(in: Link) -> Render(a) {
-  UILinkRender(in:, inner: [], onclick: None)
-}
-
-pub fn inner(at: Render(a), inner: UIRenders(a)) -> Render(a) {
-  UILinkRender(..at, inner:)
+pub fn at(in: Link, inner: UIRenders(a)) -> Render(a) {
+  UILinkRender(in:, inner:, onclick: None)
 }
 
 pub fn onclick(at: Render(a), onclick: fn(String) -> a) -> Render(a) {

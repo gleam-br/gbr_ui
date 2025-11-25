@@ -44,7 +44,7 @@ pub type Svg {
   )
 }
 
-pub const svg_key = ".svg"
+pub const svg_key = "svg"
 
 /// Replace class
 ///

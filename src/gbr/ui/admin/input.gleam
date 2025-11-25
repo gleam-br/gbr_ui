@@ -23,7 +23,7 @@ pub fn primary(in: Input, label: Option(String)) -> Render(a) {
   let in = case label {
     None -> in
     Some(label) ->
-      typo.text(label)
+      typo.span(label)
       |> typo.class(label_class)
       |> input.label(in, _)
   }
@@ -79,7 +79,7 @@ fn state_set(in, text, class, class_note, svg) -> Render(a) {
   let input_class = state_class <> " " <> class
   let note_class = state_label_class <> " " <> class_note
   let note =
-    typo.text(text)
+    typo.span(text)
     |> typo.class(note_class)
 
   input.class(in, input_class)

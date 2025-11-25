@@ -10,7 +10,6 @@
 //// attributes and properties without needs to trait genenric event type.
 ////
 
-import gleam/bool
 import gleam/dict
 import gleam/int
 import gleam/list
@@ -18,9 +17,7 @@ import gleam/option.{type Option}
 
 import lustre/attribute
 
-import gbr/ui/core/model.{
-  type UIAttrs, type UIProperties, type UIProperty, type UISwitches,
-}
+import gbr/ui/core/model.{type UIAttrs, type UIProperties, type UISwitches}
 
 // Alias
 
