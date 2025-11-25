@@ -52,7 +52,9 @@ pub fn new(id: String) -> Sidebar {
   let el =
     el.new(id)
     |> el.class(sidebar_class)
-  UISidebar(el:, selected: None, open: True)
+
+  UISidebar(el:, selected: None, open: False)
+  |> open(True)
 }
 
 /// Set open sidebar visibility
@@ -60,10 +62,10 @@ pub fn new(id: String) -> Sidebar {
 pub fn open(in: Sidebar, open: Bool) -> Sidebar {
   let el =
     el.classes(in.el, [
-      #("lg:w-[90px]", !open),
-      #("translate-x-0", !open),
+      #("lg:w-[90px] translate-x-0", !open),
       #("-translate-x-full", open),
     ])
+
   UISidebar(..in, el:, open:)
 }
 
@@ -90,7 +92,7 @@ pub fn render(at: Render(a)) -> UIRender(a) {
   // and nav
   let menu_nav = [html.nav([], root_menus)]
   // and sidebar inner
-  let inner_classes = [#("justify-center", open), #("justify-between", !open)]
+  let inner_classes = [#("justify-center", !open), #("justify-between", open)]
   let inner = [
     html.div(
       [
@@ -98,7 +100,7 @@ pub fn render(at: Render(a)) -> UIRender(a) {
         a.classes(inner_classes),
       ],
       [
-        logo.icon_only(logo, open)
+        logo.icon_only(logo, !open)
         |> logo.render(),
       ],
     ),

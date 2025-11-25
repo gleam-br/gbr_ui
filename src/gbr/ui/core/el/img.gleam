@@ -28,6 +28,12 @@ pub fn new(src: String) -> Img {
   UIImg(el: el.new("img"), src:, dark: src, small: src, small_only: False)
 }
 
+pub fn alt(in: Img, alt: String) -> Img {
+  let el = el.att(in.el, [#("alt", alt)])
+
+  UIImg(..in, el:)
+}
+
 pub fn dark(in: Img, dark: String) -> Img {
   UIImg(..in, dark:)
 }
@@ -70,7 +76,7 @@ pub fn at(in: Img) -> Render(a) {
 
 pub fn render(at: Render(a)) -> UIRenders(a) {
   let UIImgRender(in:, ..) = at
-  let UIImg(el:, small_only:, ..) = in
+  let UIImg(el:, src:, dark:, small:, small_only:) = in
 
   let attrs = el.attrs(el)
   let attrs_src = el.attrs_key(el, "dark")
@@ -82,10 +88,11 @@ pub fn render(at: Render(a)) -> UIRenders(a) {
 
   [
     html.span([classes, ..attrs], [
-      html.img([a.class("dark:hidden"), ..attrs_src]),
-      html.img([a.class("hidden dark:block"), ..attrs_dark]),
+      html.img([a.src(src), a.class("dark:hidden"), ..attrs_src]),
+      html.img([a.src(dark), a.class("hidden dark:block"), ..attrs_dark]),
     ]),
     html.img([
+      a.src(small),
       a.classes([#("lg:block", small_only), #("hidden", !small_only)]),
       ..attrs_small
     ]),

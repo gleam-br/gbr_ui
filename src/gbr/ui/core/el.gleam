@@ -48,11 +48,12 @@ type Att =
 /// Element super ui.
 ///
 /// - id: Equals `lustre/attribute.classes`
-/// - class: Equals `lustre/attribute.class`
 /// - classes: `lustre/attribute.classes`
+/// - style: `lustre/attribute.style`
+/// - att: `lustre/attribute.attribute`
 ///
 pub opaque type UIEl {
-  UIEl(id: String, class: UIClass, classes: Classes, styles: Style, att: Att)
+  UIEl(id: String, classes: Classes, styles: Style, att: Att)
 }
 
 /// Attributes of element with key
@@ -97,9 +98,6 @@ pub fn new(id: String) {
   let att =
     dict.new()
     |> dict.insert(id, [])
-  let class =
-    dict.new()
-    |> dict.insert(id, "")
   let classes =
     dict.new()
     |> dict.insert(id, [])
@@ -107,7 +105,7 @@ pub fn new(id: String) {
     dict.new()
     |> dict.insert(id, [])
 
-  UIEl(id: random_str(id), att:, class:, classes:, styles:)
+  UIEl(id: random_str(id), att:, classes:, styles:)
 }
 
 /// Replace id element
@@ -119,23 +117,24 @@ pub fn id(el: El, id: String) -> El {
   UIEl(..el, id:)
 }
 
-pub fn id_get(el: El) -> String {
+pub fn get_id(el: El) -> String {
   el.id
 }
 
-/// Replace custom attributes
+/// Replace custom attributes by id equals key
 ///
 /// - el: Element info
-/// - key: Key identification
 /// - att: Properties to set in key
 ///
-pub fn att_key(el: El, key, att: Properties) -> El {
-  let att = dict.insert(el.att, key, att)
+/// Uses id like key to set custom attributes to element.
+///
+/// - Equals att_key(el, el.id, value)
+///
+// pub fn att(el: El, att: Properties) -> El {
+//   att_key(el, el.id, att)
+// }
 
-  UIEl(..el, att:)
-}
-
-/// Replace custom attributes by id equals key
+/// Append list of custom attributes
 ///
 /// - el: Element info
 /// - att: Properties to set in key
@@ -148,48 +147,21 @@ pub fn att(el: El, att: Properties) -> El {
   att_key(el, el.id, att)
 }
 
-/// Append list of attributes into already exists list of attributes
+/// Append custom attributes
 ///
 /// - el: Element info
+/// - key: Key identification
 /// - att: Properties to set in key
 ///
-/// Uses id like key to set custom attributes to element.
-///
-/// - Equals att_key(el, el.id, value)
-///
-pub fn att_append(el: El, att: Properties) -> El {
+pub fn att_key(el: El, key, att: Properties) -> El {
   let att_el =
     dict.get(el.att, el.id)
     |> option.from_result()
     |> option.unwrap([])
 
-  att_key(el, el.id, list.append(att_el, att))
-}
+  let att = dict.insert(el.att, key, list.append(att_el, att))
 
-/// Replace value in one attribute by name in list of attributes.
-///
-/// - el: Element info
-/// - att: Property to set in attribute name
-///
-/// Uses id like key to set custom attributes to element.
-///
-/// - Equals att_key(el, el.id, value)
-///
-pub fn att_replace(el: El, att: UIProperty) -> El {
-  let #(name, _) = att
-  let att =
-    dict.get(el.att, el.id)
-    |> option.from_result()
-    |> option.unwrap([])
-    |> list.map(fn(att_el) {
-      let #(name_el, _) = att_el
-      // replace
-      use <- bool.guard(name == name_el, att)
-      // mantain
-      att_el
-    })
-
-  att_key(el, el.id, att)
+  UIEl(..el, att:)
 }
 
 pub fn att_get_key(el: El, key: String, name: String) -> Option(String) {
@@ -222,19 +194,6 @@ pub fn att_any_key(el: El, key: String, name: String) -> Bool {
 
 /// Replace class attribute element
 ///
-/// - el: Element info
-/// - key: Key identification
-///
-/// If needs toggle only one style class uses fn `gbr/core/el.classes_key`
-///
-pub fn class_key(el: El, key: String, class: String) -> El {
-  let class = dict.insert(el.class, key, class)
-
-  UIEl(..el, class:)
-}
-
-/// Replace class attribute element
-///
 /// Uses id like key to set class attribute
 ///
 /// - Equals class_key(el, el.id, value)
@@ -243,14 +202,33 @@ pub fn class(el: El, class: String) -> El {
   class_key(el, el.id, class)
 }
 
-/// Replace classes attribute element
+pub fn class_key(el: El, key: String, class: String) -> El {
+  att_key(el, key, [#("class", class)])
+}
+
+/// Append classes attribute element
+///
+/// Uses id like key to set classes attribute
+///
+/// - Equals classes_key(el, el.id, value)
+///
+pub fn classes(el: El, classes: Switches) -> El {
+  classes_key(el, el.id, classes)
+}
+
+/// Append classes attribute element
 ///
 /// - el: Element info
 /// - key: Key identification
 /// - classes: Properties `lustre.attribute.classes`
 ///
 pub fn classes_key(el: El, key: String, classes: Switches) -> El {
-  let classes = dict.insert(el.classes, key, classes)
+  let el_classes =
+    dict.get(el.classes, el.id)
+    |> option.from_result()
+    |> option.unwrap([])
+
+  let classes = dict.insert(el.classes, key, list.append(el_classes, classes))
 
   UIEl(..el, classes:)
 }
@@ -272,56 +250,19 @@ pub fn get_classes_key(el: El, key: String, name: String) -> Option(Bool) {
   |> option.map(fn(found) { found.1 })
 }
 
-/// Replace classes attribute element
-///
-/// Uses id like key to set classes attribute
-///
-/// - Equals classes_key(el, el.id, value)
-///
-pub fn classes(el: El, classes: Switches) -> El {
-  classes_key(el, el.id, classes)
-}
-
-/// Switch class (on,off) attribute element
-///
-/// If class exists, remove it, else add it.
-///
-/// - el: Element info
-/// - key: Key identification
-/// - class: To switch ON or OFF
-/// - on: Is class ON, add it into element, or not, remove it.
-///
-/// Result:
-/// - Element with class switched, if exists, else return same el.
-///
-pub fn classes_replace_key(el: El, key: String, class: String, on: Bool) -> El {
-  let classes =
-    dict.get(el.classes, key)
-    |> option.from_result()
-    |> option.unwrap([])
-    |> set_classes(class, on)
-
-  classes_key(el, key, classes)
-}
-
-/// Switch class (on,off) attribute element
-///
-/// Uses id like key to set switch attribute
-///
-/// - Equals switch_key(el, el.id, value)
-///
-pub fn classes_replace(el: El, class: String, on: Bool) -> El {
-  classes_replace_key(el, el.id, class, on)
-}
-
-/// Replace style attribute element
+/// Append style attribute element
 ///
 /// - el: Element info
 /// - key: Key identification
 /// - styles: Properties `lustre.attribute.style`
 ///
 pub fn style_key(el: El, key: String, styles: Properties) -> El {
-  let styles = dict.insert(el.styles, key, styles)
+  let el_styles =
+    dict.get(el.styles, el.id)
+    |> option.from_result()
+    |> option.unwrap([])
+
+  let styles = dict.insert(el.styles, key, list.append(el_styles, styles))
 
   UIEl(..el, styles:)
 }
@@ -352,14 +293,9 @@ pub fn attrs(el: El) -> Attrs(a) {
 }
 
 pub fn attrs_key(el: El, key: String) -> Attrs(a) {
-  let UIEl(id:, class:, classes:, styles:, att:) = el
+  let UIEl(id:, classes:, styles:, att:) = el
 
   let id = attribute.id(id)
-  let class =
-    dict.get(class, key)
-    |> option.from_result()
-    |> option.map(attribute.class)
-    |> option.unwrap(attribute.none())
   let classes =
     dict.get(classes, key)
     |> option.from_result()
@@ -376,24 +312,13 @@ pub fn attrs_key(el: El, key: String) -> Attrs(a) {
     |> option.map(map_atts)
     |> option.unwrap([])
 
-  let attrs = list.append(styles, att)
+  let attrs = list.append(att, styles)
 
-  [id, class, classes, ..attrs]
+  [id, classes, ..attrs]
 }
 
 // PRIVATE
 //
-
-/// Map list of classes switch class to state, if exists, else return classes
-///
-fn set_classes(classes, class, state) {
-  // classes map only class to on
-  use #(name, value) <- list.map(classes)
-  // guard to switch class == name
-  use <- bool.guard(class == name, #(name, state))
-  // mantain
-  #(name, value)
-}
 
 fn map_atts(att) {
   use #(name, value) <- list.map(att)

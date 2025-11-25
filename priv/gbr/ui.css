@@ -8,8 +8,7 @@
 
 @theme {
   --font-*: initial;
-  --font-gbr-ui: Outfit, sans-serif;
-  --default-font-family: --var(--font-gbr-ui);
+  --default-font-family: Outfit, sans-serif;
 
   --breakpoint-*: initial;
   --breakpoint-2xsm: 375px;

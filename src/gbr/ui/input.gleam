@@ -85,7 +85,6 @@ pub fn new(id: String, kind: String) -> Input {
     el.new(id)
     // lustre/attribute.type_(kind)
     |> el.att([#("type_", kind)])
-    |> el.att_append([#("value", "")])
 
   UIInput(el:, value: "", label: None, note: None)
 }
@@ -137,7 +136,7 @@ pub fn required(in: Input, value: String) -> Input {
 }
 
 pub fn kind(in: Input, kind: String) -> Input {
-  let el = el.att_replace(in.el, #("type_", kind))
+  let el = el.att(in.el, [#("type_", kind)])
 
   UIInput(..in, el:)
 }
@@ -263,7 +262,7 @@ pub fn render(at: Render(a)) -> UIRender(a) {
     })
     |> option.unwrap(a.none())
   // attrs
-  let id = el.id_get(el)
+  let id = el.get_id(el)
   let label = case label {
     Some(label) -> html.label([a.for(id)], [typo.render(label)])
     None -> element.none()
@@ -286,13 +285,13 @@ pub fn render(at: Render(a)) -> UIRender(a) {
 //
 
 fn attrs(in: Input, att: Attrs) -> Input {
-  let el = el.att_append(in.el, att)
+  let el = el.att(in.el, att)
 
   UIInput(..in, el:)
 }
 
 fn length(in: Input, name: String, value: Int) -> Input {
-  let el = el.att_replace(in.el, #(name, int.to_string(value)))
+  let el = el.att(in.el, [#(name, int.to_string(value))])
 
   UIInput(..in, el:)
 }

@@ -55,6 +55,12 @@ pub fn dark(in: Logo, dark: String) -> Logo {
   UILogo(..in, img:)
 }
 
+pub fn alt(in: Logo, alt: String) -> Logo {
+  let img = img.alt(in.img, alt)
+
+  UILogo(..in, img:)
+}
+
 /// Set logotype href link.
 ///
 pub fn href(in: Logo, href: String) -> Logo {

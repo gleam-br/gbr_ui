@@ -67,7 +67,7 @@ pub fn label(in: Select, label: Text) -> Select {
 }
 
 pub fn placeholder(in: Select, placeholder: String) -> Select {
-  let el = el.att_replace(in.el, #("placeholder", placeholder))
+  let el = el.att(in.el, [#("placeholder", placeholder)])
 
   UISelect(..in, el:)
 }
@@ -107,7 +107,7 @@ pub fn render(at: Render(a)) -> UIRender(a) {
   let UISelectRender(in:, onchange:) = at
   let UISelect(el:, items:, multi:, label:) = in
 
-  let id = el.id_get(in.el)
+  let id = el.get_id(in.el)
   let label = case label {
     None -> element.none()
     Some(label) ->

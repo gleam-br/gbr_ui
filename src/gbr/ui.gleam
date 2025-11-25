@@ -205,7 +205,7 @@ pub fn box(in: UIBoxes(a), attrs: UIAttrs(a)) -> UIRender(a) {
   html.div(attrs, inner)
 }
 
-/// Same of `gbr/ui.{main}` with optional breadcrumb element.
+/// Same of `gbr/ui.primary` with optional breadcrumb element.
 ///
 /// TODO: WIP
 ///
@@ -257,7 +257,7 @@ const loader_class = "fixed left-0 top-0 z-999999 flex h-screen w-screen items-c
 
 const loader_spin_class = "h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent"
 
-const main_class = "flex h-screen overflow-hidden bg-gray-100 dark:bg-gray-900"
+const main_class = "flex h-screen overflow-hidden"
 
 const main_content_class = "relative flex flex-1 flex-col overflow-x-hidden overflow-y-auto"
 
