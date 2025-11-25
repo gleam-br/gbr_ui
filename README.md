@@ -44,6 +44,22 @@ fn view(model: Model) -> Element(Msg) {
 
 Further documentation can be found at <https://hexdocs.pm/gbr_ui>.
 
+## Issues
+
+- https://tailwindcss.com/blog/tailwindcss-v4#automatic-content-detection
+
+Tailwindcss v4 has automatic content detection and search only into src directory.
+
+If you want use gleam libraries that uses tailwind do not forget configure your `./build/dev/javascript` files:
+
+Put `@source` ref. into your css file, e.g. `main.css`:
+
+```css
+@import "tailwindcss";
+
+@source "./build/dev/javascript";
+```
+
 ## ✍ Design
 
 In view element at render type show with render function.

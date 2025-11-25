@@ -2,6 +2,7 @@
 //// Gleam UI admin alert element
 ////
 
+import gbr/ui/link
 import gleam/bool
 
 import lustre/attribute as a
@@ -125,6 +126,24 @@ pub fn at(in: Alert, inner: UIRenders(a)) -> Render(a) {
   UIAlertRender(in:, inner:)
 }
 
+/// New alert render element with footer link
+///
+/// - in: Alert element
+/// - href: Link href attribute
+/// - text: Text to show into link
+///
+pub fn at_link(in: Alert, href: String, text: String) -> Render(a) {
+  let inner =
+    link.new(href)
+    |> link.class(
+      "mt-3 inline-block text-sm font-medium text-gray-500 underline dark:text-gray-400",
+    )
+    |> link.at([html.text(text)])
+    |> link.render()
+
+  at(in, [inner])
+}
+
 /// Set attribute el.classes by status
 ///
 /// Render super alert element to `lustre/element/html.{div}`.
@@ -149,13 +168,6 @@ pub fn render(at: Render(a)) -> UIRender(a) {
       desc.at(info, inner)
         |> desc.render(),
     ]),
-    //TODO
-  // link.new("#")
-  //   |> link.class(
-  //     "mt-3 inline-block text-sm font-medium text-gray-500 underline dark:text-gray-400",
-  //   )
-  //   |> link.at([html.text("Learn more")])
-  //   |> link.render(),
   ])
 }
 
