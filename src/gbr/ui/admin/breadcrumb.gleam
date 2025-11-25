@@ -6,6 +6,7 @@
 //// - [ ] Parent -> List(Parent) -> Parent(name, href, icon)
 ////
 
+import gbr/ui/core/el
 import gleam/bool
 import gleam/option.{type Option, None, Some}
 import gleam/string
@@ -28,7 +29,7 @@ type Parent {
 /// Breadcrumb super element.
 ///
 pub opaque type UIBreadcrumb {
-  UIBreadcrumb(id: String, current: String, parent: Option(Parent))
+  UIBreadcrumb(el: el.UIEl, current: String, parent: Option(Parent))
 }
 
 /// New breadcrumb super element with:
@@ -37,7 +38,11 @@ pub opaque type UIBreadcrumb {
 /// - current (curent name)
 ///
 pub fn new(id: String, current: String) {
-  UIBreadcrumb(id: id, current:, parent: None)
+  let el =
+    el.new(id)
+    |> el.class(content_class)
+
+  UIBreadcrumb(el:, current:, parent: None)
 }
 
 /// Set breadcrumb parent
@@ -51,9 +56,10 @@ pub fn parent(in: Breadcrumb, href: String, name: String) -> Breadcrumb {
 /// Render breadcrumb super element to `lustre/element/html.{div}`.
 ///
 pub fn render(in: Breadcrumb) -> UIRender(a) {
-  let UIBreadcrumb(id:, current:, parent:) = in
+  let UIBreadcrumb(el:, current:, parent:) = in
+  let attrs = el.attrs(el)
 
-  html.div([a.id(id), a.class(content_class)], [
+  html.div(attrs, [
     html.h2([a.class(head_class)], [
       format(current)
       |> html.text(),

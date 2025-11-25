@@ -2,17 +2,15 @@
 //// ✅ Gleam UI input type checkbox super element.
 ////
 
-import gleam/bool
-import gleam/option.{type Option, None, Some}
+import gleam/option.{type Option, Some}
 
 import lustre/attribute as a
 import lustre/element.{type Element}
 import lustre/element/html
 
-import gbr/ui/core/model.{
-  type UIAttrs, type UILabel, UILabel, attrs_to_lustre, random_str,
-}
 import gbr/ui/input
+import gbr/ui/typo
+
 import gbr/ui/svg
 import gbr/ui/svg/form as svg_form
 
@@ -22,57 +20,64 @@ type Checkbox =
 type Render(a) =
   UICheckboxRender(a)
 
-type Label =
-  UILabel
+type Input =
+  input.UIInput
 
-type Attrs =
-  UIAttrs
+type InputRender(a) =
+  input.UIInputRender(a)
+
+type Text =
+  typo.UITypo
 
 /// Checkbox super element.
 ///
 pub opaque type UICheckbox {
-  UICheckbox(
-    id: String,
-    att: Attrs,
-    checked: Option(Bool),
-    label: Option(Label),
-  )
+  UICheckbox(el: Input, checked: Bool)
 }
 
 /// Checkbox render type.
 ///
 pub type UICheckboxRender(a) {
-  UICheckboxRender(in: Checkbox, onclick: Option(a))
+  UICheckboxRender(in: InputRender(a), checked: Bool)
 }
 
 /// New checkbox super element.
 ///
 pub fn new(id: String) -> Checkbox {
-  UICheckbox(id: random_str(id), att: [], checked: None, label: None)
+  UICheckbox(el: input.checkbox(id), checked: False)
 }
 
 /// Set checkbox checked or not.
 ///
 pub fn checked(in: Checkbox, checked: Bool) -> Checkbox {
-  UICheckbox(..in, checked: Some(checked))
+  UICheckbox(..in, checked:)
 }
 
 /// Set checkbox label.
 ///
-pub fn label(in: Checkbox, label: Label) -> Checkbox {
-  UICheckbox(..in, label: Some(label))
+pub fn label(in: Checkbox, label: Text) -> Checkbox {
+  let el =
+    typo.class(label, class_label)
+    |> input.label(in.el, _)
+
+  UICheckbox(..in, el:)
 }
 
 /// New checkbox render.
 ///
 pub fn at(in: Checkbox) -> Render(a) {
-  UICheckboxRender(in:, onclick: None)
+  let checked = in.checked
+  let in = input.at(in.el, [], [])
+
+  UICheckboxRender(in:, checked:)
 }
 
 /// Set checkbox render onclick event.
 ///
-pub fn on_click_opt(in: Render(a), onclick: Option(a)) -> Render(a) {
-  UICheckboxRender(..in, onclick:)
+pub fn on_click_opt(at: Render(a), onclick: Option(a)) -> Render(a) {
+  let in = input.on_click_opt(at.in, onclick)
+
+  UICheckboxRender(..at, in:)
 }
 
 pub fn on_click(in: Render(a), onclick: a) -> Render(a) {
@@ -82,30 +87,11 @@ pub fn on_click(in: Render(a), onclick: a) -> Render(a) {
 /// Render checkbox super element to `lustre/element.{type Element}`.
 ///
 pub fn render(at: Render(a)) -> Element(a) {
-  let UICheckboxRender(in:, onclick:) = at
-  let UICheckbox(id:, label:, checked:, att:) = in
-  let checkbox =
-    input.checkbox(id)
-    |> input.attrs(att)
-    |> input.sr_only()
-    |> input.at()
-  let inner =
-    html.div([a.class("relative")], [
-      case onclick {
-        Some(onclick) ->
-          input.on_click(checkbox, onclick)
-          |> input.render()
-        None -> input.render(checkbox)
-      },
-      decorator(checked),
-    ])
+  let UICheckboxRender(in:, checked:) = at
 
-  use <- bool.guard(option.is_none(label), html.div([], [inner]))
-  let assert Some(UILabel(text:, att:)) = label
-
-  html.label([a.class(class_label), ..attrs_to_lustre(att)], [
-    inner,
-    html.text(text),
+  html.div([a.class("relative")], [
+    input.render(in),
+    decorator(checked),
   ])
 }
 
@@ -117,7 +103,6 @@ const class_label = "flex items-center text-sm font-normal text-gray-700 cursor-
 const class_decorator = "mr-3 flex h-5 w-5 items-center justify-center rounded-md border-[1.25px]"
 
 fn decorator(checked) {
-  let checked = option.unwrap(checked, False)
   let class_checked = case checked {
     True -> " border-brand-500 bg-brand-500"
     False -> " bg-transparent border-gray-300 dark:border-gray-700"
@@ -130,7 +115,7 @@ fn decorator(checked) {
 
   html.div([a.class(class_decorator <> class_checked)], [
     html.span([a.class(class_span)], [
-      svg.new("checkbox-icon", 14, 14)
+      svg.new(14, 14)
       |> svg_form.checkbox()
       |> svg.render(),
     ]),

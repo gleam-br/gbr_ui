@@ -5,15 +5,14 @@
 import gleam/option.{type Option, None, Some}
 
 import lustre/attribute as a
-import lustre/element
 import lustre/element/html
 
-import gbr/ui/button
+import gbr/ui/core/el
+import gbr/ui/core/model.{type UIRender}
 import gbr/ui/logo.{type UILogo}
-import gbr/ui/notify.{type UINotifyRender}
-import gbr/ui/user.{type UIUserRender}
 
-import gbr/ui/core/model.{type UIRender, random_str}
+import gbr/ui/admin/button
+import gbr/ui/admin/user.{type UIUserRender}
 
 type Header =
   UIHeader
@@ -27,9 +26,6 @@ type Logo =
 type User(a) =
   UIUserRender(a)
 
-type Notify(a) =
-  UINotifyRender(a)
-
 /// Header super element
 ///
 /// - id: Identification html element
@@ -37,14 +33,13 @@ type Notify(a) =
 /// - app_nav: App nav visible to mobile responsive
 ///
 pub opaque type UIHeader {
-  UIHeader(id: String, sidebar: Bool, appnav: Bool)
+  UIHeader(el: el.UIEl, sidebar: Bool, appnav: Bool)
 }
 
 /// Render header element
 ///
 /// - user: User info
 /// - logo: Logotype info
-/// - notify: Notify render element (optional)
 /// - on_...: Events
 ///
 pub opaque type UIHeaderRender(a) {
@@ -52,7 +47,6 @@ pub opaque type UIHeaderRender(a) {
     in: Header,
     logo: Logo,
     user: User(a),
-    notify: Option(Notify(a)),
     on_app: Option(a),
     on_sidebar: Option(a),
     on_darkmode: Option(a),
@@ -66,7 +60,11 @@ pub opaque type UIHeaderRender(a) {
 /// - appnav: User info
 ///
 pub fn new(id: String) {
-  UIHeader(id: random_str(id), sidebar: False, appnav: False)
+  let el =
+    el.new(id)
+    |> el.class(header_class)
+
+  UIHeader(el:, sidebar: False, appnav: False)
 }
 
 /// New render header element
@@ -80,15 +78,10 @@ pub fn at(in: Header, logo: Logo, user: User(a)) -> Render(a) {
     in:,
     logo:,
     user:,
-    notify: None,
     on_app: None,
     on_sidebar: None,
     on_darkmode: None,
   )
-}
-
-pub fn notify(in: Render(a), notify: Notify(a)) -> Render(a) {
-  UIHeaderRender(..in, notify: Some(notify))
 }
 
 pub fn on_app_mobile(in: Render(a), on_app: a) -> Render(a) {
@@ -112,26 +105,17 @@ pub fn toggle_sidebar(in: Header) -> Header {
 }
 
 pub fn render(at: Render(a)) -> UIRender(a) {
-  let UIHeaderRender(
-    in:,
-    logo:,
-    user:,
-    notify:,
-    on_app:,
-    on_sidebar:,
-    on_darkmode:,
-  ) = at
-  let UIHeader(id, appnav:, sidebar:) = in
-  let notify =
-    option.map(notify, notify.render)
-    |> option.unwrap(element.none())
+  let UIHeaderRender(in:, logo:, user:, on_app:, on_sidebar:, on_darkmode:) = at
+  let UIHeader(el, appnav:, sidebar:) = in
 
-  html.header([a.id(id), a.class(header_class)], [
+  let attrs = el.attrs(el)
+
+  html.header(attrs, [
     html.div([a.class(header_content_class)], [
       html.div([a.class(header_right_class)], [
-        button.sidebar(id <> "header-btn-toggle-sidebar", sidebar, on_sidebar),
+        button.sidebar("header-toggle-sidebar", sidebar, on_sidebar),
         logo.render(logo),
-        button.app_nav(id <> "header-btn-toggle-appmobile", appnav, on_app),
+        button.app_nav("header-toggle-appnav", appnav, on_app),
       ]),
       html.div(
         [
@@ -141,7 +125,6 @@ pub fn render(at: Render(a)) -> UIRender(a) {
         [
           html.div([a.class(header_left_content_class)], [
             button.dark_mode("header-btn-toggle-darkmode", on_darkmode),
-            notify,
           ]),
           html.div([a.class(header_left_user_class)], [
             user |> user.render(),

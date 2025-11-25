@@ -1,10 +1,14 @@
 ////
-//// Gleam UI avatar super element
+//// Gleam UI admin avatar super element
+////
+//// **TODO: el.UIEl**
 ////
 
 import gleam/option.{type Option, None, Some}
+import gleam/string
 
 import lustre/attribute as a
+import lustre/element
 import lustre/element/html
 
 type Avatar =
@@ -80,7 +84,7 @@ pub fn render(avatar: Avatar) {
           ],
           [],
         )
-      None -> html.text("")
+      None -> element.none()
     },
   ])
 }
@@ -113,7 +117,7 @@ fn xxl_() {
 }
 
 fn avatar_class(size: Size) {
-  "relative w-full " <> size.classes <> " rounded-full"
+  string.join(["relative w-full", size.classes, "rounded-full"], " ")
 }
 
 const state_class = "absolute bottom-0 right-0 w-full rounded-full border-[1.5px] border-white dark:border-gray-900"

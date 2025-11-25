@@ -4,15 +4,19 @@
 
 import gleam/bool
 import gleam/list
+import gleam/option.{type Option, None, Some}
 
 import lustre/attribute as a
+import lustre/element
 import lustre/element/html
 import lustre/event
 
 import gbr/ui/svg
 import gbr/ui/svg/icons as svg_icons
+import gbr/ui/typo
 
-import gbr/ui/core/model.{type UIRender, random_str}
+import gbr/ui/core/el
+import gbr/ui/core/model.{type UIRender}
 
 type Select =
   UISelect
@@ -26,22 +30,22 @@ type Items =
 type Render(a) =
   UISelectRender(a)
 
+type Text =
+  typo.UITypo
+
+type OnChange(a) =
+  fn(String) -> a
+
 /// Select super element.
 ///
 pub opaque type UISelect {
-  Select(
-    id: String,
-    placeholder: String,
-    multi: Bool,
-    title: String,
-    items: Items,
-  )
+  UISelect(el: el.UIEl, items: Items, multi: Bool, label: Option(Text))
 }
 
 /// Select render type.
 ///
 pub type UISelectRender(a) {
-  UISelectRender(onchange: fn(String) -> a)
+  UISelectRender(in: Select, onchange: Option(OnChange(a)))
 }
 
 /// Select item (option) type.
@@ -53,72 +57,87 @@ pub type UISelectItem {
 /// Constructor of select super element.
 ///
 pub fn new(id: String) -> Select {
-  Select(
-    id: random_str(id),
-    placeholder: "",
-    title: "",
-    multi: False,
-    items: [],
-  )
+  UISelect(el: el.new(id), items: [], multi: False, label: None)
 }
 
 /// Set select title.
 ///
-pub fn title(in: Select, title: String) -> Select {
-  Select(..in, title:)
+pub fn label(in: Select, label: Text) -> Select {
+  UISelect(..in, label: Some(label))
+}
+
+pub fn placeholder(in: Select, placeholder: String) -> Select {
+  let el = el.att_replace(in.el, #("placeholder", placeholder))
+
+  UISelect(..in, el:)
 }
 
 /// Set select items (options).
 ///
 pub fn items(in: Select, items) -> Select {
-  Select(..in, items:)
+  UISelect(..in, items:)
 }
 
 /// Set select multi items can selected.
 ///
 pub fn multi(in: Select, multi: Bool) -> Select {
-  Select(..in, multi:)
+  UISelect(..in, multi:)
 }
 
 /// Update select based by event occurs.
 ///
 pub fn selected(in: Select, value: String) -> Select {
-  let Select(items:, ..) = in
+  let UISelect(items:, ..) = in
   let items = items_toggle(value, items)
 
-  Select(..in, items:)
+  UISelect(..in, items:)
+}
+
+pub fn at(in: Select) -> Render(a) {
+  UISelectRender(in:, onchange: None)
+}
+
+pub fn onchange(at: Render(a), onchange: OnChange(a)) -> Render(a) {
+  UISelectRender(..at, onchange: Some(onchange))
 }
 
 /// Render select super element to `lustre/element.{type Element}`.
 ///
-pub fn render(in: Select, render: Render(a)) -> UIRender(a) {
-  let Select(id:, placeholder:, multi:, title:, items:) = in
-  let UISelectRender(onchange:) = render
+pub fn render(at: Render(a)) -> UIRender(a) {
+  let UISelectRender(in:, onchange:) = at
+  let UISelect(el:, items:, multi:, label:) = in
 
-  use <- bool.guard(multi, do_multi(in))
+  let id = el.id_get(in.el)
+  let label = case label {
+    None -> element.none()
+    Some(label) ->
+      html.label(
+        [
+          a.for(id),
+          a.class(title_class),
+        ],
+        [typo.render(label)],
+      )
+  }
+
+  use <- bool.guard(multi, do_multi(id, label, items))
+
+  let onchange =
+    option.map(onchange, event.on_change)
+    |> option.unwrap(a.none())
+
+  let attrs =
+    el.class(el, select_class)
+    |> el.attrs()
 
   html.div([], [
-    html.label(
-      [
-        a.for("gbr-admin-select-" <> id),
-        a.class(title_class),
-      ],
-      [html.text(title)],
-    ),
+    label,
     html.div([a.class(container_class)], [
-      html.select(
-        [
-          a.id("gbr-admin-select-" <> title),
-          a.class(select_class),
-          a.placeholder(placeholder),
-          event.on_change(onchange),
-        ],
-        do_items(items),
-      ),
+      html.select([onchange, ..attrs], do_items(items)),
       html.span([a.class(icon_class)], [
-        svg.new("select-icon-arrow", 20, 20)
+        svg.new(20, 20)
         |> svg_icons.arrow()
-        |> svg.classes(["stroke-current"])
+        |> svg.class("stroke-current")
         |> svg.render(),
       ]),
     ]),
@@ -136,20 +155,13 @@ fn items_toggle(value, items: Items) {
   UISelectItem(..item, selected: True)
 }
 
-fn do_multi(in: Select) -> UIRender(a) {
-  let Select(id:, placeholder:, title:, items:, ..) = in
+fn do_multi(id, label, items) -> UIRender(a) {
   html.div([], [
-    html.label(
-      [
-        a.for("gbr-admin-select-" <> id),
-        a.class(title_class),
-      ],
-      [html.text(title)],
-    ),
+    label,
     html.div([], [
       html.select(
         [
-          a.id("gbr-admin-select-" <> id),
+          a.id(id),
           a.class("hidden"),
         ],
         do_items(items),
@@ -175,7 +187,8 @@ fn do_multi(in: Select) -> UIRender(a) {
                             True -> "block"
                             False -> "hidden"
                           }),
-                          a.placeholder(placeholder),
+                          //TODO
+                          //a.placeholder(placeholder),
                           a.class(
                             "h-full w-full appearance-none border-0 bg-transparent p-1 pr-2 text-sm outline-hidden placeholder:text-gray-800 focus:border-0 focus:ring-0 focus:outline-hidden dark:placeholder:text-white/90",
                           ),
@@ -191,9 +204,9 @@ fn do_multi(in: Select) -> UIRender(a) {
                         ),
                       ],
                       [
-                        svg.new("select-icon-arrow-mult", 20, 20)
+                        svg.new(20, 20)
                         |> svg_icons.arrow()
-                        |> svg.classes(["stroke-current"])
+                        |> svg.class("stroke-current")
                         |> svg.render(),
                       ],
                     ),
@@ -302,7 +315,7 @@ fn do_items_selected_multi(items) {
             ),
           ],
           [
-            svg.new("select-icon-close-multi", 14, 14)
+            svg.new(14, 14)
             |> svg_icons.close()
             |> svg.render(),
           ],

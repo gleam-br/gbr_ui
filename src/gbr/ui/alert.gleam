@@ -4,7 +4,6 @@
 
 import gleam/bool
 import gleam/list
-import gleam/option.{type Option, None, Some}
 
 import lustre/element
 import lustre/element/html
@@ -14,7 +13,7 @@ import gbr/ui/svg/alert as svg_alert
 
 import gbr/ui/core/el
 import gbr/ui/core/el/desc
-import gbr/ui/core/model.{type UIRender, type UIRenders, type UISwitchs}
+import gbr/ui/core/model.{type UIRender, type UIRenders, type UISwitches}
 
 type Alert =
   UIAlert
@@ -28,8 +27,8 @@ type El =
 type Desc =
   desc.UIDesc
 
-type Switchs =
-  UISwitchs
+type Switches =
+  UISwitches
 
 type Status {
   Success
@@ -219,7 +218,7 @@ pub fn class_status_error(in: Alert, class: String, class_icon: String) {
 /// - classes: Alert status classes
 /// - classes_icon: Alert icon class style, only if `icon_show = True`
 ///
-pub fn classes_status_info(in: Alert, classes: Switchs, classes_icon: Switchs) {
+pub fn classes_status_info(in: Alert, classes: Switches, classes_icon: Switches) {
   classes_status(in, Info, classes, classes_icon)
 }
 
@@ -231,8 +230,8 @@ pub fn classes_status_info(in: Alert, classes: Switchs, classes_icon: Switchs) {
 ///
 pub fn classes_status_success(
   in: Alert,
-  classes: Switchs,
-  classes_icon: Switchs,
+  classes: Switches,
+  classes_icon: Switches,
 ) {
   classes_status(in, Success, classes, classes_icon)
 }
@@ -243,7 +242,7 @@ pub fn classes_status_success(
 /// - classes: Alert status classes
 /// - classes_icon: Alert icon class style, only if `icon_show = True`
 ///
-pub fn classes_status_warn(in: Alert, classes: Switchs, classes_icon: Switchs) {
+pub fn classes_status_warn(in: Alert, classes: Switches, classes_icon: Switches) {
   classes_status(in, Warning, classes, classes_icon)
 }
 
@@ -253,7 +252,11 @@ pub fn classes_status_warn(in: Alert, classes: Switchs, classes_icon: Switchs) {
 /// - classes: Alert status classes
 /// - classes_icon: Alert icon class style, only if `icon_show = True`
 ///
-pub fn classes_status_error(in: Alert, classes: Switchs, classes_icon: Switchs) {
+pub fn classes_status_error(
+  in: Alert,
+  classes: Switches,
+  classes_icon: Switches,
+) {
   classes_status(in, Error, classes, classes_icon)
 }
 
@@ -265,7 +268,7 @@ pub fn at(in: Alert) -> Render(a) {
   UIAlertRender(in:, inner: [])
 }
 
-/// Replace alert link
+/// Replace alert inner elements
 ///
 pub fn inner(in: Render(a), inner: UIRenders(a)) -> Render(a) {
   UIAlertRender(..in, inner:)
@@ -317,8 +320,8 @@ pub fn render(at: Render(a)) -> UIRender(a) {
 fn classes_status(
   in: Alert,
   status: Status,
-  classes: Switchs,
-  classes_icon: Switchs,
+  classes: Switches,
+  classes_icon: Switches,
 ) -> Alert {
   let #(status_key, status_key_icon) = status_key(status)
   let el =
@@ -377,7 +380,5 @@ fn status_icon(status, attrs, show) {
 const const_key = ".alert"
 
 const const_key_icon = ".alert-icon"
-
-const const_key_link = ".alert-link"
 
 const const_key_content = ".alert-content"

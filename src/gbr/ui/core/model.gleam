@@ -64,7 +64,7 @@ pub type UISwitch =
 
 ///
 ///
-pub type UISwitchs =
+pub type UISwitches =
   List(UISwitch)
 
 // TODO:

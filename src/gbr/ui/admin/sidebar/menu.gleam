@@ -146,16 +146,15 @@ pub fn render(
               [html.text(text)],
             ),
 
-            svg.new(id <> "sidebar-icon", 24, 24)
+            svg.new(24, 24)
               |> svg_icons.reticence()
-              // TODO use a.classes
-              |> svg.classes([
-                "menu-group-icon mx-auto fill-current sm:hidden",
-                ..case open {
-                  False -> ["lg:block", "hidden"]
-                  True -> ["hidden"]
-                }
-              ])
+              |> svg.class(
+                "menu-group-icon mx-auto fill-current sm:hidden "
+                <> case open {
+                  False -> "lg:block hidden"
+                  True -> "hidden"
+                },
+              )
               |> svg.render(),
           ],
         ),
@@ -243,7 +242,7 @@ fn menu_group(menu: Menu, open, selected, onclick) {
               ]),
             ],
             [
-              svg.new("sidebar-menu-item-icon-arrow", 20, 20)
+              svg.new(20, 20)
               |> svg_icons.arrow()
               |> svg.render(),
             ],

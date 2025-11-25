@@ -11,15 +11,16 @@ import lustre/element/html
 import lustre/element/svg
 
 import gbr/ui/core/el
-import gbr/ui/core/model.{type UIRender, type UISwitchs}
+import gbr/ui/core/model.{type UIRender}
 
 import gbr/ui/svg/core.{
   Circle, Path, Svg, svg_key, to_animate, to_att, to_attrs_circle, to_attrs_rect,
   to_path,
 }
 
-type Switchs =
-  UISwitchs
+pub const class = core.class
+
+pub const classes = core.classes
 
 /// Svg super element.
 ///
@@ -48,22 +49,6 @@ pub fn new(height h, width w) -> Svg {
     ])
 
   Svg(el:, path: [], rect: [], circle: [], animate: [], mask: None)
-}
-
-/// Replace class
-///
-pub fn class(in: Svg, class: String) -> Svg {
-  let el = el.class(in.el, class)
-
-  Svg(..in, el:)
-}
-
-/// Replace classes
-///
-pub fn classes(in: Svg, classes: Switchs) -> Svg {
-  let el = el.classes(in.el, classes)
-
-  Svg(..in, el:)
 }
 
 /// Render super svg element in `lustre/element/html.{svg}`.

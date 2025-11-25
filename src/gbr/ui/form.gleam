@@ -78,7 +78,8 @@ pub fn render(at: Render(a)) -> UIRender(a) {
 
   let attrs = el.attrs(el)
   let onsubmit =
-    option.map(onsubmit, event.on_submit)
+    onsubmit
+    |> option.map(event.on_submit)
     |> option.unwrap(a.none())
 
   html.form([onsubmit, ..attrs], inner)

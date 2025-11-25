@@ -1,5 +1,5 @@
 ////
-//// Gleam UI user info super element.
+//// Gleam UI admin user super element.
 ////
 
 import gleam/option.{type Option, None, Some}
@@ -9,11 +9,13 @@ import lustre/element
 import lustre/element/html
 import lustre/event
 
+import gbr/ui/core/el
+import gbr/ui/core/model.{type UIRender, type UIRenders}
+
 import gbr/ui/svg
 import gbr/ui/svg/icons as svg_icons
-import gbr/ui/user/dropdown.{type UIDropdown}
 
-import gbr/ui/core/model.{type UIRender, type UIRenders, random_str}
+import gbr/ui/admin/user/dropdown.{type UIDropdown}
 
 type User =
   UIUser
@@ -38,7 +40,7 @@ pub opaque type UIProfile {
 }
 
 pub opaque type UIUser {
-  UIUser(id: String, profile: Profile, dropdown: Option(Dropdown))
+  UIUser(el: el.UIEl, profile: Profile, dropdown: Option(Dropdown))
 }
 
 pub opaque type UIUserRender(a) {
@@ -51,10 +53,14 @@ pub opaque type UIUserRender(a) {
 }
 
 pub fn new(id: String, username: String) -> User {
+  let el =
+    el.new(id)
+    |> el.class("relative")
+
   let profile =
     UIProfile(username:, email: "", department: "", full_name: "", picture: "")
 
-  UIUser(id:, profile:, dropdown: None)
+  UIUser(el:, profile:, dropdown: None)
 }
 
 pub fn email(in: User, email: String) -> User {
@@ -113,7 +119,7 @@ pub fn on_dropdown_leave_opt(at: Render(a), on_dropdown: Option(a)) -> Render(a)
 
 pub fn render(at: Render(a)) -> UIRender(a) {
   let UIUserRender(in:, on_submit:, on_dropdown:, on_dropdown_leave:) = at
-  let UIUser(id:, profile:, dropdown:) = in
+  let UIUser(el:, profile:, dropdown:) = in
   let UIProfile(username:, email:, department:, full_name:, picture:) = profile
   let is_visible =
     option.map(dropdown, dropdown.is_visible)
@@ -134,69 +140,60 @@ pub fn render(at: Render(a)) -> UIRender(a) {
     None -> [element.none()]
   }
 
-  html.div(
-    [
-      random_str(id) |> a.id(),
-      a.class("relative"),
-    ],
-    [
-      html.a(
-        [
-          a.class(user_profile_class),
-          on_dropdown,
-        ],
-        [
-          html.span([a.class(user_profile_picture_class)], [
-            html.img([a.src(picture)]),
-          ]),
-          html.span([a.class(user_profile_username_class)], [
-            html.text(username),
-          ]),
-          svg.new(id <> "user-icon-arrow", 20, 18)
-            |> svg_icons.arrow()
-            |> svg.classes([
-              case is_visible {
-                True -> "rotate-180"
-                False -> ""
-              },
-              ..user_arrow_class
-            ])
-            |> svg.render(),
-        ],
-      ),
-      html.div(
-        [
-          a.class(user_dropdown_class),
-          a.classes([#("block", is_visible), #("hidden", !is_visible)]),
-          on_dropdown_click_out,
-          on_dropdown_mouse_out,
-        ],
-        [
-          html.div([a.class(user_dropdown_profile_class)], [
-            html.div([a.class("inline-flex justify-between w-full")], [
-              html.span([a.class(user_dropdown_username_class)], [
-                html.text(full_name),
-              ]),
-              html.span(
-                [
-                  a.class(user_dropdown_username_class),
-                  a.class("text-orange-400 dark:text-orange-700"),
-                ],
-                [
-                  html.text(department),
-                ],
-              ),
+  let attrs = el.attrs(el)
+
+  html.div(attrs, [
+    html.a(
+      [
+        a.class(user_profile_class),
+        on_dropdown,
+      ],
+      [
+        html.span([a.class(user_profile_picture_class)], [
+          html.img([a.src(picture)]),
+        ]),
+        html.span([a.class(user_profile_username_class)], [
+          html.text(username),
+        ]),
+        svg.new(20, 18)
+          |> svg.class(user_arrow_class)
+          |> svg.classes([#("rotate-180", is_visible)])
+          |> svg_icons.arrow()
+          |> svg.render(),
+      ],
+    ),
+    html.div(
+      [
+        a.class(user_dropdown_class),
+        a.classes([#("block", is_visible), #("hidden", !is_visible)]),
+        on_dropdown_click_out,
+        on_dropdown_mouse_out,
+      ],
+      [
+        html.div([a.class(user_dropdown_profile_class)], [
+          html.div([a.class("inline-flex justify-between w-full")], [
+            html.span([a.class(user_dropdown_username_class)], [
+              html.text(full_name),
             ]),
-            html.span([a.class(user_dropdown_email_class)], [
-              html.text(email),
-            ]),
+            html.span(
+              [
+                a.class(user_dropdown_username_class),
+                a.class("text-orange-400 dark:text-orange-700"),
+              ],
+              [
+                html.text(department),
+              ],
+            ),
           ]),
-          // dropdown
-          ..dropdown
-        ],
-      ),
-    ],
-  )
+          html.span([a.class(user_dropdown_email_class)], [
+            html.text(email),
+          ]),
+        ]),
+        // dropdown
+        ..dropdown
+      ],
+    ),
+  ])
 }
 
 // PRIVATE
@@ -207,16 +204,16 @@ fn menu_list_(dropdown: Dropdown, onsubmit) -> UIRenders(a) {
 
   let item = case icon {
     Some(identity) -> [
-      svg.new(id <> "user-icon-menu", 24, 24)
+      svg.new(24, 24)
         |> identity()
-        |> svg.classes([user_menu_icon_class])
+        |> svg.class(user_menu_icon_class)
         |> svg.render(),
       html.text(text),
     ]
     None -> [html.text(text)]
   }
 
-  html.li([a.id(random_str(id))], [
+  html.li([a.id(id)], [
     html.a(
       [
         a.class(user_dropdown_menu_class),
@@ -232,9 +229,9 @@ fn button_list_(dropdown: Dropdown, onsubmit) -> UIRenders(a) {
 
   let item = case icon {
     Some(identity) -> [
-      svg.new("user-icon-btn", 24, 24)
+      svg.new(24, 24)
         |> identity()
-        |> svg.classes([user_btn_icon_class])
+        |> svg.class(user_btn_icon_class)
         |> svg.render(),
       html.text(label),
     ]
@@ -271,7 +268,7 @@ fn get_on_submit(id, onsubmit) {
   }
 }
 
-const user_arrow_class = ["stroke-gray-500 dark:stroke-gray-400"]
+const user_arrow_class = "stroke-gray-500 dark:stroke-gray-400"
 
 const user_dropdown_class = "shadow-theme-lg dark:bg-gray-dark absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 dark:border-gray-800"
 

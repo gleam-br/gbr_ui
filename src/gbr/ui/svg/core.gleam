@@ -12,7 +12,7 @@ import lustre/element/html
 import lustre/element/svg
 
 import gbr/ui/core/el
-import gbr/ui/core/model.{type UIProperties}
+import gbr/ui/core/model.{type UIProperties, type UISwitches}
 
 pub type Properties =
   UIProperties
@@ -45,6 +45,22 @@ pub type Svg {
 }
 
 pub const svg_key = ".svg"
+
+/// Replace class
+///
+pub fn class(in: Svg, class: String) -> Svg {
+  let el = el.class(in.el, class)
+
+  Svg(..in, el:)
+}
+
+/// Replace classes
+///
+pub fn classes(in: Svg, classes: UISwitches) -> Svg {
+  let el = el.classes(in.el, classes)
+
+  Svg(..in, el:)
+}
 
 pub fn animate(in: Svg, animate: List(String)) {
   Svg(..in, animate:)

@@ -52,7 +52,7 @@ import gbr/ui/svg
 import gbr/ui/svg/icons as svg_icons
 
 import gbr/ui/core/el
-import gbr/ui/core/model.{type UIRender, type UIRenders}
+import gbr/ui/core/model.{type UIRender, type UIRenders, type UISwitches}
 
 type El =
   el.UIEl
@@ -170,6 +170,14 @@ pub fn class(in: Button, class: String) -> Button {
   UIButton(..in, el:)
 }
 
+/// Set button classes.
+///
+pub fn classes(in: Button, classes: UISwitches) -> Button {
+  let el = el.classes(in.el, classes)
+
+  UIButton(..in, el:)
+}
+
 /// Set button disabled.
 ///
 pub fn primary(in: Button) -> Button {
@@ -228,6 +236,7 @@ pub fn on_click(in: Render(a), onclick: a) -> Render(a) {
 pub fn render(at: Render(a)) -> UIRender(a) {
   let UIButtonRender(in:, inner:, ..) = at
   let UIButton(el:, ..) = in
+
   let attrs = el.attrs(el)
 
   html.button(attrs, inner)
@@ -253,34 +262,23 @@ pub fn back(id: String, text: String, onclick: a) -> UIRender(a) {
 /// Render sidebar toggle button.
 ///
 pub fn sidebar(id: String, visible: Bool, onclick: Option(a)) -> UIRender(a) {
-  let cross_toggle = case visible {
-    True -> "block lg:hidden"
-    False -> "hidden"
-  }
-  let default_toggle = case visible {
-    True -> "hidden"
-    False -> "block lg:hidden"
-  }
-  let class_toggle = case visible {
-    True ->
-      " lg:bg-transparent dark:lg:bg-transparent bg-gray-100 dark:bg-gray-800"
-    False -> ""
-  }
   let button =
     new(id)
-    |> class(sidebar_class <> class_toggle)
+    |> class(sidebar_class)
+    |> classes([#(toggle_class, visible)])
+
   let inner = [
     svg.new(12, 16)
       |> svg_icons.hamburguer_small()
-      |> svg.class("hidden lg:block")
+      |> svg.classes([#("hidden", visible), #("block lg:hidden", !visible)])
       |> svg.render(),
     svg.new(20, 20)
       |> svg_icons.hamburguer()
-      |> svg.class(default_toggle)
+      |> svg.class(toggle_class)
       |> svg.render(),
     svg.new(24, 24)
       |> svg_icons.cross()
-      |> svg.class(cross_toggle)
+      |> svg.classes([#("block lg:hidden", visible), #("hidden", !visible)])
       |> svg.render(),
   ]
 
@@ -316,10 +314,7 @@ pub fn app_nav(id: String, is_visible: Bool, onclick: Option(a)) -> UIRender(a) 
   let button =
     new(id)
     |> class(app_nav_class)
-  let button = case is_visible {
-    False -> button
-    True -> class(button, "bg-gray-100 dark:bg-gray-800")
-  }
+    |> classes([#("bg-gray-100 dark:bg-gray-800", is_visible)])
 
   let inner = [
     svg.new(24, 24)
@@ -348,3 +343,5 @@ const app_nav_class = "z-99999 flex h-10 w-10 items-center justify-center rounde
 const sidebar_class = "z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 lg:h-11 lg:w-11 lg:border dark:border-gray-800 dark:text-gray-400"
 
 const class_back = "inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+
+const toggle_class = "lg:bg-transparent dark:lg:bg-transparent bg-gray-100 dark:bg-gray-800"

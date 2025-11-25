@@ -41,6 +41,12 @@ pub fn icon(in: Logo, icon: String) -> Logo {
   UILogo(..in, img:)
 }
 
+pub fn icon_only(in: Logo, icon_only: Bool) -> Logo {
+  let img = img.small_only(in.img, icon_only)
+
+  UILogo(..in, img:)
+}
+
 /// Set logo img to dark mode.
 ///
 pub fn dark(in: Logo, dark: String) -> Logo {
