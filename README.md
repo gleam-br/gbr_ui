@@ -567,15 +567,15 @@ gleam test  # Run the tests
 
 - [ ] Unit tests
 - [ ] More docs
-- [ ] UI box
-- [ ] UI header
-- [ ] UI sidebar
-- [ ] UI search
-- [ ] UI profile
 - [ ] UI notify
 - [ ] UI login
   - [ ] basic
   - [ ] provider
+- [x] UI box
+- [x] UI header
+- [x] UI sidebar
+- [x] UI search
+- [x] UI profile
 - [x] UI layout
 - [x] UI core
 - [x] UI input
