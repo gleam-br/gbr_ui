@@ -288,7 +288,6 @@ pub fn render(at: Render(a)) -> UIRender(a) {
   let el_attrs_icon = el.attrs_key(el, const_key_icon)
   let el_attrs_status = el.attrs_key(el, status_key)
   let el_attrs_status_icon = el.attrs_key(el, status_key_icon)
-  echo el_attrs_status_icon
 
   let el_attrs =
     el_attrs
@@ -301,7 +300,7 @@ pub fn render(at: Render(a)) -> UIRender(a) {
   let status_info =
     desc.at(info, inner)
     |> desc.render()
-  echo status_icon
+
   html.div(el_attrs, [
     html.div(el_attrs_content, [
       status_icon,
