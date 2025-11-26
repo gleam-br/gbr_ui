@@ -19,6 +19,8 @@ Library based on [TailAdmin](https://tailadmin.com/)
 
 <img width="1907" height="783" alt="image" src="https://github.com/user-attachments/assets/df92dd99-6784-4288-ae84-f2fd96d9d91e" />
 
+## How to use
+
 ```sh
 gleam add gbr_ui@1
 ```
