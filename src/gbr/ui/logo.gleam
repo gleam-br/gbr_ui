@@ -7,7 +7,6 @@ import gleam/list
 import gleam/option.{type Option, None, Some}
 import lustre/element
 
-import lustre/attribute as a
 import lustre/element/html
 
 import gbr/ui/core/model.{type UIRender}
