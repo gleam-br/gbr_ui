@@ -11,6 +11,10 @@ Library based on [TailAdmin](https://tailadmin.com/)
 [![Package Version](https://img.shields.io/hexpm/v/gbr_ui)](https://hex.pm/packages/gbr_ui)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/gbr_ui/)
 
+## Demo
+
+- [gbr-ui-demo](https://github.com/gleam-br/gbr-ui-demo): Project using this library and [vite](https://vite.dev/) with [vite-plugin-gleam](https://github.com/gleam-br/vite-plugin-gleam).
+
 ## Light mode
 
 <img width="1908" height="835" alt="image" src="https://github.com/user-attachments/assets/3828500a-8303-471d-bb97-8f793d9aff06" />
