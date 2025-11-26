@@ -5,13 +5,12 @@
 import gleam/bool
 import gleam/list
 import gleam/option.{type Option, None, Some}
-import gleam/result
-import lustre/event
 
 import lustre/attribute as a
 import lustre/element
 import lustre/element/html
 import lustre/element/keyed
+import lustre/event
 
 import gbr/ui/svg
 import gbr/ui/svg/icons as svg_icons
