@@ -6,7 +6,6 @@ import gleam/bool
 import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/result
-import gleam/string
 import lustre/event
 
 import lustre/attribute as a
@@ -56,7 +55,7 @@ pub opaque type UISidebarMenu {
     text: String,
     inner: Inner,
     parent: Option(String),
-    svg: Option(svg.Svg),
+    svg: Option(svg.Identity),
   )
 }
 
@@ -89,7 +88,7 @@ pub fn title(in: Menu, text: String) -> Menu {
 ///
 /// - svg: Icon to menu
 ///
-pub fn icon(in: Menu, svg: svg.Svg) -> Menu {
+pub fn icon(in: Menu, svg: svg.Identity) -> Menu {
   UISidebarMenu(..in, svg: Some(svg))
 }
 
@@ -103,23 +102,10 @@ pub fn inner(in: Menu, inner: List(Menu)) -> Menu {
   UISidebarMenu(..in, inner:)
 }
 
+/// Get parent menu id, if exits
+///
 pub fn parent(in: Menu) -> Option(String) {
   in.parent
-}
-
-pub fn get_menu(menus: List(Menu), id: String) -> Result(Menu, Nil) {
-  use menu <- list.find(menus)
-
-  use <- bool.guard(menu.id == id, True)
-  use <- bool.guard(
-    option.is_none(menu.parent),
-    get_menu(menu.inner, id) |> result.is_ok(),
-  )
-
-  case menu.inner {
-    [] -> False
-    inner -> get_menu(inner, id) |> result.is_ok()
-  }
 }
 
 pub fn is_menu_group(menu: Menu) -> Bool {
@@ -207,6 +193,25 @@ pub fn render(
 // PRIVATE
 //
 
+fn render_icon(svg, is_selected) {
+  case svg {
+    None -> element.none()
+    Some(transform) ->
+      html.div(
+        [
+          a.classes([
+            #("[&>*]:fill-brand-500 [&>*]:dark:fill-brand-400", is_selected),
+            #(
+              "[&>*]:fill-gray-500 [&>*]:group-hover:fill-gray-700 [&>*]:dark:fill-gray-400 [&>*]:dark:group-hover:fill-gray-300",
+              !is_selected,
+            ),
+          ]),
+        ],
+        [svg.new(24, 24) |> transform() |> svg.render()],
+      )
+  }
+}
+
 fn set_parent(in: Menu, inner: List(Menu)) -> List(Menu) {
   use menu <- list.map(inner)
 
@@ -225,6 +230,8 @@ fn menu_inner(menus: Inner, open, selected, onclick) -> List(UIKeyed(a)) {
 fn menu_group(menu: Menu, open, selected, onclick) {
   let UISidebarMenu(id:, text:, inner:, svg:, ..) = menu
 
+  echo id
+  echo svg
   let is_selected = case selected {
     None -> False
     Some(selected) -> id == selected || is_menu_child(menu, selected)
@@ -243,25 +250,7 @@ fn menu_group(menu: Menu, open, selected, onclick) {
           event.on_click(onclick(id, menu)),
         ],
         [
-          case svg {
-            None -> element.none()
-            Some(svg) ->
-              html.div(
-                [
-                  a.classes([
-                    #(
-                      "[&>*]:fill-brand-500 [&>*]:dark:fill-brand-400",
-                      is_selected,
-                    ),
-                    #(
-                      "[&>*]:fill-gray-500 [&>*]:group-hover:fill-gray-700 [&>*]:dark:fill-gray-400 [&>*]:dark:group-hover:fill-gray-300",
-                      !is_selected,
-                    ),
-                  ]),
-                ],
-                [svg.render(svg)],
-              )
-          },
+          render_icon(svg, is_selected),
           html.span(
             [a.class("menu-item-text"), a.classes([#("lg:hidden", !open)])],
             [html.text(text)],
@@ -327,7 +316,7 @@ fn menu_group(menu: Menu, open, selected, onclick) {
 /// - onclick: menu item onclick event
 ///
 fn menu_item(menu, selected, onclick) -> UIKeyed(a) {
-  let UISidebarMenu(id:, text:, ..) = menu
+  let UISidebarMenu(id:, text:, svg:, ..) = menu
   let is_selected = case selected {
     Some(selected) -> id == selected
     None -> False
@@ -345,7 +334,7 @@ fn menu_item(menu, selected, onclick) -> UIKeyed(a) {
           ]),
           event.on_click(onclick(id, menu)),
         ],
-        [html.text(text)],
+        [render_icon(svg, is_selected), html.text(text)],
       ),
     ]),
   )

@@ -55,6 +55,8 @@ pub opaque type UIHeaderRender(a) {
     on_app: Option(a),
     on_sidebar: Option(a),
     on_darkmode: Option(a),
+    on_user_dropdown: Option(a),
+    on_user_submit: Option(fn(String) -> a),
   )
 }
 
@@ -91,7 +93,14 @@ pub fn user(in: Header, user: User) -> Header {
 /// - user: User render element
 ///
 pub fn at(in: Header) -> Render(a) {
-  UIHeaderRender(in:, on_app: None, on_sidebar: None, on_darkmode: None)
+  UIHeaderRender(
+    in:,
+    on_app: None,
+    on_sidebar: None,
+    on_darkmode: None,
+    on_user_dropdown: None,
+    on_user_submit: None,
+  )
 }
 
 pub fn on_app_mobile(in: Render(a), on_app: a) -> Render(a) {
@@ -99,11 +108,19 @@ pub fn on_app_mobile(in: Render(a), on_app: a) -> Render(a) {
 }
 
 pub fn on_sidebar(in: Render(a), on_sidebar: a) -> Render(a) {
-  UIHeaderRender(..in, on_app: Some(on_sidebar))
+  UIHeaderRender(..in, on_sidebar: Some(on_sidebar))
 }
 
 pub fn on_darkmode(in: Render(a), on_darkmode: a) -> Render(a) {
   UIHeaderRender(..in, on_darkmode: Some(on_darkmode))
+}
+
+pub fn on_user_dropdown(in: Render(a), on_user_dropdown: a) -> Render(a) {
+  UIHeaderRender(..in, on_user_dropdown: Some(on_user_dropdown))
+}
+
+pub fn on_user_submit(in: Render(a), onsubmit: fn(String) -> a) -> Render(a) {
+  UIHeaderRender(..in, on_user_submit: Some(onsubmit))
 }
 
 pub fn toggle_app(in: Header) -> Header {
@@ -114,8 +131,23 @@ pub fn toggle_sidebar(in: Header) -> Header {
   UIHeader(..in, sidebar: !in.sidebar)
 }
 
+pub fn toggle_user(in: Header) -> Header {
+  let user =
+    in.user
+    |> option.map(user.toggle)
+
+  UIHeader(..in, user:)
+}
+
 pub fn render(at: Render(a)) -> UIRender(a) {
-  let UIHeaderRender(in:, on_app:, on_sidebar:, on_darkmode:) = at
+  let UIHeaderRender(
+    in:,
+    on_app:,
+    on_sidebar:,
+    on_darkmode:,
+    on_user_dropdown:,
+    on_user_submit:,
+  ) = at
   let UIHeader(el, logo:, user:, appnav:, sidebar:) = in
 
   let attrs = el.attrs(el)
@@ -124,6 +156,8 @@ pub fn render(at: Render(a)) -> UIRender(a) {
     |> option.unwrap(element.none())
   let user =
     option.map(user, user.at)
+    |> option.map(user.on_dropdown_opt(_, on_user_dropdown))
+    |> option.map(user.on_submit_opt(_, on_user_submit))
     |> option.map(user.render)
     |> option.unwrap(element.none())
 
@@ -137,7 +171,7 @@ pub fn render(at: Render(a)) -> UIRender(a) {
       html.div(
         [
           a.class(header_left_class),
-          a.classes([#("flex", !appnav), #("hidden", appnav)]),
+          a.classes([#("flex", appnav), #("hidden", !appnav)]),
         ],
         [
           html.div([a.class(header_left_content_class)], [

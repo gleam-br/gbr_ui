@@ -46,7 +46,9 @@
 import gleam/list
 import gleam/option.{type Option, None, Some}
 
+import lustre/attribute
 import lustre/element/html
+import lustre/event
 
 import gbr/ui/svg
 import gbr/ui/svg/icons as svg_icons
@@ -234,10 +236,14 @@ pub fn on_click(in: Render(a), onclick: a) -> Render(a) {
 /// Render button super element to `lustre/element.{type Element}`.
 ///
 pub fn render(at: Render(a)) -> UIRender(a) {
-  let UIButtonRender(in:, inner:, ..) = at
+  let UIButtonRender(in:, inner:, onclick:) = at
   let UIButton(el:, ..) = in
 
-  let attrs = el.attrs(el)
+  let onclick =
+    option.map(onclick, event.on_click)
+    |> option.unwrap(attribute.none())
+
+  let attrs = [onclick, ..el.attrs(el)]
 
   html.button(attrs, inner)
 }
@@ -265,7 +271,7 @@ pub fn sidebar(id: String, open: Bool, onclick: Option(a)) -> UIRender(a) {
   let button =
     new(id)
     |> class(sidebar_class)
-    |> classes([#(toggle_class, !open)])
+    |> classes([#(toggle_class, open)])
 
   let inner = [
     svg.new(12, 16)
@@ -274,11 +280,11 @@ pub fn sidebar(id: String, open: Bool, onclick: Option(a)) -> UIRender(a) {
       |> svg.render(),
     svg.new(24, 24)
       |> svg_icons.hamburguer()
-      |> svg.classes([#("block lg:hidden", open), #("hidden", !open)])
+      |> svg.classes([#("block lg:hidden", !open), #("hidden", open)])
       |> svg.render(),
     svg.new(24, 24)
       |> svg_icons.cross()
-      |> svg.classes([#("block lg:hidden", !open), #("hidden", open)])
+      |> svg.classes([#("block lg:hidden", open), #("hidden", !open)])
       |> svg.render(),
   ]
 
@@ -310,11 +316,11 @@ pub fn dark_mode(id: String, onclick: Option(a)) -> UIRender(a) {
 
 /// Render app nav mobile toggle button.
 ///
-pub fn app_nav(id: String, is_visible: Bool, onclick: Option(a)) -> UIRender(a) {
+pub fn app_nav(id: String, open: Bool, onclick: Option(a)) -> UIRender(a) {
   let button =
     new(id)
     |> class(app_nav_class)
-    |> classes([#("bg-gray-100 dark:bg-gray-800", is_visible)])
+    |> classes([#("bg-gray-100 dark:bg-gray-800", open)])
 
   let inner = [
     svg.new(24, 24)

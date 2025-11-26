@@ -47,7 +47,6 @@ pub opaque type UIUserRender(a) {
   UIUserRender(
     in: User,
     on_dropdown: Option(a),
-    on_dropdown_leave: Option(a),
     on_submit: Option(fn(String) -> a),
   )
 }
@@ -96,18 +95,27 @@ pub fn dropdown_opt(in: User, dropdown: Option(Dropdown)) -> User {
   UIUser(..in, dropdown:)
 }
 
-pub fn in_dropdown(in: User, callback: fn(Option(Dropdown)) -> a) -> a {
-  let UIUser(dropdown:, ..) = in
+pub fn toggle(in: User) -> User {
+  let dropdown =
+    in.dropdown
+    |> option.map(dropdown.toggle)
 
-  callback(dropdown)
+  UIUser(..in, dropdown:)
 }
 
 pub fn at(in: User) -> Render(a) {
-  UIUserRender(in:, on_dropdown: None, on_dropdown_leave: None, on_submit: None)
+  UIUserRender(in:, on_dropdown: None, on_submit: None)
+}
+
+pub fn on_submit_opt(
+  at: Render(a),
+  on_submit: Option(fn(String) -> a),
+) -> Render(a) {
+  UIUserRender(..at, on_submit:)
 }
 
 pub fn on_submit(at: Render(a), onsubmit: fn(String) -> a) -> Render(a) {
-  UIUserRender(..at, on_submit: Some(onsubmit))
+  on_submit_opt(at, Some(onsubmit))
 }
 
 pub fn on_dropdown(at: Render(a), ondropdown: a) -> Render(a) {
@@ -118,44 +126,24 @@ pub fn on_dropdown_opt(at: Render(a), on_dropdown: Option(a)) -> Render(a) {
   UIUserRender(..at, on_dropdown:)
 }
 
-pub fn on_dropdown_leave(at: Render(a), ondropdown: a) -> Render(a) {
-  on_dropdown_leave_opt(at, Some(ondropdown))
-}
-
-pub fn on_dropdown_leave_opt(at: Render(a), on_dropdown: Option(a)) -> Render(a) {
-  UIUserRender(..at, on_dropdown:)
-}
-
 pub fn render(at: Render(a)) -> UIRender(a) {
-  let UIUserRender(in:, on_submit:, on_dropdown:, on_dropdown_leave:) = at
+  let UIUserRender(in:, on_submit:, on_dropdown:) = at
   let UIUser(el:, profile:, dropdown:) = in
   let UIProfile(username:, email:, department:, full_name:, picture:) = profile
   let is_visible =
     option.map(dropdown, dropdown.is_visible)
     |> option.unwrap(False)
 
-  let on_dropdown = get_on_dropdown(on_dropdown)
-  let on_dropdown_click_out = get_on_dropdown(on_dropdown_leave)
-  let on_dropdown_mouse_out = get_on_dropdown_mouse(on_dropdown_leave)
-
-  let dropdown = case dropdown {
-    Some(dropdown) -> [
-      html.ul(
-        [a.class(user_dropdown_menugrp_class)],
-        menu_list_(dropdown, on_submit),
-      ),
-      ..button_list_(dropdown, on_submit)
-    ]
-    None -> [element.none()]
-  }
-
+  let evt_dropdown = get_on_dropdown(on_dropdown)
+  let evt_dropdown_click_out = get_on_dropdown(on_dropdown)
+  let evt_dropdown_mouse_out = get_on_dropdown_mouse(on_dropdown)
   let attrs = el.attrs(el)
 
   html.div(attrs, [
     html.a(
       [
         a.class(user_profile_class),
-        on_dropdown,
+        evt_dropdown,
       ],
       [
         html.span([a.class(user_profile_picture_class)], [
@@ -171,37 +159,44 @@ pub fn render(at: Render(a)) -> UIRender(a) {
           |> svg.render(),
       ],
     ),
-    html.div(
-      [
-        a.class(user_dropdown_class),
-        a.classes([#("block", is_visible), #("hidden", !is_visible)]),
-        on_dropdown_click_out,
-        on_dropdown_mouse_out,
-      ],
-      [
-        html.div([a.class(user_dropdown_profile_class)], [
-          html.div([a.class("inline-flex justify-between w-full")], [
-            html.span([a.class(user_dropdown_username_class)], [
-              html.text(full_name),
+    case dropdown, is_visible {
+      Some(dropdown), True ->
+        html.div(
+          [
+            a.class(user_dropdown_class),
+            a.classes([#("block", is_visible), #("hidden", !is_visible)]),
+            evt_dropdown_click_out,
+            evt_dropdown_mouse_out,
+          ],
+          [
+            html.div([a.class(user_dropdown_profile_class)], [
+              html.div([a.class("inline-flex justify-between w-full")], [
+                html.span([a.class(user_dropdown_username_class)], [
+                  html.text(full_name),
+                ]),
+                html.span(
+                  [
+                    a.class(user_dropdown_username_class),
+                    a.class("text-orange-400 dark:text-orange-700"),
+                  ],
+                  [
+                    html.text(department),
+                  ],
+                ),
+              ]),
+              html.span([a.class(user_dropdown_email_class)], [
+                html.text(email),
+              ]),
             ]),
-            html.span(
-              [
-                a.class(user_dropdown_username_class),
-                a.class("text-orange-400 dark:text-orange-700"),
-              ],
-              [
-                html.text(department),
-              ],
+            html.ul(
+              [a.class(user_dropdown_menugrp_class)],
+              menu_list_(dropdown, on_submit),
             ),
-          ]),
-          html.span([a.class(user_dropdown_email_class)], [
-            html.text(email),
-          ]),
-        ]),
-        // dropdown
-        ..dropdown
-      ],
-    ),
+            ..button_list_(dropdown, on_submit)
+          ],
+        )
+      _, _ -> element.none()
+    },
   ])
 }
 

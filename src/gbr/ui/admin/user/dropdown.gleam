@@ -46,7 +46,7 @@ pub fn is_visible(in: UIDropdown) -> Bool {
   in.visible
 }
 
-pub fn toggle_visible(in: UIDropdown) -> UIDropdown {
+pub fn toggle(in: UIDropdown) -> UIDropdown {
   let UIDropdown(visible:, ..) = in
 
   UIDropdown(..in, visible: !visible)

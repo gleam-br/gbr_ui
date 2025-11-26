@@ -4,7 +4,6 @@
 
 import gleam/list
 import gleam/option.{type Option, None, Some}
-import gleam/result
 
 import lustre/attribute as a
 import lustre/element
@@ -98,6 +97,12 @@ pub fn toggle(in: Sidebar) -> Sidebar {
   UISidebar(..in, open: !in.open)
 }
 
+/// Set current selected menu
+///
+/// - in: Sidebar element
+/// - id: Menu id to select
+/// - menu: Menu element to select
+///
 pub fn selected(in: Sidebar, id: String, menu: Menu) -> Sidebar {
   let UISidebar(selected:, ..) = in
 
@@ -109,33 +114,18 @@ pub fn selected(in: Sidebar, id: String, menu: Menu) -> Sidebar {
         menu.is_menu_group(menu),
         menu.is_menu_child(menu, selected)
       {
-        True, True, True -> menu.parent(menu)
-        True, True, False -> menu.parent(menu)
-        True, False, True -> Some(id)
-        True, False, False -> Some(id)
-        False, True, True -> menu.parent(menu)
-        False, True, False -> Some(id)
-        False, False, True -> Some(id)
-        False, False, False -> Some(id)
+        True, False, True
+        | True, False, False
+        | False, True, False
+        | False, False, True
+        | False, False, False
+        -> Some(id)
+        True, True, True | True, True, False | False, True, True ->
+          menu.parent(menu)
       }
   }
 
   UISidebar(..in, selected:)
-}
-
-fn do_selected(selected, to, menu) {
-  // is equals
-  let is_equals = selected == to
-  // is menu group?
-  let is_menu_group = menu.is_menu_group(menu)
-  // is 'to menu' child in menu group?
-  let is_menu_group_child = menu.is_menu_child(menu, selected)
-
-  case is_equals, is_menu_group, is_menu_group_child {
-    True, True, _ -> option.None
-    False, True, True -> option.None
-    _, _, _ -> option.Some(to)
-  }
 }
 
 /// New render sidebar element
