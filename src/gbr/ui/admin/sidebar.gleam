@@ -2,17 +2,20 @@
 //// ☰ Gleam UI sidebar super element
 ////
 
-import gbr/ui/core/el
 import gleam/list
-import gleam/option.{type Option, None}
+import gleam/option.{type Option, None, Some}
+import gleam/result
 
 import lustre/attribute as a
+import lustre/element
 import lustre/element/html
 
+import gbr/ui/core/el
 import gbr/ui/core/model.{type UIRender}
+
 import gbr/ui/logo.{type UILogo}
 
-import gbr/ui/admin/sidebar/menu.{type UISidebarMenuRender}
+import gbr/ui/admin/sidebar/menu
 
 type Sidebar =
   UISidebar
@@ -20,11 +23,14 @@ type Sidebar =
 type Render(a) =
   UISidebarRender(a)
 
-type Menu(a) =
-  UISidebarMenuRender(a)
+type Menu =
+  menu.UISidebarMenu
 
 type Logo =
   UILogo
+
+type OnClick(a) =
+  menu.UISidebarMenuOnClick(a)
 
 /// Sidebar super element
 ///
@@ -35,13 +41,19 @@ type Logo =
 /// - selected: Sidebar menu id selected
 ///
 pub opaque type UISidebar {
-  UISidebar(el: el.UIEl, open: Bool, selected: Option(String))
+  UISidebar(
+    el: el.UIEl,
+    open: Bool,
+    root: List(Menu),
+    selected: Option(String),
+    logo: Option(Logo),
+  )
 }
 
 /// Render sidebar element.
 ///
 pub opaque type UISidebarRender(a) {
-  UISidebarRender(in: Sidebar, logo: Logo, root: List(Menu(a)))
+  UISidebarRender(in: Sidebar, onclick: OnClick(a))
 }
 
 /// New sidebar element
@@ -53,42 +65,84 @@ pub fn new(id: String) -> Sidebar {
     el.new(id)
     |> el.class(sidebar_class)
 
-  UISidebar(el:, selected: None, open: False)
-  |> open(True)
+  UISidebar(el:, root: [], selected: None, logo: None, open: True)
+}
+
+/// Set root menu list
+///
+/// - in: Sidebar element
+/// - menus: Root list of menus
+///
+pub fn root(in: Sidebar, menus: List(Menu)) -> Sidebar {
+  UISidebar(..in, root: set_root(menus) |> echo)
+}
+
+/// Set logo sidebar head
+///
+/// - in: Sidebar element
+/// - logo: Logo element
+///
+pub fn logo(in: Sidebar, logo: Logo) -> Sidebar {
+  UISidebar(..in, logo: Some(logo))
 }
 
 /// Set open sidebar visibility
 ///
 pub fn open(in: Sidebar, open: Bool) -> Sidebar {
-  let el =
-    el.classes(in.el, [
-      #("lg:w-[90px] translate-x-0", !open),
-      #("-translate-x-full", open),
-    ])
-
-  UISidebar(..in, el:, open:)
+  UISidebar(..in, open:)
 }
 
 /// Toggle open sidebar visibility
 ///
-pub fn toggle_open(in: Sidebar) -> Sidebar {
+pub fn toggle(in: Sidebar) -> Sidebar {
   UISidebar(..in, open: !in.open)
+}
+
+pub fn selected(in: Sidebar, select_to: String) -> Sidebar {
+  let UISidebar(selected:, root:, ..) = in
+  let selected = case selected {
+    None -> Some(select_to)
+    Some(selected) -> do_selected(root, selected, select_to)
+  }
+
+  UISidebar(..in, selected:)
+}
+
+fn do_selected(menus, selected, to) {
+  // is equals
+  let is_equals = selected == to
+  // is menu group?
+  let menu_to = menu.get_menu_group(menus, to)
+  let is_menu_group = result.is_ok(menu_to)
+  // is 'to menu' child in menu group?
+  let menu_group_child = result.map(menu_to, menu.get_menu_child(_, selected))
+  let is_menu_group_child = result.is_ok(menu_group_child)
+
+  case is_equals, is_menu_group, is_menu_group_child {
+    True, True, _ -> option.None
+    False, True, True -> option.None
+    _, _, _ -> option.Some(to)
+  }
 }
 
 /// New render sidebar element
 ///
-pub fn at(in: Sidebar, logo: Logo, root: List(Menu(a))) -> Render(a) {
-  UISidebarRender(in:, logo:, root: menu.roots(root))
+pub fn at(in: Sidebar, onclick: OnClick(a)) -> Render(a) {
+  UISidebarRender(in:, onclick:)
 }
 
 /// Render sidebar element into lustre.element
 ///
 pub fn render(at: Render(a)) -> UIRender(a) {
-  let UISidebarRender(in:, root:, logo:) = at
-  let UISidebar(el:, open:, selected:) = in
+  let UISidebarRender(in:, onclick:) = at
+  let UISidebar(el:, root:, logo:, open:, selected:) = in
+  let logo =
+    option.map(logo, logo.icon_only(_, !open))
+    |> option.map(logo.render)
+    |> option.unwrap(element.none())
 
   // menu root
-  let root_menus = menu_roots(root, open, selected)
+  let root_menus = menu_roots(root, open, selected, onclick)
   // and nav
   let menu_nav = [html.nav([], root_menus)]
   // and sidebar inner
@@ -99,15 +153,13 @@ pub fn render(at: Render(a)) -> UIRender(a) {
         a.class("sidebar-header flex items-center gap-2 pb-7 pt-8"),
         a.classes(inner_classes),
       ],
-      [
-        logo.icon_only(logo, !open)
-        |> logo.render(),
-      ],
+      [logo],
     ),
     html.div([a.class(sidebar_main_class)], menu_nav),
   ]
 
-  let attrs = el.attrs(el)
+  let classes = classes_open(open)
+  let attrs = [classes, ..el.attrs(el)]
 
   html.aside(attrs, inner)
 }
@@ -115,10 +167,25 @@ pub fn render(at: Render(a)) -> UIRender(a) {
 // PRIVATE
 //
 
-fn menu_roots(root, open, selected) {
+fn set_root(root) {
   use root <- list.map(root)
 
-  menu.render(root, open, selected)
+  menu.root(root, True)
+}
+
+fn menu_roots(root, open, selected, onclick) {
+  use root <- list.map(root)
+
+  menu.at(root, onclick)
+  |> menu.render(open, selected)
+}
+
+fn classes_open(open: Bool) {
+  [
+    #("lg:w-[90px] translate-x-0", !open),
+    #("-translate-x-full", open),
+  ]
+  |> a.classes()
 }
 
 const sidebar_class = "sidebar fixed left-0 top-0 z-9999 flex h-screen w-[290px] flex-col"

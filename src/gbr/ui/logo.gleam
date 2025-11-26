@@ -33,6 +33,12 @@ pub fn new(href: String, src: String) -> Logo {
   UILogo(href:, img:)
 }
 
+pub fn src(in: Logo, src: String) -> Logo {
+  let img = img.src(in.img, src)
+
+  UILogo(..in, img:)
+}
+
 /// Set logo icon to dark mode.
 ///
 pub fn icon(in: Logo, icon: String) -> Logo {
@@ -85,7 +91,9 @@ pub fn class_small(in: Logo, class: String) {
 ///
 pub fn render(in: Logo) -> UIRender(a) {
   let UILogo(href:, img:) = in
-  let img = img.at(img) |> img.render()
+  let img =
+    img.at(img)
+    |> img.render()
 
   link.at(href, img)
   |> link.render()

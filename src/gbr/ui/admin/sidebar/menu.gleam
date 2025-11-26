@@ -5,6 +5,7 @@
 import gleam/bool
 import gleam/list
 import gleam/option.{type Option, None, Some}
+import gleam/result
 import lustre/event
 
 import lustre/attribute as a
@@ -27,7 +28,18 @@ type Inner =
   List(UISidebarMenu)
 
 type OnClick(a) =
-  fn(String) -> a
+  UISidebarMenuOnClick(a)
+
+/// On click sidebar menu
+///
+/// - id: Menu id
+/// - menu: Menu info element
+///
+/// Returns:
+/// - Generic lustre event
+///
+pub type UISidebarMenuOnClick(a) =
+  fn(String, Menu) -> a
 
 /// Sidebar super element
 ///
@@ -109,6 +121,36 @@ pub fn inner(in: Menu, inner: List(Menu)) -> Menu {
   UISidebarMenu(..in, inner:)
 }
 
+pub fn get_menu_group(menus: List(Menu), id: String) -> Result(Menu, Nil) {
+  use menu <- list.find(menus)
+
+  case menu.id == id {
+    True -> !list.is_empty(menu.inner)
+    False ->
+      case menu.inner, menu.root {
+        _, True | [], _ -> False
+        inner, False -> get_menu_group(inner, id) |> result.is_ok()
+      }
+  }
+}
+
+pub fn get_menu_child(menu: Menu, id: String) -> Result(Menu, Nil) {
+  get_menu_child_inner(menu.inner, id)
+}
+
+fn get_menu_child_inner(inner: List(Menu), id: String) -> Result(Menu, Nil) {
+  use menu <- list.find(inner)
+
+  case menu.id == id {
+    True -> True
+    False ->
+      case menu.inner {
+        [] -> False
+        inner -> get_menu_child_inner(inner, id) |> result.is_ok()
+      }
+  }
+}
+
 /// New render sidebar menu element
 ///
 pub fn at(in: UISidebarMenu, onclick: OnClick(a)) -> UISidebarMenuRender(a) {
@@ -177,35 +219,33 @@ pub fn render(
 
 fn menu_inner(menus: Inner, open, selected, onclick) -> List(UIKeyed(a)) {
   use menu <- list.map(menus)
-  let UISidebarMenu(id, text, _, inner, _) = menu
 
-  case inner {
-    [] -> menu_item(id, text, selected, onclick)
+  case menu.inner {
+    [] -> menu_item(menu, selected, onclick)
     _ -> menu_group(menu, open, selected, onclick)
   }
 }
 
 fn menu_group(menu: Menu, open, selected, onclick) {
   let UISidebarMenu(id, text, _, inner, svg) = menu
-  let name = id <> "sidebar-menu-group"
 
   let is_selected = case selected {
     None -> False
     Some(selected) ->
-      id == selected || option.is_some(selected_(inner, selected))
+      id == selected || get_menu_child(menu, selected) |> result.is_ok()
   }
 
   #(
-    name,
+    id,
     html.li([a.id(id)], [
       html.a(
         [
-          event.on_click(onclick(id)),
-          a.class("menu-item group"),
+          a.class("menu-item group cursor-pointer"),
           a.classes([
             #("menu-item-active", is_selected),
             #("menu-item-inactive", !is_selected),
           ]),
+          event.on_click(onclick(id, menu)),
         ],
         [
           case svg {
@@ -253,7 +293,7 @@ fn menu_group(menu: Menu, open, selected, onclick) {
         [
           a.class("translate transform overflow-hidden"),
           a.classes([#("block", is_selected)]),
-          a.classes([#("hidden", is_selected)]),
+          a.classes([#("hidden", !is_selected)]),
         ],
         // TODO: improve inner code
         case inner {
@@ -261,7 +301,9 @@ fn menu_group(menu: Menu, open, selected, onclick) {
           inner -> [
             html.ul(
               [
-                a.class("menu-dropdown mt-2 flex flex-col gap-1 pl-9"),
+                a.class(
+                  "menu-dropdown mt-2 flex flex-col gap-1 pl-9 cursor-pointer",
+                ),
                 a.classes([
                   #(
                     "menu-dropdown mt-2 flex flex-col gap-1 pl-9 lg:hidden",
@@ -284,52 +326,34 @@ fn menu_group(menu: Menu, open, selected, onclick) {
 
 /// Render menu item
 ///
-/// - menu_id: curr menu id
+/// - menu: current menu element
 /// - text: menu item title
 /// - selected: menu item is selected
 /// - onclick: menu item onclick event
 ///
-fn menu_item(menu_id, text, selected, onclick) -> UIKeyed(a) {
-  let name = menu_id <> "sidebar-menu-item"
+fn menu_item(menu, selected, onclick) -> UIKeyed(a) {
+  let UISidebarMenu(id:, text:, ..) = menu
   let is_selected = case selected {
-    Some(selected) -> menu_id == selected
+    Some(selected) -> id == selected
     None -> False
   }
 
   #(
-    name,
-    html.li([a.id(menu_id)], [
+    id,
+    html.li([a.id(id)], [
       html.a(
         [
-          a.class("menu-dropdown-item group"),
+          a.class("menu-dropdown-item group cursor-pointer"),
           a.classes([
             #("menu-dropdown-item-active", is_selected),
             #("menu-dropdown-item-inactive", !is_selected),
           ]),
-          event.on_click(onclick(menu_id)),
+          event.on_click(onclick(id, menu)),
         ],
         [html.text(text)],
       ),
     ]),
   )
-}
-
-fn selected_(menu_list: Inner, current: String) {
-  let values = {
-    use menu <- list.map(menu_list)
-    let UISidebarMenu(id, _, root, _, _) = menu
-
-    case root {
-      True -> None
-      False -> Some(id)
-    }
-  }
-  let filtered =
-    list.filter(values, option.is_some)
-    |> list.map(option.unwrap(_, ""))
-
-  list.find(filtered, fn(t) { t == current })
-  |> option.from_result()
 }
 
 const menu_class = "mb-4 text-xs uppercase leading-[20px] text-gray-400"

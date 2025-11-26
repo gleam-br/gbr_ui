@@ -52,6 +52,11 @@ pub opaque type UIUserRender(a) {
   )
 }
 
+/// New user element
+///
+/// - id: html id
+/// - username: Username
+///
 pub fn new(id: String, username: String) -> User {
   let el =
     el.new(id)
@@ -61,6 +66,10 @@ pub fn new(id: String, username: String) -> User {
     UIProfile(username:, email: "", department: "", full_name: "", picture: "")
 
   UIUser(el:, profile:, dropdown: None)
+}
+
+pub fn username(in: User, username: String) -> User {
+  UIUser(..in, profile: UIProfile(..in.profile, username:))
 }
 
 pub fn email(in: User, email: String) -> User {

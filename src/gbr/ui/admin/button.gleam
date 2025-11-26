@@ -261,24 +261,24 @@ pub fn back(id: String, text: String, onclick: a) -> UIRender(a) {
 
 /// Render sidebar toggle button.
 ///
-pub fn sidebar(id: String, visible: Bool, onclick: Option(a)) -> UIRender(a) {
+pub fn sidebar(id: String, open: Bool, onclick: Option(a)) -> UIRender(a) {
   let button =
     new(id)
     |> class(sidebar_class)
-    |> classes([#(toggle_class, visible)])
+    |> classes([#(toggle_class, !open)])
 
   let inner = [
     svg.new(12, 16)
       |> svg_icons.hamburguer_small()
-      |> svg.classes([#("hidden", visible), #("block lg:hidden", !visible)])
+      |> svg.class("hidden lg:block fill-current")
       |> svg.render(),
-    svg.new(20, 20)
+    svg.new(24, 24)
       |> svg_icons.hamburguer()
-      |> svg.class(toggle_class)
+      |> svg.classes([#("block lg:hidden", open), #("hidden", !open)])
       |> svg.render(),
     svg.new(24, 24)
       |> svg_icons.cross()
-      |> svg.classes([#("block lg:hidden", visible), #("hidden", !visible)])
+      |> svg.classes([#("block lg:hidden", !open), #("hidden", open)])
       |> svg.render(),
   ]
 

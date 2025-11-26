@@ -34,6 +34,10 @@ pub fn alt(in: Img, alt: String) -> Img {
   UIImg(..in, el:)
 }
 
+pub fn src(in: Img, src: String) -> Img {
+  UIImg(..in, src:)
+}
+
 pub fn dark(in: Img, dark: String) -> Img {
   UIImg(..in, dark:)
 }
