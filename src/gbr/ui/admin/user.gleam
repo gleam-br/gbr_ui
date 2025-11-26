@@ -146,8 +146,8 @@ pub fn render(at: Render(a)) -> UIRender(a) {
         evt_dropdown,
       ],
       [
-        html.span([a.class(user_profile_picture_class)], [
-          html.img([a.src(picture)]),
+        html.span([], [
+          html.img([a.src(picture), a.class(user_profile_picture_class)]),
         ]),
         html.span([a.class(user_profile_username_class)], [
           html.text(username),

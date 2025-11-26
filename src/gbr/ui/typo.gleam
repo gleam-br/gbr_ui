@@ -46,10 +46,20 @@ pub fn p(text: String) -> UITypo {
   UITypo(el.new("text-p"), text:, behavior: Paragraph)
 }
 
+/// Replace text string in typo element
+///
+/// - text: Text to replace
+///
+/// > For construct see `span` or `p` or `h4`
+///
 pub fn text(in: UITypo, text: String) -> UITypo {
   UITypo(..in, text:)
 }
 
+/// Set typo class attribute
+///
+/// - class: Class attribute value
+///
 pub fn class(in: UITypo, class: String) -> UITypo {
   let el = el.class(in.el, class)
 

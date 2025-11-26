@@ -24,6 +24,10 @@ pub opaque type UIImgRender(a) {
   UIImgRender(in: Img, onclick: Option(a))
 }
 
+/// New img super element
+///
+/// - src: Image source `lustre/attribute.src`
+///
 pub fn new(src: String) -> Img {
   UIImg(el: el.new("img"), src:, dark: src, small: src, small_only: False)
 }
@@ -32,10 +36,6 @@ pub fn alt(in: Img, alt: String) -> Img {
   let el = el.att(in.el, [#("alt", alt)])
 
   UIImg(..in, el:)
-}
-
-pub fn src(in: Img, src: String) -> Img {
-  UIImg(..in, src:)
 }
 
 pub fn dark(in: Img, dark: String) -> Img {
@@ -48,6 +48,10 @@ pub fn small(in: Img, small: String) -> Img {
 
 pub fn small_only(in: Img, small_only: Bool) -> Img {
   UIImg(..in, small_only:)
+}
+
+pub fn is_small_only(in: Img) -> Bool {
+  in.small_only
 }
 
 pub fn class(in: Img, class: String) -> Img {

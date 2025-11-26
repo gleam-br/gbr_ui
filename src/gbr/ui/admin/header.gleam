@@ -3,13 +3,14 @@
 ////
 
 import gleam/option.{type Option, None, Some}
-import lustre/element
 
 import lustre/attribute as a
+import lustre/element
 import lustre/element/html
 
 import gbr/ui/core/el
 import gbr/ui/core/model.{type UIRender}
+
 import gbr/ui/logo.{type UILogo}
 
 import gbr/ui/admin/button
@@ -55,8 +56,8 @@ pub opaque type UIHeaderRender(a) {
     on_app: Option(a),
     on_sidebar: Option(a),
     on_darkmode: Option(a),
-    on_user_dropdown: Option(a),
-    on_user_submit: Option(fn(String) -> a),
+    on_submit: Option(fn(String) -> a),
+    on_dropdown: Option(a),
   )
 }
 
@@ -74,6 +75,8 @@ pub fn new(id: String) {
   UIHeader(el:, logo: None, user: None, sidebar: False, appnav: False)
 }
 
+/// Set header logo
+///
 pub fn logo(in: Header, logo: Logo) -> Header {
   let logo =
     logo.class(logo, "lg:hidden")
@@ -82,8 +85,32 @@ pub fn logo(in: Header, logo: Logo) -> Header {
   UIHeader(..in, logo:)
 }
 
+/// Set header user
+///
 pub fn user(in: Header, user: User) -> Header {
   UIHeader(..in, user: Some(user))
+}
+
+/// Toggle mobile screen
+///
+pub fn toggle_mobile(in: Header) -> Header {
+  UIHeader(..in, appnav: !in.appnav)
+}
+
+/// Toggle sidebar open
+///
+pub fn toggle_sidebar(in: Header) -> Header {
+  UIHeader(..in, sidebar: !in.sidebar)
+}
+
+/// Toggle dropdown user info
+///
+pub fn toggle_dropdown(in: Header) -> Header {
+  let user =
+    in.user
+    |> option.map(user.toggle)
+
+  UIHeader(..in, user:)
 }
 
 /// New render header element
@@ -98,68 +125,90 @@ pub fn at(in: Header) -> Render(a) {
     on_app: None,
     on_sidebar: None,
     on_darkmode: None,
-    on_user_dropdown: None,
-    on_user_submit: None,
+    on_dropdown: None,
+    on_submit: None,
   )
 }
 
-pub fn on_app_mobile(in: Render(a), on_app: a) -> Render(a) {
+/// On mobile screen toggle
+///
+/// Uses with `toggle_mobile`
+///
+/// When chance or open in mobile screen
+///
+pub fn on_mobile(in: Render(a), on_app: a) -> Render(a) {
   UIHeaderRender(..in, on_app: Some(on_app))
 }
 
+/// On sidebar toggle
+///
+/// Uses with `toggle_sidebar`
+///
+/// When sidebar button is clicked
+///
 pub fn on_sidebar(in: Render(a), on_sidebar: a) -> Render(a) {
   UIHeaderRender(..in, on_sidebar: Some(on_sidebar))
 }
 
+/// On dropdown user info toggle
+///
+/// Uses with `toggle_dropdown`
+///
+/// When header user element is clicked
+///
+pub fn on_dropdown(in: Render(a), on_dropdown: a) -> Render(a) {
+  UIHeaderRender(..in, on_dropdown: Some(on_dropdown))
+}
+
+/// On submit header generic event
+///
+/// Uses when TODO?
+///
+/// When clicked generic button TODO?
+///
+pub fn on_submit(in: Render(a), onsubmit: fn(String) -> a) -> Render(a) {
+  UIHeaderRender(..in, on_submit: Some(onsubmit))
+}
+
+/// On dark mode toggle
+///
+/// When dark mode button is clicked
+///
 pub fn on_darkmode(in: Render(a), on_darkmode: a) -> Render(a) {
   UIHeaderRender(..in, on_darkmode: Some(on_darkmode))
 }
 
-pub fn on_user_dropdown(in: Render(a), on_user_dropdown: a) -> Render(a) {
-  UIHeaderRender(..in, on_user_dropdown: Some(on_user_dropdown))
-}
-
-pub fn on_user_submit(in: Render(a), onsubmit: fn(String) -> a) -> Render(a) {
-  UIHeaderRender(..in, on_user_submit: Some(onsubmit))
-}
-
-pub fn toggle_app(in: Header) -> Header {
-  UIHeader(..in, appnav: !in.appnav)
-}
-
-pub fn toggle_sidebar(in: Header) -> Header {
-  UIHeader(..in, sidebar: !in.sidebar)
-}
-
-pub fn toggle_user(in: Header) -> Header {
-  let user =
-    in.user
-    |> option.map(user.toggle)
-
-  UIHeader(..in, user:)
-}
-
+/// Render header super element
+///
+/// - at: Render header element info
+///
 pub fn render(at: Render(a)) -> UIRender(a) {
   let UIHeaderRender(
     in:,
     on_app:,
     on_sidebar:,
     on_darkmode:,
-    on_user_dropdown:,
-    on_user_submit:,
+    on_dropdown:,
+    on_submit:,
   ) = at
   let UIHeader(el, logo:, user:, appnav:, sidebar:) = in
 
-  let attrs = el.attrs(el)
   let logo =
     option.map(logo, logo.render)
     |> option.unwrap(element.none())
   let user =
     option.map(user, user.at)
-    |> option.map(user.on_dropdown_opt(_, on_user_dropdown))
-    |> option.map(user.on_submit_opt(_, on_user_submit))
+    |> option.map(user.on_submit_opt(_, on_submit))
+    |> option.map(user.on_dropdown_opt(_, on_dropdown))
     |> option.map(user.render)
+    |> option.map(fn(user) {
+      html.div([a.class(header_left_user_class)], [
+        user,
+      ])
+    })
     |> option.unwrap(element.none())
+
+  let attrs = el.attrs(el)
 
   html.header(attrs, [
     html.div([a.class(header_content_class)], [
@@ -177,9 +226,7 @@ pub fn render(at: Render(a)) -> UIRender(a) {
           html.div([a.class(header_left_content_class)], [
             button.dark_mode("header-btn-toggle-darkmode", on_darkmode),
           ]),
-          html.div([a.class(header_left_user_class)], [
-            user,
-          ]),
+          user,
         ],
       ),
     ]),
