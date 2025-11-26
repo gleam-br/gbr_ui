@@ -221,7 +221,7 @@ fn menu_inner(menus: Inner, open, selected, onclick) -> List(UIKeyed(a)) {
   use menu <- list.map(menus)
 
   case menu.inner {
-    [] -> menu_item(menu, selected, onclick)
+    [] -> menu_item(menu, open, selected, onclick)
     _ -> menu_group(menu, open, selected, onclick)
   }
 }
@@ -312,7 +312,7 @@ fn menu_group(menu: Menu, open, selected, onclick) {
 /// - selected: menu item is selected
 /// - onclick: menu item onclick event
 ///
-fn menu_item(menu, selected, onclick) -> UIKeyed(a) {
+fn menu_item(menu, open, selected, onclick) -> UIKeyed(a) {
   let UISidebarMenu(id:, text:, svg:, ..) = menu
   let is_selected = case selected {
     Some(selected) -> id == selected
@@ -331,7 +331,13 @@ fn menu_item(menu, selected, onclick) -> UIKeyed(a) {
           ]),
           event.on_click(onclick(id, menu)),
         ],
-        [render_icon(svg, is_selected), html.text(text)],
+        [
+          render_icon(svg, is_selected),
+          html.span(
+            [a.class("menu-item-text"), a.classes([#("lg:hidden", !open)])],
+            [html.text(text)],
+          ),
+        ],
       ),
     ]),
   )
