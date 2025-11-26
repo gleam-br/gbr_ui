@@ -74,7 +74,7 @@ pub fn new(id: String) -> Sidebar {
 /// - menus: Root list of menus
 ///
 pub fn root(in: Sidebar, menus: List(Menu)) -> Sidebar {
-  UISidebar(..in, root: set_root(menus) |> echo)
+  UISidebar(..in, root: menus)
 }
 
 /// Set logo sidebar head
@@ -98,25 +98,38 @@ pub fn toggle(in: Sidebar) -> Sidebar {
   UISidebar(..in, open: !in.open)
 }
 
-pub fn selected(in: Sidebar, select_to: String) -> Sidebar {
-  let UISidebar(selected:, root:, ..) = in
+pub fn selected(in: Sidebar, id: String, menu: Menu) -> Sidebar {
+  let UISidebar(selected:, ..) = in
+
   let selected = case selected {
-    None -> Some(select_to)
-    Some(selected) -> do_selected(root, selected, select_to)
+    None -> Some(id)
+    Some(selected) ->
+      case
+        id == selected,
+        menu.is_menu_group(menu),
+        menu.is_menu_child(menu, selected)
+      {
+        True, True, True -> menu.parent(menu)
+        True, True, False -> menu.parent(menu)
+        True, False, True -> Some(id)
+        True, False, False -> Some(id)
+        False, True, True -> menu.parent(menu)
+        False, True, False -> Some(id)
+        False, False, True -> Some(id)
+        False, False, False -> Some(id)
+      }
   }
 
   UISidebar(..in, selected:)
 }
 
-fn do_selected(menus, selected, to) {
+fn do_selected(selected, to, menu) {
   // is equals
   let is_equals = selected == to
   // is menu group?
-  let menu_to = menu.get_menu_group(menus, to)
-  let is_menu_group = result.is_ok(menu_to)
+  let is_menu_group = menu.is_menu_group(menu)
   // is 'to menu' child in menu group?
-  let menu_group_child = result.map(menu_to, menu.get_menu_child(_, selected))
-  let is_menu_group_child = result.is_ok(menu_group_child)
+  let is_menu_group_child = menu.is_menu_child(menu, selected)
 
   case is_equals, is_menu_group, is_menu_group_child {
     True, True, _ -> option.None
@@ -166,12 +179,6 @@ pub fn render(at: Render(a)) -> UIRender(a) {
 
 // PRIVATE
 //
-
-fn set_root(root) {
-  use root <- list.map(root)
-
-  menu.root(root, True)
-}
 
 fn menu_roots(root, open, selected, onclick) {
   use root <- list.map(root)

@@ -6,6 +6,7 @@ import gleam/bool
 import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/result
+import gleam/string
 import lustre/event
 
 import lustre/attribute as a
@@ -53,8 +54,8 @@ pub opaque type UISidebarMenu {
   UISidebarMenu(
     id: String,
     text: String,
-    root: Bool,
     inner: Inner,
+    parent: Option(String),
     svg: Option(svg.Svg),
   )
 }
@@ -73,7 +74,7 @@ pub opaque type UISidebarMenuRender(a) {
 /// - id: htmlid
 ///
 pub fn new(id: String) -> Menu {
-  UISidebarMenu(id:, text: "", root: False, inner: [], svg: None)
+  UISidebarMenu(id:, text: "", parent: None, inner: [], svg: None)
 }
 
 /// Set title menu
@@ -82,27 +83,6 @@ pub fn new(id: String) -> Menu {
 ///
 pub fn title(in: Menu, text: String) -> Menu {
   UISidebarMenu(..in, text:)
-}
-
-/// Set list menus to root
-///
-/// - roots: List of menus to root
-///
-pub fn roots(roots: List(Render(a))) {
-  use render <- list.map(roots)
-  let UISidebarMenuRender(in:, ..) = render
-
-  let menu = root(in, True)
-
-  UISidebarMenuRender(..render, in: menu)
-}
-
-/// Set root menu
-///
-/// - root: If is root menu
-///
-pub fn root(in: Menu, root: Bool) -> Menu {
-  UISidebarMenu(..in, root:)
 }
 
 /// Set icon to menu
@@ -118,57 +98,67 @@ pub fn icon(in: Menu, svg: svg.Svg) -> Menu {
 /// - inner: List of menus inner parent menu
 ///
 pub fn inner(in: Menu, inner: List(Menu)) -> Menu {
+  let inner = set_parent(in, inner)
+
   UISidebarMenu(..in, inner:)
 }
 
-pub fn get_menu_group(menus: List(Menu), id: String) -> Result(Menu, Nil) {
+pub fn parent(in: Menu) -> Option(String) {
+  in.parent
+}
+
+pub fn get_menu(menus: List(Menu), id: String) -> Result(Menu, Nil) {
   use menu <- list.find(menus)
 
-  case menu.id == id {
-    True -> !list.is_empty(menu.inner)
-    False ->
-      case menu.inner, menu.root {
-        _, True | [], _ -> False
-        inner, False -> get_menu_group(inner, id) |> result.is_ok()
-      }
+  use <- bool.guard(menu.id == id, True)
+  use <- bool.guard(
+    option.is_none(menu.parent),
+    get_menu(menu.inner, id) |> result.is_ok(),
+  )
+
+  case menu.inner {
+    [] -> False
+    inner -> get_menu(inner, id) |> result.is_ok()
   }
 }
 
-pub fn get_menu_child(menu: Menu, id: String) -> Result(Menu, Nil) {
-  get_menu_child_inner(menu.inner, id)
+pub fn is_menu_group(menu: Menu) -> Bool {
+  !list.is_empty(menu.inner)
 }
 
-fn get_menu_child_inner(inner: List(Menu), id: String) -> Result(Menu, Nil) {
-  use menu <- list.find(inner)
+pub fn is_menu_child(menu: Menu, id: String) -> Bool {
+  is_menu_child_inner(menu.inner, id)
+}
 
-  case menu.id == id {
-    True -> True
-    False ->
-      case menu.inner {
-        [] -> False
-        inner -> get_menu_child_inner(inner, id) |> result.is_ok()
-      }
+fn is_menu_child_inner(inner: List(Menu), id: String) -> Bool {
+  use menu <- list.any(inner)
+
+  use <- bool.guard(menu.id == id, True)
+
+  case menu.inner {
+    [] -> False
+    inner -> is_menu_child_inner(inner, id)
   }
 }
 
 /// New render sidebar menu element
 ///
-pub fn at(in: UISidebarMenu, onclick: OnClick(a)) -> UISidebarMenuRender(a) {
+pub fn at(in: Menu, onclick: OnClick(a)) -> Render(a) {
   UISidebarMenuRender(in:, onclick:)
 }
 
 /// Render sidebar menu element
 ///
 pub fn render(
-  at: UISidebarMenuRender(a),
+  at: Render(a),
   open: Bool,
   selected: Option(String),
 ) -> UIRender(a) {
   let UISidebarMenuRender(in:, onclick:) = at
-  let UISidebarMenu(id:, text:, root:, inner:, ..) = in
+  let UISidebarMenu(id:, text:, parent:, inner:, ..) = in
 
-  // not root return none
-  use <- bool.guard(!root, element.none())
+  // has parent return none
+  use <- bool.guard(option.is_some(parent), element.none())
 
   case inner {
     [] -> element.none()
@@ -217,6 +207,12 @@ pub fn render(
 // PRIVATE
 //
 
+fn set_parent(in: Menu, inner: List(Menu)) -> List(Menu) {
+  use menu <- list.map(inner)
+
+  UISidebarMenu(..menu, parent: Some(in.id))
+}
+
 fn menu_inner(menus: Inner, open, selected, onclick) -> List(UIKeyed(a)) {
   use menu <- list.map(menus)
 
@@ -227,12 +223,11 @@ fn menu_inner(menus: Inner, open, selected, onclick) -> List(UIKeyed(a)) {
 }
 
 fn menu_group(menu: Menu, open, selected, onclick) {
-  let UISidebarMenu(id, text, _, inner, svg) = menu
+  let UISidebarMenu(id:, text:, inner:, svg:, ..) = menu
 
   let is_selected = case selected {
     None -> False
-    Some(selected) ->
-      id == selected || get_menu_child(menu, selected) |> result.is_ok()
+    Some(selected) -> id == selected || is_menu_child(menu, selected)
   }
 
   #(
