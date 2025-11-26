@@ -4,10 +4,20 @@
 
 [Gleam](https://gleam.run/) UI [lustre](https://lustre.build/) library by @gleam-br
 
+Library based on [TailAdmin](https://tailadmin.com/)
+
 🌝 Nothing stateful only stateless uses only lustre render functions.
 
 [![Package Version](https://img.shields.io/hexpm/v/gbr_ui)](https://hex.pm/packages/gbr_ui)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/gbr_ui/)
+
+## Light mode
+
+<img width="1908" height="835" alt="image" src="https://github.com/user-attachments/assets/3828500a-8303-471d-bb97-8f793d9aff06" />
+
+## Dark mode
+
+<img width="1907" height="783" alt="image" src="https://github.com/user-attachments/assets/df92dd99-6784-4288-ae84-f2fd96d9d91e" />
 
 ```sh
 gleam add gbr_ui@1
