@@ -229,8 +229,6 @@ fn menu_inner(menus: Inner, open, selected, onclick) -> List(UIKeyed(a)) {
 fn menu_group(menu: Menu, open, selected, onclick) {
   let UISidebarMenu(id:, text:, inner:, svg:, ..) = menu
 
-  echo id
-  echo svg
   let is_selected = case selected {
     None -> False
     Some(selected) -> id == selected || is_menu_child(menu, selected)
