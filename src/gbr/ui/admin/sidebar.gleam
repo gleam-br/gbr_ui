@@ -130,6 +130,9 @@ pub fn selected(in: Sidebar, id: String, menu: Menu) -> Sidebar {
 
 /// New render sidebar element
 ///
+/// - in: Sidebar info
+/// - onclick: Sidebar menu clicked
+///
 pub fn at(in: Sidebar, onclick: OnClick(a)) -> Render(a) {
   UISidebarRender(in:, onclick:)
 }

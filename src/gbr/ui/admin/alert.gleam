@@ -57,13 +57,13 @@ pub opaque type UIAlertRender(a) {
 /// New alert super element pass title and description.
 ///
 /// - title: Alert title
-/// - desc: Alert description
+/// - content: Alert content description
 ///
-pub fn new(title: String, desc: String) -> Alert {
+pub fn new(title: String, content: String) -> Alert {
   let el = create_el()
 
   let info =
-    desc.new(title, desc)
+    desc.new(title, content)
     |> desc.class_content("text-sm text-gray-500 dark:text-gray-400")
     |> desc.class_title(
       "mb-1 text-sm font-semibold text-gray-800 dark:text-white/90",

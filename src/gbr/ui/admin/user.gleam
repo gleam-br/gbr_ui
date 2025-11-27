@@ -2,6 +2,7 @@
 //// Gleam UI admin user super element.
 ////
 
+import gleam/list
 import gleam/option.{type Option, None, Some}
 
 import lustre/attribute as a
@@ -190,9 +191,11 @@ pub fn render(at: Render(a)) -> UIRender(a) {
             ]),
             html.ul(
               [a.class(user_dropdown_menugrp_class)],
-              menu_list_(dropdown, on_submit),
+              menu_list_(dropdown, on_submit)
+                |> list.reverse(),
             ),
             ..button_list_(dropdown, on_submit)
+            |> list.reverse()
           ],
         )
       _, _ -> element.none()
@@ -232,9 +235,9 @@ fn button_list_(dropdown: Dropdown, onsubmit) -> UIRenders(a) {
   use id, label, icon <- dropdown.in_buttons(dropdown)
 
   let item = case icon {
-    Some(identity) -> [
+    Some(icon) -> [
       svg.new(24, 24)
-        |> identity()
+        |> icon()
         |> svg.class(user_btn_icon_class)
         |> svg.render(),
       html.text(label),
@@ -288,12 +291,12 @@ const user_btn_icon_class = "fill-gray-500 group-hover:fill-gray-700 dark:group-
 
 const user_menu_icon_class = "fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300"
 
-const user_dropdown_menugrp_class = "flex flex-col gap-1 order-b order-gray-200 ark:border-gray-800 t-4 b-3"
+const user_dropdown_menugrp_class = "flex flex-col gap-1 border-b border-gray-200 dark:border-gray-800 t-4 b-3"
 
 const user_dropdown_menu_class = "group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
 
 const user_dropdown_email_class = "text-theme-xs mt-0.5 block text-gray-500 dark:text-gray-400"
 
-const user_dropdown_username_class = "text-theme-sm block ont-medium text-gray-700 dark:text-gray-400"
+const user_dropdown_username_class = "text-theme-sm block font-medium text-gray-700 dark:text-gray-400"
 
 const user_btn_class = "group text-theme-sm mt-3 flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"

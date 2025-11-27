@@ -78,7 +78,7 @@ pub fn support(in: Svg) -> Svg {
   ])
 }
 
-pub fn ai_assistent(in: Svg) -> Svg {
+pub fn robot(in: Svg) -> Svg {
   let el = el.att(in.el, [#("fill", "none")])
   Svg(..in, el:, path: [
     [

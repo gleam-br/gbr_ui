@@ -8,13 +8,11 @@ import lustre/attribute as a
 import lustre/element
 import lustre/element/html
 
-import gbr/ui/core/el
-import gbr/ui/core/model.{type UIRender}
-
-import gbr/ui/logo.{type UILogo}
-
 import gbr/ui/admin/button
 import gbr/ui/admin/user
+import gbr/ui/core/el
+import gbr/ui/core/model.{type UIRender}
+import gbr/ui/logo.{type UILogo}
 
 type Header =
   UIHeader
@@ -64,8 +62,6 @@ pub opaque type UIHeaderRender(a) {
 /// New header super element
 ///
 /// - id: Identification html element
-/// - sidebar: Logo info
-/// - appnav: User info
 ///
 pub fn new(id: String) {
   let el =

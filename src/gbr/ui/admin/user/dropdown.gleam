@@ -2,9 +2,8 @@
 ////
 ////
 
-import gleam/function
 import gleam/list
-import gleam/option.{type Option, Some}
+import gleam/option.{type Option, None, Some}
 
 import gbr/ui/svg
 
@@ -39,7 +38,27 @@ pub fn add_menu_icon(
 }
 
 pub fn add_menu(in: UIDropdown, id: String, text: String) -> UIDropdown {
-  add_menu_icon(in, id, text, function.identity)
+  let UIDropdown(menus:, ..) = in
+  let menu = Item(id:, text:, icon: None)
+
+  UIDropdown(..in, menus: [menu, ..menus])
+}
+
+pub fn add_button(in: UIDropdown, id: String, text: String) -> UIDropdown {
+  let btn = Item(id:, text:, icon: None)
+
+  UIDropdown(..in, buttons: [btn, ..in.buttons])
+}
+
+pub fn add_button_icon(
+  in: UIDropdown,
+  id: String,
+  text: String,
+  icon: svg.Identity,
+) -> UIDropdown {
+  let btn = Item(id:, text:, icon: Some(icon))
+
+  UIDropdown(..in, buttons: [btn, ..in.buttons])
 }
 
 pub fn is_visible(in: UIDropdown) -> Bool {
