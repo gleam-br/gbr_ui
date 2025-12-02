@@ -161,6 +161,10 @@ pub fn att_key(el: El, key, att: Properties) -> El {
   UIEl(..el, att:)
 }
 
+pub fn att_get(el: El, name: String) -> Option(String) {
+  att_get_key(el, el.id, name)
+}
+
 pub fn att_get_key(el: El, key: String, name: String) -> Option(String) {
   dict.get(el.att, key)
   |> option.from_result()

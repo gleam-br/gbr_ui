@@ -66,6 +66,10 @@ pub fn label(in: Select, label: Text) -> Select {
   UISelect(..in, label: Some(label))
 }
 
+/// Set placeholder to multi-select
+///
+/// > Only multi-select support
+///
 pub fn placeholder(in: Select, placeholder: String) -> Select {
   let el = el.att(in.el, [#("placeholder", placeholder)])
 
@@ -87,8 +91,8 @@ pub fn multi(in: Select, multi: Bool) -> Select {
 /// Update select based by event occurs.
 ///
 pub fn selected(in: Select, value: String) -> Select {
-  let UISelect(items:, ..) = in
-  let items = items_toggle(value, items)
+  let UISelect(items:, multi:, ..) = in
+  let items = items_toggle(items, value, multi)
 
   UISelect(..in, items:)
 }
@@ -122,18 +126,38 @@ pub fn render(at: Render(a)) -> UIRender(a) {
 
   use <- bool.guard(multi, do_multi(id, label, items))
 
-  let onchange =
+  let evt_onchange =
     option.map(onchange, event.on_change)
+    |> option.unwrap(a.none())
+  let evt_oninput =
+    option.map(onchange, event.on_input)
     |> option.unwrap(a.none())
 
   let attrs =
     el.class(el, select_class)
     |> el.attrs()
 
+  let attrs = list.append([evt_onchange, evt_oninput], attrs)
+
+  let placeholder =
+    el.att_get(el, "placeholder")
+    |> option.map(fn(pholder) {
+      html.option(
+        [
+          a.disabled(True),
+          a.selected(True),
+          a.hidden(True),
+          a.value(""),
+        ],
+        pholder,
+      )
+    })
+    |> option.unwrap(element.none())
+
   html.div([], [
     label,
     html.div([a.class(container_class)], [
-      html.select([onchange, ..attrs], do_items(items)),
+      html.select(attrs, [placeholder, ..do_items(items)]),
       html.span([a.class(icon_class)], [
         svg.new(20, 20)
         |> svg_icons.arrow()
@@ -147,12 +171,15 @@ pub fn render(at: Render(a)) -> UIRender(a) {
 // PRIVATE
 //
 
-fn items_toggle(value, items: Items) {
+fn items_toggle(items: Items, value, multi) {
   use item <- list.map(items)
+  let is_equals = item.value == value
 
-  use <- bool.guard(item.value != value, item)
-
-  UISelectItem(..item, selected: True)
+  case is_equals, multi {
+    _, False -> UISelectItem(..item, selected: is_equals)
+    True, True -> UISelectItem(..item, selected: True)
+    False, True -> item
+  }
 }
 
 fn do_multi(id, label, items) -> UIRender(a) {
@@ -240,14 +267,11 @@ fn do_items(items) {
   use option <- list.map(items)
 
   let UISelectItem(value:, label:, selected:) = option
-  let classes = case selected {
-    True -> option_class <> " " <> option_selected_class
-    False -> option_class
-  }
 
   html.option(
     [
-      a.class(classes),
+      a.class(option_class),
+      a.classes([#(option_selected_class, selected)]),
       a.value(value),
       a.selected(selected),
     ],
