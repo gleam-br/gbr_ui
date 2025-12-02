@@ -97,6 +97,12 @@ pub fn toggle(in: Sidebar) -> Sidebar {
   UISidebar(..in, open: !in.open)
 }
 
+/// Get menu by id
+///
+pub fn menu(in: Sidebar, id: String) -> Option(Menu) {
+  menu.find_menu(in.root, id)
+}
+
 /// Set current selected menu
 ///
 /// - in: Sidebar element

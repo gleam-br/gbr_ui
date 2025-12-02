@@ -107,23 +107,24 @@ pub fn parent(in: Menu) -> Option(String) {
   in.parent
 }
 
+/// Is menu group menu witch contains inner
+///
 pub fn is_menu_group(menu: Menu) -> Bool {
   !list.is_empty(menu.inner)
 }
 
+/// Is menu child that is parent menu
+///
 pub fn is_menu_child(menu: Menu, id: String) -> Bool {
   is_menu_child_inner(menu.inner, id)
 }
 
-fn is_menu_child_inner(inner: List(Menu), id: String) -> Bool {
-  use menu <- list.any(inner)
-
-  use <- bool.guard(menu.id == id, True)
-
-  case menu.inner {
-    [] -> False
-    inner -> is_menu_child_inner(inner, id)
-  }
+/// Find menu by id
+///
+pub fn find_menu(menus: List(Menu), id) -> Option(Menu) {
+  all_(menus)
+  |> list.find(fn(m) { m.id == id })
+  |> option.from_result()
 }
 
 /// New render sidebar menu element
@@ -192,6 +193,23 @@ pub fn render(
 // PRIVATE
 //
 
+fn all_(menus: List(Menu)) {
+  use m <- list.flat_map(menus)
+
+  [m, ..all_(m.inner)]
+}
+
+fn is_menu_child_inner(inner: List(Menu), id: String) -> Bool {
+  use menu <- list.any(inner)
+
+  use <- bool.guard(menu.id == id, True)
+
+  case menu.inner {
+    [] -> False
+    inner -> is_menu_child_inner(inner, id)
+  }
+}
+
 fn render_icon(svg, is_selected) {
   case svg {
     None -> element.none()
@@ -239,6 +257,7 @@ fn menu_group(menu: Menu, open, selected, onclick) {
     html.li([a.id(id)], [
       html.a(
         [
+          a.href(id),
           a.class("menu-item group cursor-pointer"),
           a.classes([
             #("menu-item-active", is_selected),
@@ -324,6 +343,7 @@ fn menu_item(menu, open, selected, onclick) -> UIKeyed(a) {
     html.li([a.id(id)], [
       html.a(
         [
+          a.href(id),
           a.class("menu-dropdown-item group cursor-pointer"),
           a.classes([
             #("menu-dropdown-item-active", is_selected),
