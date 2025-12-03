@@ -1,10 +1,10 @@
 ////
-//// Gleam UI input select super element.
+//// Gleam UI select super element.
 ////
 
 import gleam/bool
 import gleam/list
-import gleam/option.{type Option, None, Some}
+import gleam/option
 
 import lustre/attribute as a
 import lustre/element
@@ -13,357 +13,104 @@ import lustre/event
 
 import gbr/ui/svg
 import gbr/ui/svg/icons as svg_icons
-import gbr/ui/typo
 
 import gbr/ui/core/el
-import gbr/ui/core/model.{type UIRender}
+import gbr/ui/core/model.{type UIRender} as _core_model
 
-type Select =
-  UISelect
+import gbr/ui/admin/select/model.{UISelect, UISelectRender}
+import gbr/ui/admin/select/multi
 
-type Item =
-  UISelectItem
-
-type Items =
-  List(Item)
+// Alias
+//
 
 type Render(a) =
-  UISelectRender(a)
+  model.UISelectRender(a)
 
-type Text =
-  typo.UITypo
+pub const new = model.new
 
-type OnChange(a) =
-  fn(String) -> a
+pub const label = model.label
 
-/// Select super element.
-///
-pub opaque type UISelect {
-  UISelect(el: el.UIEl, items: Items, multi: Bool, label: Option(Text))
-}
+pub const open = model.open
 
-/// Select render type.
-///
-pub type UISelectRender(a) {
-  UISelectRender(in: Select, onchange: Option(OnChange(a)))
-}
+pub const multi = model.multi
 
-/// Select item (option) type.
-///
-pub type UISelectItem {
-  UISelectItem(value: String, label: String, selected: Bool)
-}
+pub const placeholder = model.placeholder
 
-/// Constructor of select super element.
-///
-pub fn new(id: String) -> Select {
-  UISelect(el: el.new(id), items: [], multi: False, label: None)
-}
+pub const items = model.items
 
-/// Set select title.
-///
-pub fn label(in: Select, label: Text) -> Select {
-  UISelect(..in, label: Some(label))
-}
+pub const selected = model.selected
 
-/// Set placeholder to multi-select
-///
-/// > Only multi-select support
-///
-pub fn placeholder(in: Select, placeholder: String) -> Select {
-  let el = el.att(in.el, [#("placeholder", placeholder)])
+pub const at = model.at
 
-  UISelect(..in, el:)
-}
+pub const onchange = model.onchange
 
-/// Set select items (options).
-///
-pub fn items(in: Select, items) -> Select {
-  UISelect(..in, items:)
-}
-
-/// Set select multi items can selected.
-///
-pub fn multi(in: Select, multi: Bool) -> Select {
-  UISelect(..in, multi:)
-}
-
-/// Update select based by event occurs.
-///
-pub fn selected(in: Select, value: String) -> Select {
-  let UISelect(items:, multi:, ..) = in
-  let items = items_toggle(items, value, multi)
-
-  UISelect(..in, items:)
-}
-
-pub fn at(in: Select) -> Render(a) {
-  UISelectRender(in:, onchange: None)
-}
-
-pub fn onchange(at: Render(a), onchange: OnChange(a)) -> Render(a) {
-  UISelectRender(..at, onchange: Some(onchange))
-}
+pub const ontoggle = model.ontoggle
 
 /// Render select super element to `lustre/element.{type Element}`.
 ///
 pub fn render(at: Render(a)) -> UIRender(a) {
-  let UISelectRender(in:, onchange:) = at
-  let UISelect(el:, items:, multi:, label:) = in
+  let UISelectRender(in:, onchange:, ..) = at
+  let UISelect(el:, items:, multi:, label:, open:) = in
 
-  let id = el.get_id(in.el)
-  let label = case label {
-    None -> element.none()
-    Some(label) ->
-      html.label(
-        [
-          a.for(id),
-          a.class(title_class),
-        ],
-        [typo.render(label)],
-      )
-  }
-
-  use <- bool.guard(multi, do_multi(id, label, items))
+  use <- bool.guard(multi, multi.render(at))
 
   let evt_onchange =
-    option.map(onchange, event.on_change)
+    onchange
+    |> option.map(event.on_change)
     |> option.unwrap(a.none())
   let evt_oninput =
-    option.map(onchange, event.on_input)
+    onchange
+    |> option.map(event.on_input)
     |> option.unwrap(a.none())
-
   let attrs =
-    el.class(el, select_class)
+    el
+    |> el.class(
+      "dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 "
+      <> "dark:focus:border-brand-800 h-11 w-full appearance-none rounded-lg border border-gray-300 "
+      <> "bg-transparent bg-none px-4 py-2.5 pr-11 text-sm focus:ring-3 focus:outline-hidden "
+      <> "dark:border-gray-700 dark:bg-gray-900 text-gray-800 dark:text-white/90",
+    )
     |> el.attrs()
+    |> list.append([evt_onchange, evt_oninput])
 
-  let attrs = list.append([evt_onchange, evt_oninput], attrs)
+  let transform = fn(placeholder) {
+    html.option(
+      [
+        a.class("text-gray-600 dark:text-white/60"),
+        a.disabled(!open),
+        a.selected(True),
+        a.hidden(!open),
+        a.value(""),
+      ],
+      placeholder,
+    )
+  }
 
+  let id = el.get_id(el)
+  let label = model.new_label(id, label)
+  let options = model.new_options(items)
   let placeholder =
     el.att_get(el, "placeholder")
-    |> option.map(fn(pholder) {
-      html.option(
-        [
-          a.disabled(True),
-          a.selected(True),
-          a.hidden(True),
-          a.value(""),
-        ],
-        pholder,
-      )
-    })
+    |> option.map(transform)
     |> option.unwrap(element.none())
 
   html.div([], [
     label,
-    html.div([a.class(container_class)], [
-      html.select(attrs, [placeholder, ..do_items(items)]),
-      html.span([a.class(icon_class)], [
-        svg.new(20, 20)
-        |> svg_icons.arrow()
-        |> svg.class("stroke-current")
-        |> svg.render(),
-      ]),
+    html.div([a.class("relative z-20 bg-transparent")], [
+      html.select(attrs, [placeholder, ..options]),
+      html.span(
+        [
+          a.class(
+            "pointer-events-none absolute top-1/2 right-4 z-30 -translate-y-1/2 text-gray-700 dark:text-gray-400",
+          ),
+        ],
+        [
+          svg.new(20, 20)
+          |> svg_icons.arrow()
+          |> svg.class("stroke-current")
+          |> svg.render(),
+        ],
+      ),
     ]),
   ])
 }
-
-// PRIVATE
-//
-
-fn items_toggle(items: Items, value, multi) {
-  use item <- list.map(items)
-  let is_equals = item.value == value
-
-  case is_equals, multi {
-    _, False -> UISelectItem(..item, selected: is_equals)
-    True, True -> UISelectItem(..item, selected: True)
-    False, True -> item
-  }
-}
-
-fn do_multi(id, label, items) -> UIRender(a) {
-  html.div([], [
-    label,
-    html.div([], [
-      html.select(
-        [
-          a.id(id),
-          a.class("hidden"),
-        ],
-        do_items(items),
-      ),
-      html.div([a.class("flex flex-col items-center")], [
-        html.input([a.type_("hidden"), a.name("values")]),
-        html.div([a.class("relative z-20 inline-block w-full")], [
-          html.div([a.class("relative flex flex-col items-center")], [
-            html.div([a.class("w-full")], [
-              html.div(
-                [
-                  a.class(
-                    "shadow-theme-xs focus:border-brand-300 focus:shadow-focus-ring dark:focus:border-brand-300 mb-2 flex h-11 rounded-lg border border-gray-300 py-1.5 pr-3 pl-3 outline-hidden transition dark:border-gray-700 dark:bg-gray-900",
-                  ),
-                ],
-                [
-                  html.div(
-                    [a.class("flex flex-auto flex-wrap gap-2")],
-                    list.append(do_items_selected_multi(items), [
-                      html.div([], [
-                        html.input([
-                          a.class(case list.is_empty(items) {
-                            True -> "block"
-                            False -> "hidden"
-                          }),
-                          //TODO
-                          //a.placeholder(placeholder),
-                          a.class(
-                            "h-full w-full appearance-none border-0 bg-transparent p-1 pr-2 text-sm outline-hidden placeholder:text-gray-800 focus:border-0 focus:ring-0 focus:outline-hidden dark:placeholder:text-white/90",
-                          ),
-                        ]),
-                      ]),
-                    ]),
-                  ),
-                  html.div([a.class("flex w-7 items-center py-1 pr-1 pl-1")], [
-                    html.button(
-                      [
-                        a.class(
-                          "h-5 w-5 cursor-pointer text-gray-700 outline-hidden focus:outline-hidden dark:text-gray-400",
-                        ),
-                      ],
-                      [
-                        svg.new(20, 20)
-                        |> svg_icons.arrow()
-                        |> svg.class("stroke-current")
-                        |> svg.render(),
-                      ],
-                    ),
-                  ]),
-                ],
-              ),
-            ]),
-            html.div([a.class("w-full px-4")], [
-              html.div(
-                [
-                  a.class(
-                    "max-h-select absolute top-full left-0 z-40 w-full overflow-y-auto rounded-lg bg-white shadow-sm dark:bg-gray-900",
-                  ),
-                ],
-                [
-                  html.div(
-                    [a.class("flex w-full flex-col")],
-                    do_items_multi(items),
-                  ),
-                ],
-              ),
-            ]),
-          ]),
-        ]),
-      ]),
-    ]),
-  ])
-}
-
-fn do_items(items) {
-  use option <- list.map(items)
-
-  let UISelectItem(value:, label:, selected:) = option
-
-  html.option(
-    [
-      a.class(option_class),
-      a.classes([#(option_selected_class, selected)]),
-      a.value(value),
-      a.selected(selected),
-    ],
-    label,
-  )
-}
-
-fn do_items_multi(items) {
-  use option <- list.map(filter_items_selected(items, False))
-  html.div([], [
-    html.div(
-      [
-        a.class(
-          "hover:bg-primary/5 w-full cursor-pointer rounded-t border-b border-gray-200 dark:border-gray-800",
-        ),
-      ],
-      [
-        html.div(
-          [
-            a.class(
-              "relative flex w-full items-center border-l-2 border-transparent p-2 pl-2",
-            ),
-          ],
-          [
-            html.div([a.class("flex w-full items-center")], [
-              html.div(
-                [
-                  a.class("mx-2 leading-6 text-gray-800 dark:text-white/90"),
-                  a.value(option.value),
-                ],
-                [html.text(option.label)],
-              ),
-            ]),
-          ],
-        ),
-      ],
-    ),
-  ])
-}
-
-fn do_items_selected_multi(items) {
-  use option <- list.map(filter_items_selected(items, True))
-
-  html.div(
-    [
-      a.class(
-        "group flex items-center justify-center rounded-full border-[0.7px] border-transparent bg-gray-100 py-1 pr-2 pl-2.5 text-sm text-gray-800 hover:border-gray-200 dark:bg-gray-800 dark:text-white/90 dark:hover:border-gray-800",
-      ),
-    ],
-    [
-      html.div(
-        [
-          a.class("max-w-full flex-initial"),
-          a.value(option.value),
-        ],
-        [
-          html.text(option.label),
-        ],
-      ),
-      html.div([a.class("flex flex-auto flex-row-reverse")], [
-        html.div(
-          [
-            a.class(
-              "cursor-pointer pl-2 text-gray-500 group-hover:text-gray-400 dark:text-gray-400",
-            ),
-          ],
-          [
-            svg.new(14, 14)
-            |> svg_icons.close()
-            |> svg.render(),
-          ],
-        ),
-      ]),
-    ],
-  )
-}
-
-fn filter_items_selected(options, is_selected) {
-  use opt <- list.filter(options)
-  let UISelectItem(selected:, ..) = opt
-
-  selected == is_selected
-}
-
-const title_class = "mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"
-
-const container_class = "relative z-20 bg-transparent"
-
-const select_class = "dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
-
-const option_class = "text-gray-700 dark:bg-gray-900 dark:text-gray-400"
-
-const option_selected_class = "text-gray-800 dark:text-white/90"
-
-const icon_class = "pointer-events-none absolute top-1/2 right-4 z-30 -translate-y-1/2 text-gray-700 dark:text-gray-400"
