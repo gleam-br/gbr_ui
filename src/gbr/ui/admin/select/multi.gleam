@@ -1,56 +1,6 @@
 ////
+//// Gleam UI multi select element
 ////
-////
-////
-
-// function dropdown() {
-//   return {
-//     options: [],
-//     selected: [],
-//     show: false,
-//     open() {
-//       this.show = true;
-//     },
-//     close() {
-//       this.show = false;
-//     },
-//     isOpen() {
-//       return this.show === true;
-//     },
-//     select(index, event) {
-//       if (!this.options[index].selected) {
-//         this.options[index].selected = true;
-//         this.options[index].element = event.target;
-//         this.selected.push(index);
-//       } else {
-//         this.selected.splice(this.selected.lastIndexOf(index), 1);
-//         this.options[index].selected = false;
-//       }
-//     },
-//     remove(index, option) {
-//       this.options[option].selected = false;
-//       this.selected.splice(index, 1);
-//     },
-//     loadOptions() {
-//       const options = document.getElementById("select").options;
-//       for (let i = 0; i < options.length; i++) {
-//         this.options.push({
-//           value: options[i].value,
-//           text: options[i].innerText,
-//           selected:
-//             options[i].getAttribute("selected") != null
-//               ? options[i].getAttribute("selected")
-//               : false,
-//         });
-//       }
-//     },
-//     selectedValues() {
-//       return this.selected.map((option) => {
-//         return this.options[option].value;
-//       });
-//     },
-//   };
-// }
 
 import gleam/bool
 import gleam/list
@@ -92,7 +42,7 @@ pub fn render(at: Render(a)) {
     |> new_placeholder(items_selected_empty)
   let options = model.new_options(items)
 
-  let onclick =
+  let ontoggleclick =
     ontoggle
     |> option.map(fn(ontoggle) { event.on_click(ontoggle(False)) })
     |> option.unwrap(a.none())
@@ -126,13 +76,14 @@ pub fn render(at: Render(a)) {
         ],
         options,
       ),
+      // bag with remove icon to selected options
       html.div(
         [
           a.class(
             "shadow-theme-xs flex min-h-11 cursor-pointer gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 transition dark:border-gray-700 dark:bg-gray-900",
           ),
-          // toggle is open
-          onclick,
+          // toggle dropdown open/close
+          ontoggleclick,
         ],
         [
           //list of options selected
@@ -159,6 +110,7 @@ pub fn render(at: Render(a)) {
           ]),
         ],
       ),
+      // dropdown not selected options
       html.div(
         [
           a.class(
