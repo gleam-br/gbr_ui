@@ -2,13 +2,11 @@
 //// Gleam UI admin multi select element
 ////
 
-import gleam/bool
 import gleam/list
 import gleam/option.{type Option, None, Some}
-import gleam/string
-import lustre/element
 
 import lustre/attribute as a
+import lustre/element
 import lustre/element/html
 
 import gbr/ui/core/el
@@ -36,7 +34,7 @@ type OnChange(a) =
   fn(String) -> a
 
 type OnToggle(a) =
-  a
+  fn(Bool) -> a
 
 /// Select super element
 ///

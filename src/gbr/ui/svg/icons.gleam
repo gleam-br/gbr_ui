@@ -263,7 +263,8 @@ pub fn bell(svg: Svg) -> Svg {
 }
 
 pub fn arrow(svg: Svg) -> Svg {
-  core.stroke_none(svg, "M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585")
+  // core.stroke_none(svg, "M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585")
+  core.stroke_none(svg, "M19 9l-7 7-7-7")
 }
 
 pub fn copy(svg: Svg) -> Svg {
