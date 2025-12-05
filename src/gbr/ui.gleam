@@ -113,8 +113,15 @@ pub fn loader(loading: Bool) -> UIRender(a) {
 /// List of elements to one element with horizontal layout inner elements.
 ///
 pub fn horizontal(inner: UIRenders(a)) -> UIRender(a) {
-  html.div([class(horizontal_class)], [
-    html.div([class(horizontal_main_class)], inner),
+  html.div([class("relative z-1 bg-white p-6 sm:p-0 dark:bg-gray-900")], [
+    html.div(
+      [
+        class(
+          "relative flex h-screen w-full flex-col justify-center sm:p-0 lg:flex-row dark:bg-gray-900",
+        ),
+      ],
+      inner,
+    ),
   ])
 }
 
@@ -187,13 +194,34 @@ pub fn grid(
   right: UIRenders(a),
   inner: UIRenders(a),
 ) -> UIRender(a) {
-  html.div([class(grid_content_class)], [
-    html.div([class(grid_main_class)], [
-      html.div([class(grid_left_class)], left),
-      html.div([class(grid_right_class)], right),
-      ..inner
-    ]),
-  ])
+  html.div(
+    [
+      class(
+        "bg-brand-950 relative hidden h-full w-full items-center lg:grid lg:w-1/2 dark:bg-white/5",
+      ),
+    ],
+    [
+      html.div([class("z-1 flex items-center justify-center")], [
+        html.div(
+          [
+            class(
+              "absolute right-0 top-0 -z-1 w-full max-w-[250px] xl:max-w-[450px]",
+            ),
+          ],
+          left,
+        ),
+        html.div(
+          [
+            class(
+              "absolute bottom-0 left-0 -z-1 w-full max-w-[250px] rotate-180 xl:max-w-[450px]",
+            ),
+          ],
+          right,
+        ),
+        ..inner
+      ]),
+    ],
+  )
 }
 
 /// UI boxes layout
@@ -262,18 +290,6 @@ const main_class = "flex h-screen overflow-hidden bg-gray-100 dark:bg-gray-900"
 const main_content_class = "relative flex flex-1 flex-col overflow-x-hidden overflow-y-auto"
 
 const main_body_class = "mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6"
-
-const horizontal_class = "relative p-6 sm:p-0"
-
-const horizontal_main_class = "relative flex flex-col justify-center w-full h-screen bg-white dark:bg-gray-900 sm:p-0 lg:flex-row"
-
-const grid_content_class = "relative items-center hidden w-full h-full bg-brand-950 dark:bg-white/5 lg:grid lg:w-1/2"
-
-const grid_main_class = "flex items-center justify-center z-1"
-
-const grid_left_class = "absolute right-0 top-0 -z-1 w-full max-w-[250px] xl:max-w-[450px]"
-
-const grid_right_class = "absolute bottom-0 left-0 -z-1 w-full max-w-[250px] rotate-180 xl:max-w-[450px]"
 
 const box_class = "mx-auto mb-10 w-full max-w-60 rounded-2xl bg-gray-50 px-4 py-5 text-center dark:bg-white/[0.03]"
 

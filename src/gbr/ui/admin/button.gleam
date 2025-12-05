@@ -188,7 +188,7 @@ pub fn primary(in: Button) -> Button {
 
 /// New button render at right inner and onclick event.
 ///
-pub fn at_right(in: Button, inner: UIRenders(a)) -> Render(a) {
+pub fn at_left(in: Button, inner: UIRenders(a)) -> Render(a) {
   let UIButton(text:, ..) = in
 
   let inner = case text {
@@ -201,7 +201,7 @@ pub fn at_right(in: Button, inner: UIRenders(a)) -> Render(a) {
 
 /// New button render at left inner and onclick event.
 ///
-pub fn at_left(in: Button, inner: UIRenders(a)) -> Render(a) {
+pub fn at_right(in: Button, inner: UIRenders(a)) -> Render(a) {
   let UIButton(text:, ..) = in
   let inner = case text {
     Some(text) -> [html.text(text), ..inner]
@@ -293,6 +293,9 @@ pub fn sidebar(id: String, open: Bool, onclick: Option(a)) -> UIRender(a) {
 }
 
 /// Render dark mode toggle button.
+///
+/// - id: Html id
+/// - onclick: Event on click
 ///
 pub fn dark_mode(id: String, onclick: Option(a)) -> UIRender(a) {
   let button =

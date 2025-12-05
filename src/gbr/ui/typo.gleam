@@ -17,6 +17,7 @@ type Behavior {
   H4
   Text
   Paragraph
+  Label(String)
 }
 
 pub type UITypos =
@@ -44,6 +45,12 @@ pub fn h4(text: String) -> UITypo {
 ///
 pub fn p(text: String) -> UITypo {
   UITypo(el.new("text-p"), text:, behavior: Paragraph)
+}
+
+/// Paragraph super element.
+///
+pub fn label(for: String, text: String) -> UITypo {
+  UITypo(el.new("text-label"), text:, behavior: Label(for))
 }
 
 /// Replace text string in typo element
@@ -100,6 +107,7 @@ pub fn render(in: UITypo) -> UIRender(a) {
     H4 -> html.h4(attrs, [html.text(text)])
     Text -> html.span(attrs, [html.text(text)])
     Paragraph -> html.p(attrs, [html.text(text)])
+    Label(id) -> html.label([a.for(id), ..attrs], [html.text(text)])
   }
 }
 

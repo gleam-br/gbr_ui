@@ -26,9 +26,6 @@ type Input =
 type InputRender(a) =
   input.UIInputRender(a)
 
-type Text =
-  typo.UITypo
-
 /// Checkbox super element.
 ///
 pub opaque type UICheckbox {
@@ -55,10 +52,10 @@ pub fn checked(in: Checkbox, checked: Bool) -> Checkbox {
 
 /// Set checkbox label.
 ///
-pub fn label(in: Checkbox, label: Text) -> Checkbox {
+pub fn label(in: Checkbox, label: String) -> Checkbox {
   let el =
-    typo.class(label, class_label)
-    |> input.label(in.el, _)
+    input.label(in.el, label)
+    |> input.label_class(class_label)
 
   UICheckbox(..in, el:)
 }

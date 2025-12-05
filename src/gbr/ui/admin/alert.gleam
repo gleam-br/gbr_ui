@@ -121,6 +121,7 @@ pub fn error(in: Alert) -> Alert {
 /// New alert render element.
 ///
 /// - in: Alert info
+/// - inner: List of elements to show in footer alert dialog
 ///
 pub fn at(in: Alert, inner: UIRenders(a)) -> Render(a) {
   UIAlertRender(in:, inner:)

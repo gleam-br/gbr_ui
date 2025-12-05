@@ -83,8 +83,7 @@ pub fn checkbox(id: String) -> Input {
 pub fn new(id: String, kind: String) -> Input {
   let el =
     el.new(id)
-    // lustre/attribute.type_(kind)
-    |> el.att([#("type_", kind)])
+    |> el.att([#("type", kind)])
 
   UIInput(el:, value: "", label: None, note: None)
 }
@@ -103,8 +102,19 @@ pub fn value(in: Input, value: String) -> Input {
   UIInput(..in, value:)
 }
 
-pub fn label(in: Input, label: Text) -> Input {
+pub fn label(in: Input, label: String) -> Input {
+  let id = el.get_id(in.el)
+  let label = typo.label(id, label)
+
   UIInput(..in, label: Some(label))
+}
+
+pub fn label_class(in: Input, class: String) -> Input {
+  let label =
+    in.label
+    |> option.map(typo.class(_, class))
+
+  UIInput(..in, label:)
 }
 
 pub fn note(in: Input, note: Text) -> Input {
@@ -136,7 +146,7 @@ pub fn required(in: Input, value: String) -> Input {
 }
 
 pub fn kind(in: Input, kind: String) -> Input {
-  let el = el.att(in.el, [#("type_", kind)])
+  let el = el.att(in.el, [#("type", kind)])
 
   UIInput(..in, el:)
 }
@@ -262,18 +272,18 @@ pub fn render(at: Render(a)) -> UIRender(a) {
     })
     |> option.unwrap(a.none())
   // attrs
-  let id = el.get_id(el)
   let label = case label {
-    Some(label) -> html.label([a.for(id)], [typo.render(label)])
+    Some(label) -> typo.render(label)
     None -> element.none()
   }
   let attrs = el.attrs(el)
   // input
   let input =
     html.input([onclick, oninput, onchange, onpaste, onkeypress, ..attrs])
-  let input = case note {
-    None -> html.div([], [input, ..inner])
-    Some(note) ->
+  let input = case note, inner {
+    None, [] -> html.div([], [input])
+    None, inner -> html.div([a.class("relative")], [input, ..inner])
+    Some(note), inner ->
       html.div([a.class("relative")], [input, typo.render(note), ..inner])
   }
 

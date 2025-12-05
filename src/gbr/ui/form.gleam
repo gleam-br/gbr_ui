@@ -60,14 +60,20 @@ pub fn at(in: Form) -> Render(a) {
 
 /// New form render at inline behavior.
 ///
-pub fn at_inline(in: Form, inner: UIRenders(a)) -> Render(a) {
+pub fn at_inner(in: Form, inner: UIRenders(a)) -> Render(a) {
   UIFormRender(in:, inner:, onsubmit: None)
 }
 
 /// Set form render on submit event.
 ///
-pub fn on_submit(in: Render(a), onsubmit: OnSubmit(a)) -> Render(a) {
-  UIFormRender(..in, onsubmit: Some(onsubmit))
+pub fn onsubmit(in: Render(a), onsubmit: OnSubmit(a)) -> Render(a) {
+  onsubmit_opt(in, Some(onsubmit))
+}
+
+/// Set form render on submit event.
+///
+pub fn onsubmit_opt(in: Render(a), onsubmit: Option(OnSubmit(a))) -> Render(a) {
+  UIFormRender(..in, onsubmit:)
 }
 
 /// Render form super element to `lustre/element/html.{form}`.
@@ -83,21 +89,4 @@ pub fn render(at: Render(a)) -> UIRender(a) {
     |> option.unwrap(a.none())
 
   html.form([onsubmit, ..attrs], inner)
-}
-
-/// Render form input icon eye to password fields.
-/// - open: True is open or close.
-/// - attributes: `lustre/attribute.{*}` | `lustre.event.{*}`
-///
-pub fn eye(open: Bool, attributes: model.UIAttrs(a)) {
-  let transform = case open {
-    True -> form.eye_open
-    False -> form.eye_close
-  }
-
-  html.span(attributes, [
-    svg.new(20, 20)
-    |> transform()
-    |> svg.render(),
-  ])
 }

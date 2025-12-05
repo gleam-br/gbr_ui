@@ -2,7 +2,6 @@
 //// Gleam UI select super element.
 ////
 
-import gleam/bool
 import gleam/list
 import gleam/option
 
@@ -15,7 +14,6 @@ import gbr/ui/svg
 import gbr/ui/svg/icons as svg_icons
 
 import gbr/ui/core/el
-import gbr/ui/core/model.{type UIRender} as _core_model
 
 import gbr/ui/admin/select/model.{UISelect, UISelectRender}
 import gbr/ui/admin/select/multi
@@ -48,11 +46,19 @@ pub const ontoggle = model.ontoggle
 
 /// Render select super element to `lustre/element.{type Element}`.
 ///
-pub fn render(at: Render(a)) -> UIRender(a) {
-  let UISelectRender(in:, onchange:, ..) = at
-  let UISelect(el:, items:, multi:, label:, open:) = in
+pub fn render(at: Render(a)) -> element.Element(a) {
+  case at.in.multi {
+    True -> multi.render(at)
+    False -> one_render(at)
+  }
+}
 
-  use <- bool.guard(multi, multi.render(at))
+// PRIVATE
+//
+
+fn one_render(at) {
+  let UISelectRender(in:, onchange:, ontoggle:) = at
+  let UISelect(el:, items:, label:, open:, ..) = in
 
   let evt_onchange =
     onchange
@@ -62,13 +68,17 @@ pub fn render(at: Render(a)) -> UIRender(a) {
     onchange
     |> option.map(event.on_input)
     |> option.unwrap(a.none())
+  // let evt_ontoggle =
+  //   ontoggle
+  //   |> option.map(fn(ontoggle) { event.on_click(ontoggle(False)) })
+  //   |> option.unwrap(a.none())
   let attrs =
     el
     |> el.class(
       "dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 "
       <> "dark:focus:border-brand-800 h-11 w-full appearance-none rounded-lg border border-gray-300 "
-      <> "bg-transparent bg-none px-4 py-2.5 pr-11 text-sm focus:ring-3 focus:outline-hidden "
-      <> "dark:border-gray-700 dark:bg-gray-900 text-gray-800 dark:text-white/90",
+      <> "bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 placeholder:text-gray-400 "
+      <> "focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30",
     )
     |> el.attrs()
     |> list.append([evt_onchange, evt_oninput])
@@ -105,10 +115,18 @@ pub fn render(at: Render(a)) -> UIRender(a) {
           ),
         ],
         [
-          svg.new(20, 20)
+          svg.new(24, 24)
           |> svg_icons.arrow()
-          |> svg.class("stroke-current")
+          |> svg.classes([#("rotate-180", open)])
+          |> svg.class(
+            "h-5 w-5 shrink-0 text-gray-500 transition-transform dark:text-gray-400 stroke-current",
+          )
           |> svg.render(),
+          //
+        // svg.new(20, 20)
+        // |> svg_icons.arrow()
+        // |> svg.class("stroke-current")
+        // |> svg.render(),
         ],
       ),
     ]),
