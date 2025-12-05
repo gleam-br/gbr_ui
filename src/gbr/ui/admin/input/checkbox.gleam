@@ -26,22 +26,36 @@ type Input =
 type InputRender(a) =
   input.UIInputRender(a)
 
+type Text =
+  typo.UITypo
+
 /// Checkbox super element.
 ///
 pub opaque type UICheckbox {
-  UICheckbox(el: Input, checked: Bool)
+  UICheckbox(el: Input, label: Text, checked: Bool)
 }
 
 /// Checkbox render type.
 ///
 pub type UICheckboxRender(a) {
-  UICheckboxRender(in: InputRender(a), checked: Bool)
+  UICheckboxRender(in: Checkbox, input: InputRender(a), checked: Bool)
 }
 
 /// New checkbox super element.
 ///
 pub fn new(id: String) -> Checkbox {
-  UICheckbox(el: input.checkbox(id), checked: False)
+  let label =
+    typo.label(id, "")
+    |> typo.class(
+      "flex cursor-pointer items-center text-sm font-normal text-gray-700 select-none dark:text-gray-400",
+    )
+  let el =
+    input.checkbox(id)
+    |> input.class(
+      "mr-3 flex h-5 w-5 items-center justify-center rounded-md border-[1.25px] bg-transparent border-gray-300 dark:border-gray-700",
+    )
+
+  UICheckbox(el:, label:, checked: False)
 }
 
 /// Set checkbox checked or not.
@@ -53,28 +67,26 @@ pub fn checked(in: Checkbox, checked: Bool) -> Checkbox {
 /// Set checkbox label.
 ///
 pub fn label(in: Checkbox, label: String) -> Checkbox {
-  let el =
-    input.label(in.el, label)
-    |> input.label_class(class_label)
+  let label = typo.text(in.label, label)
 
-  UICheckbox(..in, el:)
+  UICheckbox(..in, label:)
 }
 
 /// New checkbox render.
 ///
 pub fn at(in: Checkbox) -> Render(a) {
   let checked = in.checked
-  let in = input.at(in.el, [], [])
+  let input = input.at(in.el, [], [])
 
-  UICheckboxRender(in:, checked:)
+  UICheckboxRender(in:, input:, checked:)
 }
 
 /// Set checkbox render onclick event.
 ///
 pub fn on_click_opt(at: Render(a), onclick: Option(a)) -> Render(a) {
-  let in = input.on_click_opt(at.in, onclick)
+  let input = input.on_click_opt(at.input, onclick)
 
-  UICheckboxRender(..at, in:)
+  UICheckboxRender(..at, input:)
 }
 
 pub fn on_click(in: Render(a), onclick: a) -> Render(a) {
@@ -84,37 +96,30 @@ pub fn on_click(in: Render(a), onclick: a) -> Render(a) {
 /// Render checkbox super element to `lustre/element.{type Element}`.
 ///
 pub fn render(at: Render(a)) -> Element(a) {
-  let UICheckboxRender(in:, checked:) = at
+  let UICheckboxRender(in:, input:, checked:) = at
+  let UICheckbox(label:, ..) = in
 
-  html.div([a.class("relative")], [
-    input.render(in),
-    decorator(checked),
-  ])
-}
-
-// PRIVATE
-//
-
-const class_label = "flex items-center text-sm font-normal text-gray-700 cursor-pointer select-none dark:text-gray-400"
-
-const class_decorator = "mr-3 flex h-5 w-5 items-center justify-center rounded-md border-[1.25px]"
-
-fn decorator(checked) {
-  let class_checked = case checked {
-    True -> " border-brand-500 bg-brand-500"
-    False -> " bg-transparent border-gray-300 dark:border-gray-700"
-  }
-
-  let class_span = case checked {
-    False -> "opacity-0"
-    _ -> ""
-  }
-
-  html.div([a.class(class_decorator <> class_checked)], [
-    html.span([a.class(class_span)], [
-      svg.new(14, 14)
-      |> svg_form.checkbox()
-      |> svg.render(),
+  typo.at_left(label, [
+    html.div([a.class("relative")], [
+      input.render(input),
+      html.div(
+        [
+          a.classes([
+            #("border-brand-500 bg-brand-500", checked),
+            #("bg-transparent border-gray-300 dark:border-gray-700", !checked),
+          ]),
+          a.class(
+            "mr-3 flex h-5 w-5 items-center justify-center rounded-md border-[1.25px] bg-transparent border-gray-300 dark:border-gray-700",
+          ),
+        ],
+        [
+          html.span([a.classes([#("opacity-0", !checked)])], [
+            svg.new(14, 14)
+            |> svg_form.checkbox()
+            |> svg.render(),
+          ]),
+        ],
+      ),
     ]),
   ])
 }

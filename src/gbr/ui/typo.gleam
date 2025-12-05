@@ -99,20 +99,36 @@ pub fn grouped(in: UITypos) -> UIRenders(a) {
 /// Render typo super element to `lustre/element.{type Element}`.
 ///
 pub fn render(in: UITypo) -> UIRender(a) {
+  render_inner(in, [html.text(in.text)])
+}
+
+pub fn at_right(in: UITypo, inner: UIRenders(a)) -> UIRender(a) {
+  let inner = [html.text(in.text), ..inner]
+
+  render_inner(in, inner)
+}
+
+pub fn at_left(in: UITypo, inner: UIRenders(a)) -> UIRender(a) {
+  let inner = list.append(inner, [html.text(in.text)])
+
+  render_inner(in, inner)
+}
+
+// PRIVATE
+//
+
+fn render_inner(in: UITypo, inner: UIRenders(a)) -> UIRender(a) {
   let UITypo(el:, text:, behavior:) = in
 
   let attrs = el.attrs(el)
 
   case behavior {
-    H4 -> html.h4(attrs, [html.text(text)])
-    Text -> html.span(attrs, [html.text(text)])
-    Paragraph -> html.p(attrs, [html.text(text)])
-    Label(id) -> html.label([a.for(id), ..attrs], [html.text(text)])
+    H4 -> html.h4(attrs, inner)
+    Text -> html.span(attrs, inner)
+    Paragraph -> html.p(attrs, inner)
+    Label(id) -> html.label([a.for(id), ..attrs], inner)
   }
 }
-
-// PRIVATE
-//
 
 fn group_reduce(in: UITypos) -> Result(UITypo, Nil) {
   use typo, acc <- list.reduce(in)
