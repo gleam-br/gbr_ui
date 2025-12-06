@@ -65,7 +65,7 @@ pub fn disabled(in: Input, text: String) -> Render(a) {
 }
 
 pub fn loading(in: Input, text: String) -> Render(a) {
-  //todo
+  //todo: dev spinner
   disabled(in, text)
 }
 
