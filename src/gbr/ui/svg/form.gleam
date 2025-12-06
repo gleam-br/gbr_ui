@@ -6,7 +6,9 @@ import gbr/ui/core/el
 import gbr/ui/svg/core.{type Svg, Svg}
 
 pub fn checkbox(svg: Svg) -> Svg {
-  Svg(..svg, path: [
+  let el = el.att(svg.el, [#("fill", "none")])
+
+  Svg(..svg, el:, path: [
     [
       #("stroke", "white"),
       #("stroke-width", "1.94437"),

@@ -52,7 +52,7 @@ pub opaque type UISidebar {
 /// Render sidebar element.
 ///
 pub opaque type UISidebarRender(a) {
-  UISidebarRender(in: Sidebar, onclick: OnClick(a))
+  UISidebarRender(in: Sidebar, onclick: Option(OnClick(a)))
 }
 
 /// New sidebar element
@@ -139,7 +139,7 @@ pub fn selected(in: Sidebar, id: String, menu: Menu) -> Sidebar {
 /// - in: Sidebar info
 /// - onclick: Sidebar menu clicked
 ///
-pub fn at(in: Sidebar, onclick: OnClick(a)) -> Render(a) {
+pub fn at(in: Sidebar, onclick: Option(OnClick(a))) -> Render(a) {
   UISidebarRender(in:, onclick:)
 }
 

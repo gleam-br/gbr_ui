@@ -118,7 +118,7 @@ pub fn at_left(in: UITypo, inner: UIRenders(a)) -> UIRender(a) {
 //
 
 fn render_inner(in: UITypo, inner: UIRenders(a)) -> UIRender(a) {
-  let UITypo(el:, text:, behavior:) = in
+  let UITypo(el:, behavior:, ..) = in
 
   let attrs = el.attrs(el)
 

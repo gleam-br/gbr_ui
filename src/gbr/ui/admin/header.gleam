@@ -133,7 +133,11 @@ pub fn at(in: Header) -> Render(a) {
 /// When chance or open in mobile screen
 ///
 pub fn on_mobile(in: Render(a), on_app: a) -> Render(a) {
-  UIHeaderRender(..in, on_app: Some(on_app))
+  on_mobile_opt(in, Some(on_app))
+}
+
+pub fn on_mobile_opt(in: Render(a), on_app: Option(a)) -> Render(a) {
+  UIHeaderRender(..in, on_app:)
 }
 
 /// On sidebar toggle
@@ -142,8 +146,12 @@ pub fn on_mobile(in: Render(a), on_app: a) -> Render(a) {
 ///
 /// When sidebar button is clicked
 ///
-pub fn on_sidebar(in: Render(a), on_sidebar: a) -> Render(a) {
-  UIHeaderRender(..in, on_sidebar: Some(on_sidebar))
+pub fn on_sidebar(in: Render(a), onsidebar: a) -> Render(a) {
+  on_sidebar_opt(in, Some(onsidebar))
+}
+
+pub fn on_sidebar_opt(in: Render(a), on_sidebar: Option(a)) -> Render(a) {
+  UIHeaderRender(..in, on_sidebar:)
 }
 
 /// On dropdown user info toggle
@@ -153,7 +161,11 @@ pub fn on_sidebar(in: Render(a), on_sidebar: a) -> Render(a) {
 /// When header user element is clicked
 ///
 pub fn on_dropdown(in: Render(a), on_dropdown: a) -> Render(a) {
-  UIHeaderRender(..in, on_dropdown: Some(on_dropdown))
+  on_dropdown_opt(in, Some(on_dropdown))
+}
+
+pub fn on_dropdown_opt(in: Render(a), on_dropdown: Option(a)) -> Render(a) {
+  UIHeaderRender(..in, on_dropdown:)
 }
 
 /// On submit header generic event
@@ -163,7 +175,14 @@ pub fn on_dropdown(in: Render(a), on_dropdown: a) -> Render(a) {
 /// When clicked generic button TODO?
 ///
 pub fn on_submit(in: Render(a), onsubmit: fn(String) -> a) -> Render(a) {
-  UIHeaderRender(..in, on_submit: Some(onsubmit))
+  on_submit_opt(in, Some(onsubmit))
+}
+
+pub fn on_submit_opt(
+  in: Render(a),
+  on_submit: Option(fn(String) -> a),
+) -> Render(a) {
+  UIHeaderRender(..in, on_submit:)
 }
 
 /// On dark mode toggle
@@ -171,7 +190,11 @@ pub fn on_submit(in: Render(a), onsubmit: fn(String) -> a) -> Render(a) {
 /// When dark mode button is clicked
 ///
 pub fn on_darkmode(in: Render(a), on_darkmode: a) -> Render(a) {
-  UIHeaderRender(..in, on_darkmode: Some(on_darkmode))
+  on_darkmode_opt(in, Some(on_darkmode))
+}
+
+pub fn on_darkmode_opt(in: Render(a), on_darkmode: Option(a)) -> Render(a) {
+  UIHeaderRender(..in, on_darkmode:)
 }
 
 /// Render header super element

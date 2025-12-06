@@ -64,7 +64,7 @@ pub opaque type UISidebarMenu {
 /// - onclick: Sidebar menu on click event
 ///
 pub opaque type UISidebarMenuRender(a) {
-  UISidebarMenuRender(in: UISidebarMenu, onclick: OnClick(a))
+  UISidebarMenuRender(in: UISidebarMenu, onclick: Option(OnClick(a)))
 }
 
 /// New sidebar menu super element
@@ -129,7 +129,7 @@ pub fn find_menu(menus: List(Menu), id) -> Option(Menu) {
 
 /// New render sidebar menu element
 ///
-pub fn at(in: Menu, onclick: OnClick(a)) -> Render(a) {
+pub fn at(in: Menu, onclick: Option(OnClick(a))) -> Render(a) {
   UISidebarMenuRender(in:, onclick:)
 }
 
@@ -263,7 +263,9 @@ fn menu_group(menu: Menu, open, selected, onclick) {
             #("menu-item-active", is_selected),
             #("menu-item-inactive", !is_selected),
           ]),
-          event.on_click(onclick(id, menu)),
+          onclick
+            |> option.map(fn(onclick) { event.on_click(onclick(id, menu)) })
+            |> option.unwrap(a.none()),
         ],
         [
           render_icon(svg, is_selected),
@@ -349,7 +351,9 @@ fn menu_item(menu, open, selected, onclick) -> UIKeyed(a) {
             #("menu-dropdown-item-active", is_selected),
             #("menu-dropdown-item-inactive", !is_selected),
           ]),
-          event.on_click(onclick(id, menu)),
+          onclick
+            |> option.map(fn(onclick) { event.on_click(onclick(id, menu)) })
+            |> option.unwrap(a.none()),
         ],
         [
           render_icon(svg, is_selected),
