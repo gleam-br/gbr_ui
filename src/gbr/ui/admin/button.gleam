@@ -155,6 +155,12 @@ pub fn label(in: Button, text: String) -> Button {
   UIButton(..in, text: Some(text))
 }
 
+pub fn kind(in: Button, kind: String) -> Button {
+  let el = el.att(in.el, [#("type", kind)])
+
+  UIButton(..in, el:)
+}
+
 /// Set button disabled.
 ///
 pub fn disabled(in: Button, disabled: Bool) -> Button {
@@ -333,6 +339,20 @@ pub fn app_nav(id: String, open: Bool, onclick: Option(a)) -> UIRender(a) {
 
   button
   |> do_inner(inner, onclick)
+  |> render()
+}
+
+pub fn loading(id: String) {
+  let inner = [
+    svg.new(24, 24)
+    |> svg_icons.spinner()
+    |> svg.render(),
+  ]
+
+  new(id)
+  |> primary()
+  |> disabled(True)
+  |> do_inner(inner, None)
   |> render()
 }
 

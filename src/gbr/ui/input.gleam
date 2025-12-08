@@ -36,7 +36,7 @@ type Attrs =
 /// Input super element.
 ///
 pub opaque type UIInput {
-  UIInput(el: el.UIEl, value: String, label: Option(Text), note: Option(Text))
+  UIInput(el: el.UIEl, label: Option(Text), note: Option(Text))
 }
 
 /// Input super element.
@@ -84,8 +84,9 @@ pub fn new(id: String, kind: String) -> Input {
   let el =
     el.new(id)
     |> el.att([#("type", kind)])
+    |> el.att([#("name", id)])
 
-  UIInput(el:, value: "", label: None, note: None)
+  UIInput(el:, label: None, note: None)
 }
 
 /// Set element class
@@ -99,7 +100,7 @@ pub fn class(in: Input, class: String) -> Input {
 /// Set input value
 ///
 pub fn value(in: Input, value: String) -> Input {
-  UIInput(..in, value:)
+  attrs(in, [#("value", value)])
 }
 
 pub fn label(in: Input, label: String) -> Input {
@@ -252,7 +253,7 @@ pub fn render(at: Render(a)) -> UIRender(a) {
     onpaste:,
     onkeypress:,
   ) = at
-  let UIInput(el:, label:, note:, ..) = in
+  let UIInput(el:, label:, note:) = in
   // events
   let onclick =
     option.map(onclick, event.on_click)

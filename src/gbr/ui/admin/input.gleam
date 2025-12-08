@@ -3,6 +3,7 @@
 ////
 
 import gleam/option.{type Option}
+import lustre/event
 
 import lustre/attribute as a
 import lustre/element/html
@@ -34,7 +35,12 @@ pub fn primary(in: Input, label: Option(String)) -> Render(a) {
   |> input.at([], [])
 }
 
-pub fn password(in: Input, visible: Bool, label: Option(String)) -> Render(a) {
+pub fn password(
+  in: Input,
+  visible: Bool,
+  label: Option(String),
+  ontoggle: Option(a),
+) -> Render(a) {
   in
   |> set_label(label)
   |> input.class(
@@ -45,7 +51,7 @@ pub fn password(in: Input, visible: Bool, label: Option(String)) -> Render(a) {
     <> "focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 "
     <> "dark:text-white/90 dark:placeholder:text-white/30",
   )
-  |> at_right([eye(!visible)])
+  |> at_right([eye(!visible, ontoggle)])
 }
 
 pub fn success(in: Input, text: String) -> Render(a) {
@@ -123,15 +129,22 @@ const class_right = "absolute z-30 text-gray-500 -translate-y-1/2 cursor-pointer
 
 const class_left = "absolute top-1/2 left-0 flex h-11 -translate-y-1/2 items-center justify-center border-r border-gray-200 dark:border-gray-800 inline-flex gap-1 px-3"
 
-fn eye(open: Bool) {
+fn eye(open, ontoggle) {
   let transform = case open {
     True -> form.eye_open
     False -> form.eye_close
   }
 
-  svg.new(20, 20)
-  |> transform()
-  |> svg.render()
+  let ontoggle =
+    ontoggle
+    |> option.map(event.on_click)
+    |> option.unwrap(a.none())
+
+  html.span([ontoggle], [
+    svg.new(20, 20)
+    |> transform()
+    |> svg.render(),
+  ])
 }
 
 fn set_label(in: Input, label: Option(String)) -> Input {

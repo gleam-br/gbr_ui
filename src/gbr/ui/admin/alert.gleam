@@ -187,7 +187,11 @@ fn svg_status(status) {
 
 fn create_el() {
   el.new("alert")
-  |> el.class("rounded-xl border p-4")
+  |> el.class(
+    "fixed top-20 right-10 z-999999 rounded-xl border p-4 pr-2 w-1/3 "
+    // todo
+    <> "animate-bounce",
+  )
 }
 
 fn classes_el(el, status) {

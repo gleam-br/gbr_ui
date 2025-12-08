@@ -9,7 +9,6 @@ import lustre/attribute as a
 import lustre/element.{type Element}
 import lustre/element/html
 
-import gbr/ui/input
 import gbr/ui/typo
 
 import gbr/ui/svg
@@ -54,6 +53,12 @@ pub fn checked(in: Checkbox, checked: Bool) -> Checkbox {
   UICheckbox(..in, checked:)
 }
 
+/// Toggle checkbox checked or not.
+///
+pub fn toggle(in: Checkbox) -> Checkbox {
+  UICheckbox(..in, checked: !in.checked)
+}
+
 /// Set checkbox label.
 ///
 pub fn label(in: Checkbox, label: String) -> Checkbox {
@@ -95,6 +100,7 @@ pub fn render(at: Render(a)) -> Element(a) {
     html.div([onclick, a.class("relative")], [
       html.input([
         a.id(id),
+        a.name(id),
         a.type_("checkbox"),
         a.class("sr-only"),
         onclick,
