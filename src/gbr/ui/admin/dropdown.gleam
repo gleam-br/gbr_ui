@@ -190,8 +190,8 @@ pub fn render(at: Render(a)) -> UIRender(a) {
         html.text(title),
         svg.new(20, 20)
           |> svg.classes([#("rotate-180", open)])
-          |> icons.arrow_small()
           |> svg.class("stroke-current duration-200 ease-in-out")
+          |> icons.arrow_small()
           |> svg.render(),
       ])
       |> link.onclick_opt(
