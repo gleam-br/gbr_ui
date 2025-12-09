@@ -188,7 +188,7 @@ fn svg_status(status) {
 fn create_el() {
   el.new("alert")
   |> el.class(
-    "fixed top-20 right-10 z-999999 rounded-xl border p-4 pr-2 w-1/3 "
+    "fixed top-20 right-10 z-999999 rounded-xl border p-4 pr-2 max-w-1/3 "
     // todo
     <> "animate-bounce",
   )

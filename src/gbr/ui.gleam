@@ -168,6 +168,37 @@ pub fn primary(
   primary_with_breadcrumb(header:, sidebar:, content:, breadcrumb: None)
 }
 
+/// UI page with title and inner elements
+///
+/// - title: Page title text
+/// - inner: Inner elements
+///
+pub fn page(title: String, inner: UIRenders(a)) -> UIRender(a) {
+  html.div(
+    [
+      class(
+        "rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]",
+      ),
+    ],
+    [
+      html.div([class("px-5 py-4 sm:px-6 sm:py-5")], [
+        html.h3(
+          [class("text-base font-medium text-gray-800 dark:text-white/90")],
+          [html.text(title)],
+        ),
+      ]),
+      html.div(
+        [
+          class(
+            "space-y-6 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-800",
+          ),
+        ],
+        inner,
+      ),
+    ],
+  )
+}
+
 /// UI grid layout with left, right, inner elements.
 ///
 /// Excelent layout to one page message from errors, e.g. 404 or page to payment success message.

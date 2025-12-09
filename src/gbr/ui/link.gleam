@@ -49,10 +49,16 @@ pub opaque type UILinkRender(a) {
 ///
 /// - href: `lustre/attribute.href`
 ///
-pub fn new(href: String) -> Link {
-  let el = el.new(const_key)
+pub fn new(id: String) -> Link {
+  let el = el.new(id)
 
-  UILink(el:, href:)
+  UILink(el:, href: "#")
+}
+
+/// Get id element
+///
+pub fn id(in: Link) -> String {
+  el.get_id(in.el)
 }
 
 pub fn href(in: Link, href: String) -> Link {
@@ -70,7 +76,11 @@ pub fn at(in: Link, inner: UIRenders(a)) -> Render(a) {
 }
 
 pub fn onclick(at: Render(a), onclick: fn(String) -> a) -> Render(a) {
-  UILinkRender(..at, onclick: Some(onclick))
+  onclick_opt(at, Some(onclick))
+}
+
+pub fn onclick_opt(at: Render(a), onclick: Option(fn(String) -> a)) -> Render(a) {
+  UILinkRender(..at, onclick:)
 }
 
 /// Render link super element
@@ -95,5 +105,3 @@ fn map_onclick(href, onclick) {
   })
   |> option.unwrap(a.none())
 }
-
-const const_key = ".link"
