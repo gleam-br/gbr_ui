@@ -118,19 +118,6 @@ pub fn get_id(el: El) -> String {
   el.id
 }
 
-/// Replace custom attributes by id equals key
-///
-/// - el: Element info
-/// - att: Properties to set in key
-///
-/// Uses id like key to set custom attributes to element.
-///
-/// - Equals att_key(el, el.id, value)
-///
-// pub fn att(el: El, att: Properties) -> El {
-//   att_key(el, el.id, att)
-// }
-
 /// Append list of custom attributes
 ///
 /// - el: Element info

@@ -153,10 +153,10 @@ pub fn render(at: Render(a)) -> UIRender(a) {
         html.span([a.class(user_profile_username_class)], [
           html.text(username),
         ]),
-        svg.new(20, 18)
+        svg.new(20, 20)
           |> svg.class(user_arrow_class)
           |> svg.classes([#("rotate-180", is_visible)])
-          |> svg_icons.arrow()
+          |> svg_icons.arrow_small()
           |> svg.render(),
       ],
     ),

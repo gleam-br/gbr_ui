@@ -43,8 +43,10 @@
 //// - [ ] contrast accessibilty 4:5:1
 ////
 
+import gleam/bool
 import gleam/list
 import gleam/option.{type Option, None, Some}
+import gleam/string
 
 import lustre/attribute
 import lustre/element/html
@@ -59,56 +61,10 @@ import gbr/ui/core/model.{type UIRender, type UIRenders, type UISwitches}
 type El =
   el.UIEl
 
-type Type {
-  /// Typically used for less-pronounced actions, including those located: in dialogs, in cards
-  Default
-  // /// High-emphasis, distinguished by their use of elevation and fill. Actions that are primary.
-  // Contained
-  // /// Encourages a user to perform a specific action, such as "Shop Now", "Sign Up".
-  // Cta
-  // /// Appears in front of all screen content, typically as a circular shape with an icon in its center.
-  // Fab
-  // /// Lower-emphasis buttons that are not important but are important funcionality, like FAB but layout rect.
-  // Ghost
-  // /// Medium-emphasis buttons that are important but aren't the primary action.
-  // Outlined
-  // /// Group related options, a group should share a common container, e.g. switch button.
-  // Toggle
-  // /// Signify actions and seek to give depth to a mostly flat page
-  // Raised
-  // /// Should be used for important, final actions that complete a flow.
-  // Filled
-  // /// Reveals a list of options when clicked, allowing a user to select one.
-  // Dropdown
-  // /// Attract user attention, initial actions that is required.
-  // Expendable
-}
-
 type Size {
-  // Xs
-  // Sm
+  Sm
   Md
-  // Lg
-  // Xl
-}
-
-type Shape {
-  Rect
-  // Cirlce
-  // Rounded
-}
-
-type State {
-  /// Enabled to action
-  Enabled
-  /// Disabled to action
-  Disabled
-  // /// On focus
-  // Focus
-  // /// On hover
-  // Hover
-  // /// On pressed
-  // Active
+  Lg
 }
 
 type Button =
@@ -120,14 +76,7 @@ type Render(a) =
 /// Button super element.
 ///
 pub opaque type UIButton {
-  UIButton(
-    el: El,
-    kind: Type,
-    size: Size,
-    state: State,
-    shape: Shape,
-    text: Option(String),
-  )
+  UIButton(el: El, size: Size, disabled: Bool, text: Option(String))
 }
 
 /// Button render type.
@@ -139,14 +88,7 @@ pub type UIButtonRender(a) {
 /// New button super element.
 ///
 pub fn new(id: String) -> Button {
-  UIButton(
-    el: el.new(id),
-    kind: Default,
-    state: Enabled,
-    shape: Rect,
-    size: Md,
-    text: None,
-  )
+  UIButton(el: el.new(id), size: Md, disabled: False, text: None)
 }
 
 /// Set button label.
@@ -155,6 +97,8 @@ pub fn label(in: Button, text: String) -> Button {
   UIButton(..in, text: Some(text))
 }
 
+/// Set html type attribute
+///
 pub fn kind(in: Button, kind: String) -> Button {
   let el = el.att(in.el, [#("type", kind)])
 
@@ -164,10 +108,7 @@ pub fn kind(in: Button, kind: String) -> Button {
 /// Set button disabled.
 ///
 pub fn disabled(in: Button, disabled: Bool) -> Button {
-  case disabled {
-    False -> UIButton(..in, state: Enabled)
-    True -> UIButton(..in, state: Disabled)
-  }
+  UIButton(..in, disabled:)
 }
 
 /// Set button class.
@@ -186,10 +127,28 @@ pub fn classes(in: Button, classes: UISwitches) -> Button {
   UIButton(..in, el:)
 }
 
-/// Set button disabled.
+/// Set button size to medium
+///
+pub fn md(in: Button) -> Button {
+  UIButton(..in, size: Md)
+}
+
+/// Set button size to large
+///
+pub fn lg(in: Button) -> Button {
+  UIButton(..in, size: Lg)
+}
+
+/// Set button primary behavior.
 ///
 pub fn primary(in: Button) -> Button {
   class(in, primary_class)
+}
+
+/// Set button secondary behavior.
+///
+pub fn secondary(in: Button) -> Button {
+  class(in, secondary_class)
 }
 
 /// New button render at right inner and onclick event.
@@ -243,13 +202,20 @@ pub fn on_click(in: Render(a), onclick: a) -> Render(a) {
 ///
 pub fn render(at: Render(a)) -> UIRender(a) {
   let UIButtonRender(in:, inner:, onclick:) = at
-  let UIButton(el:, ..) = in
+  let UIButton(el:, disabled:, size:, ..) = in
 
   let onclick =
     option.map(onclick, event.on_click)
     |> option.unwrap(attribute.none())
 
-  let attrs = [onclick, ..el.attrs(el)]
+  let attrs =
+    el.classes(el, [
+      #("px-4 py-3", size == Md),
+      #("px-5 py-3.5", size == Lg),
+      #("px-0 py-0", size == Sm),
+    ])
+    |> el.attrs()
+  let attrs = [onclick, attribute.disabled(disabled), ..attrs]
 
   html.button(attrs, inner)
 }
@@ -277,7 +243,7 @@ pub fn sidebar(id: String, open: Bool, onclick: Option(a)) -> UIRender(a) {
   let button =
     new(id)
     |> class(sidebar_class)
-    |> classes([#(toggle_class, open)])
+    |> classes([#(sidebar_toggle_class, open)])
 
   let inner = [
     svg.new(12, 16)
@@ -294,7 +260,8 @@ pub fn sidebar(id: String, open: Bool, onclick: Option(a)) -> UIRender(a) {
       |> svg.render(),
   ]
 
-  do_inner(button, inner, onclick)
+  UIButton(..button, size: Sm)
+  |> do_inner(inner, onclick)
   |> render()
 }
 
@@ -318,7 +285,7 @@ pub fn dark_mode(id: String, onclick: Option(a)) -> UIRender(a) {
       |> svg.render(),
   ]
 
-  button
+  UIButton(..button, size: Sm)
   |> do_inner(inner, onclick)
   |> render()
 }
@@ -337,20 +304,23 @@ pub fn app_nav(id: String, open: Bool, onclick: Option(a)) -> UIRender(a) {
     |> svg.render(),
   ]
 
-  button
+  UIButton(..button, size: Sm)
   |> do_inner(inner, onclick)
   |> render()
 }
 
+/// TODO put size here
 pub fn loading(id: String) {
   let inner = [
-    svg.new(24, 24)
+    svg.new(20, 20)
+    |> svg.class("animate-spin")
     |> svg_icons.spinner()
     |> svg.render(),
   ]
 
   new(id)
   |> primary()
+  |> class("w-full")
   |> disabled(True)
   |> do_inner(inner, None)
   |> render()
@@ -363,7 +333,9 @@ fn do_inner(in: Button, inner: UIRenders(a), onclick: Option(a)) -> Render(a) {
   UIButtonRender(in:, inner:, onclick:)
 }
 
-const primary_class = "inline-flex items-center justify-center w-full gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+const primary_class = "inline-flex items-center justify-center gap-2 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 disabled:cursor-not-allowed"
+
+const secondary_class = "inline-flex items-center gap-2 rounded-lg bg-white text-sm font-medium text-gray-700 shadow-theme-xs ring-1 ring-inset ring-gray-300 transition hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700 dark:hover:bg-white/[0.03] cursor-pointer disabled:cursor-not-allowed"
 
 const darkmode_class = "hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
 
@@ -373,4 +345,4 @@ const sidebar_class = "z-99999 flex h-10 w-10 items-center justify-center rounde
 
 const class_back = "inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
 
-const toggle_class = "lg:bg-transparent dark:lg:bg-transparent bg-gray-100 dark:bg-gray-800"
+const sidebar_toggle_class = "lg:bg-transparent dark:lg:bg-transparent bg-gray-100 dark:bg-gray-800"

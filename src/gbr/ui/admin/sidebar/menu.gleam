@@ -285,7 +285,7 @@ fn menu_group(menu: Menu, open, selected, onclick) {
             ],
             [
               svg.new(20, 20)
-              |> svg_icons.arrow()
+              |> svg_icons.arrow_small()
               |> svg.render(),
             ],
           ),

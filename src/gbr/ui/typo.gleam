@@ -43,6 +43,8 @@ pub fn h4(text: String) -> UITypo {
 
 /// Paragraph super element.
 ///
+/// - text: Text of paragraph
+///
 pub fn p(text: String) -> UITypo {
   UITypo(el.new("text-p"), text:, behavior: Paragraph)
 }
