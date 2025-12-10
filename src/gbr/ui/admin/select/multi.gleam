@@ -29,7 +29,7 @@ type Item =
 
 /// Render multi select
 ///
-pub fn render(at: Render(a)) {
+pub fn view(at: Render(a)) {
   let model.UISelectRender(in:, onchange:, ontoggle:) = at
   let model.UISelect(el:, items:, label:, open:, ..) = in
 
@@ -106,7 +106,7 @@ pub fn render(at: Render(a)) {
             |> svg.class(
               "h-5 w-5 shrink-0 text-gray-500 transition-transform dark:text-gray-400 stroke-current",
             )
-            |> svg.render(),
+            |> svg.view(),
           ]),
         ],
       ),
@@ -171,7 +171,7 @@ fn items_selected(
         [
           svg.new(14, 14)
           |> svg_icons.close()
-          |> svg.render(),
+          |> svg.view(),
         ],
       ),
     ],

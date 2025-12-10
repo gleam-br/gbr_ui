@@ -15,7 +15,7 @@
 //// Horizontal:
 ////
 //// ```gleam
-//// pub fn render(in: Login) -> Element(LoginEvent) {
+//// pub fn view(in: Login) -> Element(LoginEvent) {
 ////   let Login(basic:, logo:) = in
 ////
 ////   [basic, logo]
@@ -26,7 +26,7 @@
 //// Main:
 ////
 //// ```gleam
-//// pub fn render(in: AdminHome) -> Element(AdminEvent) {
+//// pub fn view(in: AdminHome) -> Element(AdminEvent) {
 ////   let AdminHome(sidebar:, header:, content:, breadcrumb:) = in
 ////
 ////   ui.primary(header:, sidebar:, content:, breadcrumb:)
@@ -101,7 +101,7 @@ pub fn loader(loading: Bool) -> UIRender(a) {
 /// Supose login render function:
 ///
 /// ```gleam
-/// pub fn render(in: Login) -> Element(LoginEvent) {
+/// pub fn view(in: Login) -> Element(LoginEvent) {
 ///   let Login(basic:, logo:) = in
 ///
 ///   [basic, logo]
@@ -149,7 +149,7 @@ pub fn partial(
 /// Supose admin home render function:
 ///
 /// ```gleam
-/// pub fn render(in: AdminHome) -> Element(AdminEvent) {
+/// pub fn view(in: AdminHome) -> Element(AdminEvent) {
 ///   let AdminHome(sidebar:, header:, content:, breadcrumb:) = in
 ///
 ///   ui.primary(header:, sidebar:, content:, breadcrumb:)
@@ -206,7 +206,7 @@ pub fn page(title: String, inner: UIRenders(a)) -> UIRender(a) {
 /// Supose page 404 with grid img background render function:
 ///
 /// ```gleam
-/// pub fn render() -> Element(Msg) {
+/// pub fn view() -> Element(Msg) {
 ///   let img = html.img([src("/assets/grid-01.svg"), alt("Grid")])
 ///   let inner = [
 ///     html.h1([], [html.text("404: Not found")])

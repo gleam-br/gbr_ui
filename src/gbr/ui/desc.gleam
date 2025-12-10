@@ -86,19 +86,19 @@ pub fn class_content(in: Desc, class: String) -> Desc {
 ///
 /// - in: Desc info
 ///
-pub fn at(in: Desc, inner: UIRenders(a)) -> Render(a) {
+pub fn render(in: Desc, inner: UIRenders(a)) -> Render(a) {
   UIDescRender(in:, inner:)
 }
 
 /// Render description element
 ///
-pub fn render(at: Render(a)) -> UIRender(a) {
+pub fn view(at: Render(a)) -> UIRender(a) {
   let UIDescRender(in:, inner:) = at
   let UIDesc(el:, title:, content:) = in
 
   let attrs = el.attrs(el)
-  let title = typo.render(title)
-  let content = typo.render(content)
+  let title = typo.view(title)
+  let content = typo.view(content)
 
   html.div(attrs, [title, content, ..inner])
 }

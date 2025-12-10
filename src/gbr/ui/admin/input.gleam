@@ -32,7 +32,7 @@ pub fn primary(in: Input, label: Option(String)) -> Render(a) {
       <> "text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden "
       <> "dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30",
   )
-  |> input.at([], [])
+  |> input.render([], [])
 }
 
 pub fn password(
@@ -51,7 +51,7 @@ pub fn password(
     <> "focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 "
     <> "dark:text-white/90 dark:placeholder:text-white/30",
   )
-  |> at_right([eye(!visible, ontoggle)])
+  |> render_right([eye(!visible, ontoggle)])
 }
 
 pub fn success(in: Input, text: String) -> Render(a) {
@@ -75,12 +75,12 @@ pub fn loading(in: Input, text: String) -> Render(a) {
   disabled(in, text)
 }
 
-pub fn at_right(in: Input, inner: UIRenders(a)) -> Render(a) {
-  input.at(in, [a.class(class_right)], inner)
+pub fn render_right(in: Input, inner: UIRenders(a)) -> Render(a) {
+  input.render(in, [a.class(class_right)], inner)
 }
 
-pub fn at_left(in: Input, inner: UIRenders(a)) {
-  input.at(in, [a.class(class_left)], inner)
+pub fn render_left(in: Input, inner: UIRenders(a)) {
+  input.render(in, [a.class(class_left)], inner)
 }
 
 //PRIVATE
@@ -90,7 +90,7 @@ fn state_set(in, text, class, class_note, svg) -> Render(a) {
   let svg =
     svg.new(16, 16)
     |> svg()
-    |> svg.render()
+    |> svg.view()
 
   let input_class = state_class <> " " <> class
   let note_class = state_label_class <> " " <> class_note
@@ -100,7 +100,7 @@ fn state_set(in, text, class, class_note, svg) -> Render(a) {
 
   input.class(in, input_class)
   |> input.note(note)
-  |> input.at([a.class(state_icon_class)], [svg])
+  |> input.render([a.class(state_icon_class)], [svg])
 }
 
 const state_label_class = "text-theme-xs text-error-500 mt-1.5"
@@ -143,7 +143,7 @@ fn eye(open, ontoggle) {
   html.span([ontoggle], [
     svg.new(20, 20)
     |> transform()
-    |> svg.render(),
+    |> svg.view(),
   ])
 }
 

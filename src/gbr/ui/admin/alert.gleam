@@ -123,7 +123,7 @@ pub fn error(in: Alert) -> Alert {
 /// - in: Alert info
 /// - inner: List of elements to show in footer alert dialog
 ///
-pub fn at(in: Alert, inner: UIRenders(a)) -> Render(a) {
+pub fn render(in: Alert, inner: UIRenders(a)) -> Render(a) {
   UIAlertRender(in:, inner:)
 }
 
@@ -133,23 +133,23 @@ pub fn at(in: Alert, inner: UIRenders(a)) -> Render(a) {
 /// - href: Link href attribute
 /// - text: Text to show into link
 ///
-pub fn at_link(in: Alert, href: String, text: String) -> Render(a) {
+pub fn render_link(in: Alert, href: String, text: String) -> Render(a) {
   let inner =
     link.new(href)
     |> link.class(
       "mt-3 inline-block text-sm font-medium text-gray-500 underline dark:text-gray-400",
     )
-    |> link.at([html.text(text)])
-    |> link.render()
+    |> link.render([html.text(text)])
+    |> link.view()
 
-  at(in, [inner])
+  render(in, [inner])
 }
 
 /// Set attribute el.classes by status
 ///
 /// Render super alert element to `lustre/element/html.{div}`.
 ///
-pub fn render(at: Render(a)) -> UIRender(a) {
+pub fn view(at: Render(a)) -> UIRender(a) {
   let UIAlertRender(in:, inner:) = at
   let UIAlert(el:, info:, status:, open:) = in
 
@@ -164,10 +164,10 @@ pub fn render(at: Render(a)) -> UIRender(a) {
       html.div([a.class("-mt-0.5"), classes_icon(status)], [
         svg.new(24, 24)
         |> svg_status(status)
-        |> svg.render(),
+        |> svg.view(),
       ]),
-      desc.at(info, inner)
-        |> desc.render(),
+      desc.render(info, inner)
+        |> desc.view(),
     ]),
   ])
 }

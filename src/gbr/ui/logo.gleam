@@ -135,7 +135,7 @@ pub fn class_small(in: Logo, class: String) {
 
 /// Render logo super element to `lustre/element.{type Element}`.
 ///
-pub fn render(in: Logo) -> UIRender(a) {
+pub fn view(in: Logo) -> UIRender(a) {
   let UILogo(el:, href:, img:, text:) = in
   let icon_only =
     option.map(img, img.is_small_only)
@@ -149,8 +149,8 @@ pub fn render(in: Logo) -> UIRender(a) {
     True -> element.none()
   }
   let img =
-    option.map(img, img.at)
-    |> option.map(img.render)
+    option.map(img, img.render)
+    |> option.map(img.view)
     |> option.unwrap([])
 
   // todo orientation (left or right)
@@ -158,6 +158,6 @@ pub fn render(in: Logo) -> UIRender(a) {
   let inner = list.reverse([text, ..img])
   let inner = html.div(el.attrs(el), inner)
 
-  link.at(href, [inner])
-  |> link.render()
+  link.render(href, [inner])
+  |> link.view()
 }

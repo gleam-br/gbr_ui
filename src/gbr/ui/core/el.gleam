@@ -84,7 +84,7 @@ pub type UIClasses =
 pub type UIStyles =
   dict.Dict(String, Properties)
 
-/// New super element with initial class styled
+/// New element type
 ///
 /// - id: `lustre/attribute.id`
 ///
@@ -114,6 +114,10 @@ pub fn id(el: El, id: String) -> El {
   UIEl(..el, id:)
 }
 
+/// Get identification from element
+///
+/// - el: Element info type
+///
 pub fn get_id(el: El) -> String {
   el.id
 }
@@ -148,10 +152,14 @@ pub fn att_key(el: El, key, att: Properties) -> El {
   UIEl(..el, att:)
 }
 
+/// Get attribute element by name
+///
 pub fn att_get(el: El, name: String) -> Option(String) {
   att_get_key(el, el.id, name)
 }
 
+/// Get attribute element by key and name
+///
 pub fn att_get_key(el: El, key: String, name: String) -> Option(String) {
   dict.get(el.att, key)
   |> option.from_result()
@@ -221,23 +229,6 @@ pub fn classes_key(el: El, key: String, classes: Switches) -> El {
   UIEl(..el, classes:)
 }
 
-pub fn get_classes(el: El, name: String) -> Option(Bool) {
-  get_classes_key(el, el.id, name)
-}
-
-pub fn get_classes_key(el: El, key: String, name: String) -> Option(Bool) {
-  dict.get(el.classes, key)
-  |> option.from_result()
-  |> option.unwrap([])
-  |> list.find(fn(classes_el) {
-    let #(name_el, _) = classes_el
-
-    name == name_el
-  })
-  |> option.from_result()
-  |> option.map(fn(found) { found.1 })
-}
-
 /// Append style attribute element
 ///
 /// - el: Element info
@@ -255,7 +246,7 @@ pub fn style_key(el: El, key: String, styles: Properties) -> El {
   UIEl(..el, styles:)
 }
 
-/// Replace style attribute element
+/// Append style attribute element
 ///
 /// Uses id like key to set style attribute
 ///

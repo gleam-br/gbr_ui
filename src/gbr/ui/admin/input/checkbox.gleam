@@ -69,7 +69,7 @@ pub fn label(in: Checkbox, label: String) -> Checkbox {
 
 /// New checkbox render.
 ///
-pub fn at(in: Checkbox) -> Render(a) {
+pub fn render(in: Checkbox) -> Render(a) {
   let checked = in.checked
 
   UICheckboxRender(in:, checked:, onclick: None)
@@ -87,7 +87,7 @@ pub fn on_click(in: Render(a), onclick: a) -> Render(a) {
 
 /// Render checkbox super element to `lustre/element.{type Element}`.
 ///
-pub fn render(at: Render(a)) -> Element(a) {
+pub fn view(at: Render(a)) -> Element(a) {
   let UICheckboxRender(in:, onclick:, checked:) = at
   let UICheckbox(id:, label:, ..) = in
 
@@ -96,7 +96,7 @@ pub fn render(at: Render(a)) -> Element(a) {
     |> option.map(event.on_click)
     |> option.unwrap(a.none())
 
-  typo.at_left(label, [
+  typo.render_left(label, [
     html.div([onclick, a.class("relative")], [
       html.input([
         a.id(id),
@@ -119,7 +119,7 @@ pub fn render(at: Render(a)) -> Element(a) {
           html.span([a.classes([#("opacity-0", !checked)])], [
             svg.new(14, 14)
             |> svg_form.checkbox()
-            |> svg.render(),
+            |> svg.view(),
           ]),
         ],
       ),

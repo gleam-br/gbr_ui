@@ -168,7 +168,7 @@ pub fn size(in: Input, value: Int) -> Input {
 
 /// New input render at inner.
 ///
-pub fn at(in: Input, attrs: UIAttrs(a), inner: UIRenders(a)) -> Render(a) {
+pub fn render(in: Input, attrs: UIAttrs(a), inner: UIRenders(a)) -> Render(a) {
   let inner = [html.span(attrs, inner)]
 
   UIInputRender(
@@ -243,7 +243,7 @@ pub fn on_keypress_opt(
 
 /// Render input super element to `lustre/element.{type Element}`.
 ///
-pub fn render(at: Render(a)) -> UIRender(a) {
+pub fn view(at: Render(a)) -> UIRender(a) {
   let UIInputRender(
     in:,
     inner:,
@@ -274,7 +274,7 @@ pub fn render(at: Render(a)) -> UIRender(a) {
     |> option.unwrap(a.none())
   // attrs
   let label = case label {
-    Some(label) -> typo.render(label)
+    Some(label) -> typo.view(label)
     None -> element.none()
   }
   let attrs = el.attrs(el)
@@ -285,7 +285,7 @@ pub fn render(at: Render(a)) -> UIRender(a) {
     None, [] -> html.div([], [input])
     None, inner -> html.div([a.class("relative")], [input, ..inner])
     Some(note), inner ->
-      html.div([a.class("relative")], [input, typo.render(note), ..inner])
+      html.div([a.class("relative")], [input, typo.view(note), ..inner])
   }
 
   // label and input

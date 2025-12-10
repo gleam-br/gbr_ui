@@ -78,11 +78,11 @@ pub fn class_small(in: Img, class: String) -> Img {
   UIImg(..in, el:)
 }
 
-pub fn at(in: Img) -> Render(a) {
+pub fn render(in: Img) -> Render(a) {
   UIImgRender(in:, onclick: None)
 }
 
-pub fn render(at: Render(a)) -> UIRenders(a) {
+pub fn view(at: Render(a)) -> UIRenders(a) {
   let UIImgRender(in:, ..) = at
   let UIImg(el:, src:, dark:, small:, small_only:) = in
 

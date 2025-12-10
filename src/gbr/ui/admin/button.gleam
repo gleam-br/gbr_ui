@@ -16,14 +16,14 @@
 ////   let inner = [
 ////     svg.new("id-svg", 20, 20)
 ////       |> icons.back()
-////       |> svg.render()
+////       |> svg.view()
 ////     ]
 ////   ]
 ////   button.new(id)
 ////     |> button.label(label)
-////     |> button.at_left(inner)
+////     |> button.render_left(inner)
 ////     |> button.on_click(onclick)
-////     |> button.render()
+////     |> button.view()
 //// }
 ////```
 ////
@@ -31,22 +31,13 @@
 ////
 //// 🚧 **Work in progress**
 ////
-//// - [ ] type behavior
-//// - [ ] size behavior
-//// - [ ] icon behavior
-////   - [ ] direction top, down, left and right
-////   - [ ] badge styled
-//// - [ ] state behavior
-//// - [ ] shape behavior
 //// - [ ] group behavior
 //// - [ ] loading behavior
 //// - [ ] contrast accessibilty 4:5:1
 ////
 
-import gleam/bool
 import gleam/list
 import gleam/option.{type Option, None, Some}
-import gleam/string
 
 import lustre/attribute
 import lustre/element/html
@@ -153,7 +144,7 @@ pub fn secondary(in: Button) -> Button {
 
 /// New button render at right inner and onclick event.
 ///
-pub fn at_left(in: Button, inner: UIRenders(a)) -> Render(a) {
+pub fn render_left(in: Button, inner: UIRenders(a)) -> Render(a) {
   let UIButton(text:, ..) = in
 
   let inner = case text {
@@ -166,7 +157,7 @@ pub fn at_left(in: Button, inner: UIRenders(a)) -> Render(a) {
 
 /// New button render at left inner and onclick event.
 ///
-pub fn at_right(in: Button, inner: UIRenders(a)) -> Render(a) {
+pub fn render_right(in: Button, inner: UIRenders(a)) -> Render(a) {
   let UIButton(text:, ..) = in
   let inner = case text {
     Some(text) -> [html.text(text), ..inner]
@@ -178,7 +169,7 @@ pub fn at_right(in: Button, inner: UIRenders(a)) -> Render(a) {
 
 /// New button render at default.
 ///
-pub fn at(in: Button) -> Render(a) {
+pub fn render(in: Button) -> Render(a) {
   let UIButton(text:, ..) = in
   let inner = case text {
     Some(text) -> [html.text(text)]
@@ -200,7 +191,7 @@ pub fn on_click(in: Render(a), onclick: a) -> Render(a) {
 
 /// Render button super element to `lustre/element.{type Element}`.
 ///
-pub fn render(at: Render(a)) -> UIRender(a) {
+pub fn view(at: Render(a)) -> UIRender(a) {
   let UIButtonRender(in:, inner:, onclick:) = at
   let UIButton(el:, disabled:, size:, ..) = in
 
@@ -226,15 +217,15 @@ pub fn back(id: String, text: String, onclick: a) -> UIRender(a) {
   let inner = [
     svg.new(20, 20)
     |> svg_icons.back()
-    |> svg.render(),
+    |> svg.view(),
   ]
 
   new(id)
   |> class(class_back)
   |> label(text)
-  |> at_left(inner)
+  |> render_left(inner)
   |> on_click(onclick)
-  |> render()
+  |> view()
 }
 
 /// Render sidebar toggle button.
@@ -249,20 +240,20 @@ pub fn sidebar(id: String, open: Bool, onclick: Option(a)) -> UIRender(a) {
     svg.new(12, 16)
       |> svg_icons.hamburguer_small()
       |> svg.class("hidden lg:block fill-current")
-      |> svg.render(),
+      |> svg.view(),
     svg.new(24, 24)
       |> svg_icons.hamburguer()
       |> svg.classes([#("block lg:hidden", !open), #("hidden", open)])
-      |> svg.render(),
+      |> svg.view(),
     svg.new(24, 24)
       |> svg_icons.cross()
       |> svg.classes([#("block lg:hidden", open), #("hidden", !open)])
-      |> svg.render(),
+      |> svg.view(),
   ]
 
   UIButton(..button, size: Sm)
   |> do_inner(inner, onclick)
-  |> render()
+  |> view()
 }
 
 /// Render dark mode toggle button.
@@ -278,16 +269,16 @@ pub fn dark_mode(id: String, onclick: Option(a)) -> UIRender(a) {
     svg.new(20, 20)
       |> svg_icons.moon()
       |> svg.class("hidden dark:block")
-      |> svg.render(),
+      |> svg.view(),
     svg.new(20, 20)
       |> svg_icons.sun()
       |> svg.class("dark:hidden")
-      |> svg.render(),
+      |> svg.view(),
   ]
 
   UIButton(..button, size: Sm)
   |> do_inner(inner, onclick)
-  |> render()
+  |> view()
 }
 
 /// Render app nav mobile toggle button.
@@ -301,12 +292,12 @@ pub fn app_nav(id: String, open: Bool, onclick: Option(a)) -> UIRender(a) {
   let inner = [
     svg.new(24, 24)
     |> svg_icons.app_nav()
-    |> svg.render(),
+    |> svg.view(),
   ]
 
   UIButton(..button, size: Sm)
   |> do_inner(inner, onclick)
-  |> render()
+  |> view()
 }
 
 /// TODO put size here
@@ -315,7 +306,7 @@ pub fn loading(id: String) {
     svg.new(20, 20)
     |> svg.class("animate-spin")
     |> svg_icons.spinner()
-    |> svg.render(),
+    |> svg.view(),
   ]
 
   new(id)
@@ -323,7 +314,7 @@ pub fn loading(id: String) {
   |> class("w-full")
   |> disabled(True)
   |> do_inner(inner, None)
-  |> render()
+  |> view()
 }
 
 // PRIVATE
@@ -333,9 +324,9 @@ fn do_inner(in: Button, inner: UIRenders(a), onclick: Option(a)) -> Render(a) {
   UIButtonRender(in:, inner:, onclick:)
 }
 
-const primary_class = "inline-flex items-center justify-center gap-2 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 disabled:cursor-not-allowed"
+const primary_class = "inline-flex items-center justify-center gap-2 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 active:bg-brand-500 disabled:cursor-not-allowed"
 
-const secondary_class = "inline-flex items-center gap-2 rounded-lg bg-white text-sm font-medium text-gray-700 shadow-theme-xs ring-1 ring-inset ring-gray-300 transition hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700 dark:hover:bg-white/[0.03] cursor-pointer disabled:cursor-not-allowed"
+const secondary_class = "inline-flex items-center gap-2 rounded-lg bg-white text-sm font-medium text-gray-700 shadow-theme-xs ring-1 ring-inset ring-gray-300 transition active:bg-white dark:active:bg-gray-800 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700 dark:hover:bg-white/[0.03] disabled:cursor-not-allowed"
 
 const darkmode_class = "hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
 

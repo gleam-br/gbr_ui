@@ -65,7 +65,7 @@ pub fn xxl(in: Avatar) {
   UIAvatar(..in, size: xxl_())
 }
 
-pub fn render(avatar: Avatar) {
+pub fn view(avatar: Avatar) {
   let UIAvatar(img:, size:, state:) = avatar
 
   html.span([a.class(avatar_class(size))], [

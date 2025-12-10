@@ -115,7 +115,7 @@ pub fn toggle_dropdown(in: Header) -> Header {
 /// - logo: Logo info
 /// - user: User render element
 ///
-pub fn at(in: Header) -> Render(a) {
+pub fn render(in: Header) -> Render(a) {
   UIHeaderRender(
     in:,
     on_app: None,
@@ -201,7 +201,7 @@ pub fn on_darkmode_opt(in: Render(a), on_darkmode: Option(a)) -> Render(a) {
 ///
 /// - at: Render header element info
 ///
-pub fn render(at: Render(a)) -> UIRender(a) {
+pub fn view(at: Render(a)) -> UIRender(a) {
   let UIHeaderRender(
     in:,
     on_app:,
@@ -213,13 +213,13 @@ pub fn render(at: Render(a)) -> UIRender(a) {
   let UIHeader(el, logo:, user:, appnav:, sidebar:) = in
 
   let logo =
-    option.map(logo, logo.render)
+    option.map(logo, logo.view)
     |> option.unwrap(element.none())
   let user =
-    option.map(user, user.at)
+    option.map(user, user.render)
     |> option.map(user.on_submit_opt(_, on_submit))
     |> option.map(user.on_dropdown_opt(_, on_dropdown))
-    |> option.map(user.render)
+    |> option.map(user.view)
     |> option.map(fn(user) {
       html.div([a.class(header_left_user_class)], [
         user,

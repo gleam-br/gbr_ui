@@ -65,8 +65,8 @@ pub fn new() -> Search {
   UISearch(el:)
 }
 
-pub fn at(in: Search, onsubmit: OnSubmit(a)) -> Render(a) {
-  let in = input.at(in.el, [], [])
+pub fn render(in: Search, onsubmit: OnSubmit(a)) -> Render(a) {
+  let in = input.render(in.el, [], [])
 
   UISearchRender(in:, onsubmit:)
 }
@@ -80,14 +80,14 @@ pub fn onchange(at: Render(a), onchange: fn(String) -> a) -> Render(a) {
   UISearchRender(..at, in:)
 }
 
-pub fn render(at: Render(a)) -> UIRender(a) {
+pub fn view(at: Render(a)) -> UIRender(a) {
   let UISearchRender(in:, onsubmit:) = at
 
   html.div([a.class(search_class), event.on_submit(onsubmit)], [
     form.new("form-input-search")
     |> form.class("relative")
-    |> form.at_inner(inline(in))
-    |> form.render(),
+    |> form.render_inner(inline(in))
+    |> form.view(),
   ])
 }
 
@@ -100,9 +100,9 @@ fn inline(in) {
       svg.new(20, 20)
       |> svg_form.search()
       |> svg.class(search_icon_svg_class)
-      |> svg.render(),
+      |> svg.view(),
     ]),
-    input.render(in),
+    input.view(in),
     html.button([a.type_("submit"), a.class(search_button_class)], [
       html.span([], [html.text(" ⌘ ")]),
       html.span([], [html.text(" K ")]),

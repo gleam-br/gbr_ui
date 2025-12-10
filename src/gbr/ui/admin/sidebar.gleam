@@ -139,18 +139,18 @@ pub fn selected(in: Sidebar, id: String, menu: Menu) -> Sidebar {
 /// - in: Sidebar info
 /// - onclick: Sidebar menu clicked
 ///
-pub fn at(in: Sidebar, onclick: Option(OnClick(a))) -> Render(a) {
+pub fn render(in: Sidebar, onclick: Option(OnClick(a))) -> Render(a) {
   UISidebarRender(in:, onclick:)
 }
 
 /// Render sidebar element into lustre.element
 ///
-pub fn render(at: Render(a)) -> UIRender(a) {
+pub fn view(at: Render(a)) -> UIRender(a) {
   let UISidebarRender(in:, onclick:) = at
   let UISidebar(el:, root:, logo:, open:, selected:) = in
   let logo =
     option.map(logo, logo.icon_only(_, !open))
-    |> option.map(logo.render)
+    |> option.map(logo.view)
     |> option.unwrap(element.none())
 
   // menu root
@@ -182,8 +182,8 @@ pub fn render(at: Render(a)) -> UIRender(a) {
 fn menu_roots(root, open, selected, onclick) {
   use root <- list.map(root)
 
-  menu.at(root, onclick)
-  |> menu.render(open, selected)
+  menu.render(root, onclick)
+  |> menu.view(open, selected)
 }
 
 fn classes_open(open: Bool) {

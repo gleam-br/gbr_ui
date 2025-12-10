@@ -53,7 +53,7 @@ pub fn new(height h, width w) -> Svg {
 
 /// Render super svg element in `lustre/element/html.{svg}`.
 ///
-pub fn render(in: Svg) -> UIRender(a) {
+pub fn view(in: Svg) -> UIRender(a) {
   let Svg(el:, path:, rect:, circle:, mask:, animate:) = in
   let path = to_path(path)
   let rect = to_attrs_rect(rect)

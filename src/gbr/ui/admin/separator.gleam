@@ -33,7 +33,7 @@ pub fn label(_in: Separator, label: String) -> Separator {
 
 /// Render separator super element to `lustre/element/html.{div}`.
 ///
-pub fn render(in: Separator) -> UIRender(a) {
+pub fn view(in: Separator) -> UIRender(a) {
   let transform = fn(label) {
     html.span(
       [class("bg-white p-2 text-gray-400 sm:px-5 sm:py-2 dark:bg-gray-900")],

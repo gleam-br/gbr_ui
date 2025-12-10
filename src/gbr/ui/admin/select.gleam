@@ -38,7 +38,7 @@ pub const items = model.items
 
 pub const selected = model.selected
 
-pub const at = model.at
+pub const render = model.render
 
 pub const onchange = model.onchange
 
@@ -46,17 +46,17 @@ pub const ontoggle = model.ontoggle
 
 /// Render select super element to `lustre/element.{type Element}`.
 ///
-pub fn render(at: Render(a)) -> element.Element(a) {
+pub fn view(at: Render(a)) -> element.Element(a) {
   case at.in.multi {
-    True -> multi.render(at)
-    False -> one_render(at)
+    True -> multi.view(at)
+    False -> view_unique(at)
   }
 }
 
 // PRIVATE
 //
 
-fn one_render(at) {
+fn view_unique(at) {
   let UISelectRender(in:, onchange:, ontoggle:) = at
   let UISelect(el:, items:, label:, open:, ..) = in
 
@@ -68,10 +68,10 @@ fn one_render(at) {
     onchange
     |> option.map(event.on_input)
     |> option.unwrap(a.none())
-  // let evt_ontoggle =
-  //   ontoggle
-  //   |> option.map(fn(ontoggle) { event.on_click(ontoggle(False)) })
-  //   |> option.unwrap(a.none())
+  let evt_ontoggle =
+    ontoggle
+    |> option.map(fn(ontoggle) { event.on_click(ontoggle(False)) })
+    |> option.unwrap(a.none())
   let attrs =
     el
     |> el.class(
@@ -81,7 +81,7 @@ fn one_render(at) {
       <> "focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30",
     )
     |> el.attrs()
-    |> list.append([evt_onchange, evt_oninput])
+    |> list.append([evt_ontoggle, evt_onchange, evt_oninput])
 
   let transform = fn(placeholder) {
     html.option(
@@ -121,12 +121,12 @@ fn one_render(at) {
           |> svg.class(
             "h-5 w-5 shrink-0 text-gray-500 transition-transform dark:text-gray-400 stroke-current",
           )
-          |> svg.render(),
+          |> svg.view(),
           //
         // svg.new(20, 20)
         // |> svg_icons.arrow()
         // |> svg.class("stroke-current")
-        // |> svg.render(),
+        // |> svg.view(),
         ],
       ),
     ]),

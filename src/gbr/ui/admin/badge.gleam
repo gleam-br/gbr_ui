@@ -105,15 +105,15 @@ pub fn dark(in: Badge) -> Badge {
   UIBadge(..in, behavior: BehaviorDark)
 }
 
-pub fn at(in: Badge) -> Render(a) {
+pub fn render(in: Badge) -> Render(a) {
   UIBadgeRender(in:, inner: [html.text(in.text)], onclick: None)
 }
 
-pub fn at_right(in: Badge, inner: UIRenders(a)) -> Render(a) {
+pub fn render_right(in: Badge, inner: UIRenders(a)) -> Render(a) {
   UIBadgeRender(in:, inner: [html.text(in.text), ..inner], onclick: None)
 }
 
-pub fn at_left(in: Badge, inner: UIRenders(a)) -> Render(a) {
+pub fn render_left(in: Badge, inner: UIRenders(a)) -> Render(a) {
   let inner = list.append(inner, [html.text(in.text)])
 
   UIBadgeRender(in:, inner:, onclick: None)
@@ -123,7 +123,7 @@ pub fn onclick(at: Render(a), onclick: fn(String) -> a) {
   UIBadgeRender(..at, onclick: Some(onclick))
 }
 
-pub fn render(at: Render(a)) -> UIRender(a) {
+pub fn view(at: Render(a)) -> UIRender(a) {
   let UIBadgeRender(in:, inner:, onclick:) = at
   let UIBadge(el:, background:, behavior:, ..) = in
 

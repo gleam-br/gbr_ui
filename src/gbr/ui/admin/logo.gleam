@@ -11,5 +11,5 @@ import gbr/ui/core/model.{type UIRender}
 pub fn primary(logo: logo.UILogo) -> UIRender(a) {
   logo.class(logo, "logo")
   |> logo.class_small("logo-icon")
-  |> logo.render()
+  |> logo.view()
 }

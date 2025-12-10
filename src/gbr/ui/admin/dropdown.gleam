@@ -158,7 +158,7 @@ pub fn separator() {
 ///
 /// - in: Dropdown element info
 ///
-pub fn at(in: Dropdown) -> Render(a) {
+pub fn render(in: Dropdown) -> Render(a) {
   UIDropdownRender(in:, ontoggle: None, onclick: None)
 }
 
@@ -176,7 +176,7 @@ pub fn onclick(at: Render(a), onclick: fn(String) -> a) -> Render(a) {
 
 ///
 ///
-pub fn render(at: Render(a)) -> UIRender(a) {
+pub fn view(at: Render(a)) -> UIRender(a) {
   let UIDropdownRender(in:, ontoggle:, onclick:) = at
   let UIDropdown(title:, open:, items:) = in
 
@@ -186,19 +186,19 @@ pub fn render(at: Render(a)) -> UIRender(a) {
         "inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 "
         <> "py-3 text-sm font-medium text-white hover:bg-brand-600",
       )
-      |> link.at([
+      |> link.render([
         html.text(title),
         svg.new(20, 20)
           |> svg.classes([#("rotate-180", open)])
           |> svg.class("stroke-current duration-200 ease-in-out")
           |> icons.arrow_small()
-          |> svg.render(),
+          |> svg.view(),
       ])
       |> link.onclick_opt(
         ontoggle
         |> option.map(fn(ontoggle) { fn(_) { ontoggle } }),
       )
-      |> link.render(),
+      |> link.view(),
     html.div(
       [
         a.classes([#("hidden", !open)]),
@@ -236,14 +236,14 @@ fn render_link(link, text, svg, onclick) {
     |> option.map(fn(svg) {
       svg.new(24, 24)
       |> svg()
-      |> svg.render()
+      |> svg.view()
     })
     |> option.unwrap(element.none())
 
   link
-  |> link.at([svg, text])
+  |> link.render([svg, text])
   |> link.onclick_opt(onclick)
-  |> link.render()
+  |> link.view()
 }
 
 fn render_sep() {

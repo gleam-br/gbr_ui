@@ -55,7 +55,7 @@ pub fn parent(in: Breadcrumb, href: String, name: String) -> Breadcrumb {
 
 /// Render breadcrumb super element to `lustre/element/html.{div}`.
 ///
-pub fn render(in: Breadcrumb) -> UIRender(a) {
+pub fn view(in: Breadcrumb) -> UIRender(a) {
   let UIBreadcrumb(el:, current:, parent:) = in
   let attrs = el.attrs(el)
 
@@ -92,7 +92,7 @@ fn render_parent(current, parent: Option(Parent)) {
       _ ->
         svg.new(16, 17)
         |> svg_icons.greater()
-        |> svg.render()
+        |> svg.view()
     },
   ])
 }

@@ -91,15 +91,15 @@ pub fn horizontal(in: Card, horizontal: Bool) {
 
 ///
 ///
-pub fn at(in: Card) -> Render(a) {
+pub fn render(in: Card) -> Render(a) {
   UICardRender(in:)
 }
 
-pub fn render(at: Render(a)) -> UIRender(a) {
+pub fn view(at: Render(a)) -> UIRender(a) {
   let UICardRender(in:) = at
   let UICard(content:, title:, img:, svg:, horizontal:) = in
 
-  let content = typo.render(content)
+  let content = typo.view(content)
   let title = render_title(title)
   let img = render_img(img)
   let svg = render_svg(svg)
@@ -109,8 +109,8 @@ pub fn render(at: Render(a)) -> UIRender(a) {
     |> button.label("Read more")
     |> button.primary()
     |> button.class("mt-4")
-    |> button.at()
     |> button.render()
+    |> button.view()
 
   html.div([], [
     html.div(
@@ -142,37 +142,41 @@ pub fn render(at: Render(a)) -> UIRender(a) {
 
 fn render_img(img) {
   img
-  |> option.map(fn(img) {
-    let attrs = el.attrs(img)
-
-    html.div([a.class("mb-5 overflow-hidden rounded-lg")], [
-      html.img(attrs),
-    ])
-  })
+  |> option.map(img_view)
   |> option.unwrap(element.none())
 }
 
 fn render_svg(svg) {
   svg
-  |> option.map(fn(svg) {
-    html.div(
-      [
-        a.class(
-          "mb-5 flex h-14 max-w-14 items-center justify-center rounded-[10.5px] bg-brand-50 text-brand-500 dark:bg-brand-500/10",
-        ),
-      ],
-      [
-        svg.new(28, 28)
-        |> svg()
-        |> svg.render(),
-      ],
-    )
-  })
+  |> option.map(svg_view)
   |> option.unwrap(element.none())
 }
 
 fn render_title(title) {
   title
-  |> option.map(typo.render)
+  |> option.map(typo.view)
   |> option.unwrap(element.none())
+}
+
+fn svg_view(svg) {
+  html.div(
+    [
+      a.class(
+        "mb-5 flex h-14 max-w-14 items-center justify-center rounded-[10.5px] bg-brand-50 text-brand-500 dark:bg-brand-500/10",
+      ),
+    ],
+    [
+      svg.new(28, 28)
+      |> svg()
+      |> svg.view(),
+    ],
+  )
+}
+
+fn img_view(img) {
+  let attrs = el.attrs(img)
+
+  html.div([a.class("mb-5 overflow-hidden rounded-lg")], [
+    html.img(attrs),
+  ])
 }

@@ -129,17 +129,13 @@ pub fn find_menu(menus: List(Menu), id) -> Option(Menu) {
 
 /// New render sidebar menu element
 ///
-pub fn at(in: Menu, onclick: Option(OnClick(a))) -> Render(a) {
+pub fn render(in: Menu, onclick: Option(OnClick(a))) -> Render(a) {
   UISidebarMenuRender(in:, onclick:)
 }
 
 /// Render sidebar menu element
 ///
-pub fn render(
-  at: Render(a),
-  open: Bool,
-  selected: Option(String),
-) -> UIRender(a) {
+pub fn view(at: Render(a), open: Bool, selected: Option(String)) -> UIRender(a) {
   let UISidebarMenuRender(in:, onclick:) = at
   let UISidebarMenu(id:, text:, parent:, inner:, ..) = in
 
@@ -173,7 +169,7 @@ pub fn render(
                   True -> "hidden"
                 },
               )
-              |> svg.render(),
+              |> svg.view(),
           ],
         ),
         html.ul(
@@ -224,7 +220,7 @@ fn render_icon(svg, is_selected) {
             ),
           ]),
         ],
-        [svg.new(24, 24) |> transform() |> svg.render()],
+        [svg.new(24, 24) |> transform() |> svg.view()],
       )
   }
 }
@@ -286,7 +282,7 @@ fn menu_group(menu: Menu, open, selected, onclick) {
             [
               svg.new(20, 20)
               |> svg_icons.arrow_small()
-              |> svg.render(),
+              |> svg.view(),
             ],
           ),
         ],

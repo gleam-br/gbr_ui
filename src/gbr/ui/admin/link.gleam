@@ -15,19 +15,19 @@ type Render(a) =
 ///
 pub fn primary(in: Link) -> Render(a) {
   link.class(in, class_primary)
-  |> link.at([])
+  |> link.render([])
 }
 
 /// Set link primary behavior
 ///
 pub fn signin(in: Link) -> Render(a) {
   link.class(in, class_signin)
-  |> link.at([])
+  |> link.render([])
 }
 
 pub fn alert(in: Link) -> Render(a) {
   link.class(in, class_alert)
-  |> link.at([])
+  |> link.render([])
 }
 
 const class_alert = "mt-3 inline-block text-sm font-medium text-gray-500"

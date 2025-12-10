@@ -71,7 +71,7 @@ pub fn class(in: Link, class: String) -> Link {
   UILink(..in, el:)
 }
 
-pub fn at(in: Link, inner: UIRenders(a)) -> Render(a) {
+pub fn render(in: Link, inner: UIRenders(a)) -> Render(a) {
   UILinkRender(in:, inner:, onclick: None)
 }
 
@@ -85,7 +85,7 @@ pub fn onclick_opt(at: Render(a), onclick: Option(fn(String) -> a)) -> Render(a)
 
 /// Render link super element
 ///
-pub fn render(at: Render(a)) -> UIRender(a) {
+pub fn view(at: Render(a)) -> UIRender(a) {
   let UILinkRender(in:, inner:, onclick:) = at
   let UILink(el:, href:) = in
 

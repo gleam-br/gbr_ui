@@ -104,7 +104,7 @@ pub fn toggle(in: User) -> User {
   UIUser(..in, dropdown:)
 }
 
-pub fn at(in: User) -> Render(a) {
+pub fn render(in: User) -> Render(a) {
   UIUserRender(in:, on_dropdown: None, on_submit: None)
 }
 
@@ -127,7 +127,7 @@ pub fn on_dropdown_opt(at: Render(a), on_dropdown: Option(a)) -> Render(a) {
   UIUserRender(..at, on_dropdown:)
 }
 
-pub fn render(at: Render(a)) -> UIRender(a) {
+pub fn view(at: Render(a)) -> UIRender(a) {
   let UIUserRender(in:, on_submit:, on_dropdown:) = at
   let UIUser(el:, profile:, dropdown:) = in
   let UIProfile(username:, email:, department:, full_name:, picture:) = profile
@@ -157,7 +157,7 @@ pub fn render(at: Render(a)) -> UIRender(a) {
           |> svg.class(user_arrow_class)
           |> svg.classes([#("rotate-180", is_visible)])
           |> svg_icons.arrow_small()
-          |> svg.render(),
+          |> svg.view(),
       ],
     ),
     case dropdown, is_visible {
@@ -214,7 +214,7 @@ fn menu_list_(dropdown: Dropdown, onsubmit) -> UIRenders(a) {
       svg.new(24, 24)
         |> identity()
         |> svg.class(user_menu_icon_class)
-        |> svg.render(),
+        |> svg.view(),
       html.text(text),
     ]
     None -> [html.text(text)]
@@ -239,7 +239,7 @@ fn button_list_(dropdown: Dropdown, onsubmit) -> UIRenders(a) {
       svg.new(24, 24)
         |> icon()
         |> svg.class(user_btn_icon_class)
-        |> svg.render(),
+        |> svg.view(),
       html.text(label),
     ]
     None -> [html.text(label)]

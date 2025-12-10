@@ -54,13 +54,13 @@ pub fn class(in: Form, class: String) -> Form {
 
 /// New form render at default behavior.
 ///
-pub fn at(in: Form) -> Render(a) {
+pub fn render(in: Form) -> Render(a) {
   UIFormRender(in:, inner: [], onsubmit: None)
 }
 
 /// New form render at inline behavior.
 ///
-pub fn at_inner(in: Form, inner: UIRenders(a)) -> Render(a) {
+pub fn render_inner(in: Form, inner: UIRenders(a)) -> Render(a) {
   UIFormRender(in:, inner:, onsubmit: None)
 }
 
@@ -78,7 +78,7 @@ pub fn onsubmit_opt(in: Render(a), onsubmit: Option(OnSubmit(a))) -> Render(a) {
 
 /// Render form super element to `lustre/element/html.{form}`.
 ///
-pub fn render(at: Render(a)) -> UIRender(a) {
+pub fn view(at: Render(a)) -> UIRender(a) {
   let UIFormRender(in:, inner:, onsubmit:) = at
   let UIForm(el:) = in
 

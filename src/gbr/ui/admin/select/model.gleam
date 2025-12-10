@@ -131,7 +131,7 @@ pub fn selected(in: Select, value: String) -> Select {
 ///
 /// - in: Select element info type
 ///
-pub fn at(in: Select) -> Render(a) {
+pub fn render(in: Select) -> Render(a) {
   UISelectRender(in:, onchange: None, ontoggle: None)
 }
 
@@ -181,7 +181,7 @@ pub fn new_label(id, label) {
           "mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400",
         ),
       ],
-      [typo.render(label)],
+      [typo.view(label)],
     )
   }
 

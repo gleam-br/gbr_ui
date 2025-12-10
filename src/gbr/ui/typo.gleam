@@ -79,7 +79,7 @@ pub fn class(in: UITypo, class: String) -> UITypo {
 ///
 pub fn inline(in: UITypos) -> UIRender(a) {
   case group_reduce(in) {
-    Ok(inline) -> render(inline)
+    Ok(inline) -> view(inline)
     Error(Nil) -> element.none()
   }
 }
@@ -95,22 +95,22 @@ pub fn styled(in: UITypos, class: String) -> UIRender(a) {
 pub fn grouped(in: UITypos) -> UIRenders(a) {
   use typo <- list.map(in)
 
-  render(typo)
+  view(typo)
 }
 
 /// Render typo super element to `lustre/element.{type Element}`.
 ///
-pub fn render(in: UITypo) -> UIRender(a) {
+pub fn view(in: UITypo) -> UIRender(a) {
   render_inner(in, [html.text(in.text)])
 }
 
-pub fn at_right(in: UITypo, inner: UIRenders(a)) -> UIRender(a) {
+pub fn render_right(in: UITypo, inner: UIRenders(a)) -> UIRender(a) {
   let inner = [html.text(in.text), ..inner]
 
   render_inner(in, inner)
 }
 
-pub fn at_left(in: UITypo, inner: UIRenders(a)) -> UIRender(a) {
+pub fn render_left(in: UITypo, inner: UIRenders(a)) -> UIRender(a) {
   let inner = list.append(inner, [html.text(in.text)])
 
   render_inner(in, inner)
