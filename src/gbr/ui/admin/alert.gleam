@@ -157,6 +157,7 @@ pub fn view(at: Render(a)) -> UIRender(a) {
 
   let attrs =
     classes_el(el, status)
+    |> el.class("max-w-1/4")
     |> el.attrs()
 
   html.div(attrs, [

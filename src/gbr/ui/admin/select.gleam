@@ -1,9 +1,14 @@
 ////
 //// Gleam UI select super element.
 ////
+////
+//// Gleam UI admin multi select element
+////
 
+import gleam/bool
 import gleam/list
-import gleam/option
+import gleam/option.{type Option, None, Some}
+import gleam/string
 
 import lustre/attribute as a
 import lustre/element
@@ -12,43 +17,233 @@ import lustre/event
 
 import gbr/ui/svg
 import gbr/ui/svg/icons as svg_icons
+import gbr/ui/typo
 
 import gbr/ui/core/el
-
-import gbr/ui/admin/select/model.{UISelect, UISelectRender}
-import gbr/ui/admin/select/multi
+import gbr/ui/core/model.{type UIRender}
 
 // Alias
 //
 
+type Select =
+  UISelect
+
 type Render(a) =
-  model.UISelectRender(a)
+  UISelectRender(a)
 
-pub const new = model.new
+type Item =
+  UISelectItem
 
-pub const label = model.label
+type Items =
+  List(Item)
 
-pub const open = model.open
+type Text =
+  typo.UITypo
 
-pub const multi = model.multi
+type OnChange(a) =
+  fn(String) -> a
 
-pub const placeholder = model.placeholder
+type OnToggle(a) =
+  fn(Bool) -> a
 
-pub const items = model.items
+/// Select super element
+///
+/// - el: Element info type
+/// - items: List of options
+/// - label: Option label for select
+/// - multi: Is multi select
+/// - open: If is open multi select dropdown
+///
+pub opaque type UISelect {
+  UISelect(
+    el: el.UIEl,
+    items: Items,
+    label: Option(Text),
+    multi: Bool,
+    open: Bool,
+  )
+}
 
-pub const selected = model.selected
+/// Select render type
+///
+/// - in: Select type info
+/// - onchange: Option on change event
+/// - ontoggle: Option on toggle event (only to multi select)
+///
+pub opaque type UISelectRender(a) {
+  UISelectRender(
+    in: Select,
+    onchange: Option(OnChange(a)),
+    ontoggle: Option(OnToggle(a)),
+  )
+}
 
-pub const render = model.render
+/// Select item (option) type
+///
+/// - value: Value of option
+/// - label: Label of option
+/// - selected: If is selected or not
+///
+pub opaque type UISelectItem {
+  UISelectItem(value: String, label: String, selected: Bool)
+}
 
-pub const onchange = model.onchange
+/// Constructor of select super element
+///
+pub fn new(id: String) -> Select {
+  UISelect(el: el.new(id), items: [], multi: False, open: False, label: None)
+}
 
-pub const ontoggle = model.ontoggle
+/// New selection option item
+///
+/// - value: Select option value
+/// - text: Select option inner text
+///
+pub fn option(value: String, text: String) -> Item {
+  UISelectItem(value:, label: text, selected: False)
+}
+
+/// Set select title
+///
+pub fn label(in: Select, label: Text) -> Select {
+  UISelect(..in, label: Some(label))
+}
+
+/// Set placeholder to multi-select
+///
+/// > Only multi-select support
+///
+pub fn placeholder(in: Select, placeholder: String) -> Select {
+  let el = el.att(in.el, [#("placeholder", placeholder)])
+
+  UISelect(..in, el:)
+}
+
+/// Set select items (options)
+///
+pub fn items(in: Select, items) -> Select {
+  UISelect(..in, items:)
+}
+
+/// Set select multi items can selected
+///
+pub fn multi(in: Select, multi: Bool) -> Select {
+  UISelect(..in, multi:)
+}
+
+/// Set select open mulit select items
+///
+pub fn open(in: Select, open: Bool) -> Select {
+  UISelect(..in, open:)
+}
+
+/// Toggle select open multi select items
+///
+pub fn toggle(in: Select) -> Select {
+  UISelect(..in, open: !in.open)
+}
+
+/// Update select based by event occurs.
+///
+pub fn selected(in: Select, value: String) -> Select {
+  let UISelect(items:, multi:, ..) = in
+  let items = items_select(items, value, multi)
+
+  UISelect(..in, items:)
+}
+
+/// New select render type
+///
+/// - in: Select element info type
+///
+pub fn render(in: Select) -> Render(a) {
+  UISelectRender(in:, onchange: None, ontoggle: None)
+}
+
+/// Set select element event onchange and oninput
+///
+/// - at: Select render elemment info
+/// - onchange: Select event
+///
+pub fn onchange(at: Render(a), onchange: OnChange(a)) -> Render(a) {
+  UISelectRender(..at, onchange: Some(onchange))
+}
+
+/// Set multi select event on dropdown open toggle
+///
+/// - at: Select render elemment info
+/// - onchange: Select event
+///
+/// In multi select element behavior has a dropdown list of not selected options.
+///
+pub fn ontoggle(at: Render(a), ontoggle: OnToggle(a)) -> Render(a) {
+  UISelectRender(..at, ontoggle: Some(ontoggle))
+}
+
+pub fn new_options(items: List(Item)) {
+  use item <- list.map(items)
+
+  let UISelectItem(value:, label:, selected:) = item
+
+  html.option(
+    [
+      a.value(value),
+      a.class("text-gray-700 dark:bg-gray-900 dark:text-gray-400"),
+      a.classes([
+        #("text-gray-800 dark:text-white/90", selected),
+      ]),
+    ],
+    label,
+  )
+}
+
+pub fn new_label(id, label) {
+  let transform = fn(label) {
+    html.label(
+      [
+        a.for(id),
+        a.class(
+          "mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400",
+        ),
+      ],
+      [typo.view(label)],
+    )
+  }
+
+  label
+  |> option.map(transform)
+  |> option.unwrap(element.none())
+}
+
+/// Filter select items, options, by selected
+///
+/// - items: List of items (options)
+/// - selected: True or False
+///
+pub fn items_filter_by_selected(items: List(Item), selected: Bool) -> List(Item) {
+  use item <- list.filter(items)
+
+  item.selected == selected
+}
+
+/// If items is empty filter by selected or not
+///
+/// - items: List of options
+/// - selected: True or False
+///
+pub fn items_filter_by_selected_is_empty(
+  items: List(Item),
+  selected: Bool,
+) -> Bool {
+  items_filter_by_selected(items, selected)
+  |> list.is_empty()
+}
 
 /// Render select super element to `lustre/element.{type Element}`.
 ///
-pub fn view(at: Render(a)) -> element.Element(a) {
+pub fn view(at: Render(a)) -> UIRender(a) {
   case at.in.multi {
-    True -> multi.view(at)
+    True -> view_multi(at)
     False -> view_unique(at)
   }
 }
@@ -97,8 +292,8 @@ fn view_unique(at) {
   }
 
   let id = el.get_id(el)
-  let label = model.new_label(id, label)
-  let options = model.new_options(items)
+  let label = new_label(id, label)
+  let options = new_options(items)
   let placeholder =
     el.att_get(el, "placeholder")
     |> option.map(transform)
@@ -131,4 +326,213 @@ fn view_unique(at) {
       ),
     ]),
   ])
+}
+
+fn items_select(items: Items, value, multi) {
+  use item <- list.map(items)
+  let is_equals = item.value == value
+
+  case is_equals, multi {
+    _, False -> UISelectItem(..item, selected: is_equals)
+    True, True -> UISelectItem(..item, selected: !item.selected)
+    False, True -> item
+  }
+}
+
+/// Render multi select
+///
+fn view_multi(at: Render(a)) {
+  let UISelectRender(in:, onchange:, ontoggle:) = at
+  let UISelect(el:, items:, label:, open:, ..) = in
+
+  let id = el.get_id(el)
+  let label = new_label(id, label)
+  let items_selected_empty = items_filter_by_selected_is_empty(items, True)
+  let placeholder =
+    el.att_get(el, "placeholder")
+    |> new_placeholder(items_selected_empty)
+  let options = new_options(items)
+
+  let ontoggleclick =
+    ontoggle
+    |> option.map(fn(ontoggle) { event.on_click(ontoggle(False)) })
+    |> option.unwrap(a.none())
+  let onmouseleave =
+    ontoggle
+    |> option.map(fn(ontoggle) {
+      event.on_mouse_leave(ontoggle(True)) |> event.stop_propagation()
+    })
+    |> option.unwrap(a.none())
+
+  // TODO
+  // let attrs = el.attrs(el)
+
+  let values =
+    items
+    |> items_filter_by_selected(True)
+    |> list.map(fn(item) { item.value })
+    |> string.join(",")
+
+  html.div([], [
+    label,
+    html.div([a.class("relative"), onmouseleave], [
+      // form select hidden values
+      //
+      html.select(
+        [
+          a.id(id),
+          a.value(values),
+          a.class("hidden"),
+          a.name("select-multi-values"),
+        ],
+        options,
+      ),
+      // bag with remove icon to selected options
+      html.div(
+        [
+          a.class(
+            "shadow-theme-xs flex min-h-11 cursor-pointer gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 transition dark:border-gray-700 dark:bg-gray-900",
+          ),
+          // toggle dropdown open/close
+          ontoggleclick,
+        ],
+        [
+          //list of options selected
+          html.div(
+            [
+              a.class("flex flex-1 flex-wrap items-center gap-2"),
+            ],
+            [
+              // if empty show input placeholde
+              placeholder,
+              // else list of selected options
+              ..items_selected(items, onchange)
+            ],
+          ),
+          // arrow dropdown
+          html.div([a.class("flex items-start pt-1.5")], [
+            svg.new(24, 24)
+            |> svg_icons.arrow()
+            |> svg.classes([#("rotate-180", open)])
+            |> svg.class(
+              "h-5 w-5 shrink-0 text-gray-500 transition-transform dark:text-gray-400 stroke-current",
+            )
+            |> svg.view(),
+          ]),
+        ],
+      ),
+      // dropdown not selected options
+      html.div(
+        [
+          a.class(
+            "absolute z-50 w-full overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900",
+          ),
+          a.style("max-height", "16rem"),
+          a.classes([#("hidden", !open)]),
+        ],
+        [
+          html.div(
+            [a.class("overflow-y-auto"), a.style("max-height", "16rem")],
+            items_not_selected(items, onchange),
+          ),
+        ],
+      ),
+    ]),
+  ])
+}
+
+// PRIVATE
+//
+
+fn items_selected(
+  items: List(Item),
+  onchange: Option(fn(String) -> a),
+) -> List(element.Element(a)) {
+  use item <- list.map(items_filter_by_selected(items, True))
+
+  let onchange =
+    onchange
+    |> option.map(fn(onchange) { onchange(item.value) })
+
+  let onclick =
+    onchange
+    |> option.map(event.on_click)
+    |> option.unwrap(a.none())
+
+  html.div(
+    [
+      a.class(
+        "group flex items-center justify-center rounded-full border-[0.7px] border-transparent bg-gray-100 "
+        <> "py-1 pr-2 pl-2.5 text-sm text-gray-800 hover:border-gray-200 dark:bg-gray-800 dark:text-white/90 dark:hover:border-gray-800",
+      ),
+    ],
+    [
+      // option title, value
+      html.span([], [html.text(item.label)]),
+      // option tag to removed
+      // remove icon
+      html.button(
+        [
+          a.class(
+            "ml-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300",
+          ),
+          onclick
+            |> event.stop_propagation(),
+        ],
+        [
+          svg.new(14, 14)
+          |> svg_icons.close()
+          |> svg.view(),
+        ],
+      ),
+    ],
+  )
+}
+
+fn items_not_selected(
+  items: List(Item),
+  onchange: Option(fn(String) -> a),
+) -> List(element.Element(a)) {
+  use item <- list.map(items_filter_by_selected(items, False))
+
+  let onchange =
+    onchange
+    |> option.map(fn(onchange) { onchange(item.value) })
+
+  let onclick =
+    onchange
+    |> option.map(event.on_click)
+    |> option.unwrap(a.none())
+
+  html.div(
+    [
+      a.class(
+        "cursor-pointer border-b border-gray-200 px-4 py-3 text-sm transition last:border-b-0 dark:border-gray-800",
+      ),
+      onclick,
+    ],
+    [
+      html.span(
+        [
+          a.class("text-gray-800 dark:text-white/90"),
+        ],
+        [html.text(item.label)],
+      ),
+    ],
+  )
+}
+
+fn new_placeholder(placeholder: Option(String), items_selected_empty: Bool) {
+  // x-show=selected == 0
+  use <- bool.guard(!items_selected_empty, element.none())
+
+  let transform = fn(placeholder) {
+    html.span([a.class("text-sm text-gray-500 dark:text-gray-400")], [
+      html.text(placeholder),
+    ])
+  }
+
+  placeholder
+  |> option.map(transform)
+  |> option.unwrap(element.none())
 }
