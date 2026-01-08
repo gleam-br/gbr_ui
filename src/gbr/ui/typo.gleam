@@ -14,6 +14,9 @@ import gbr/ui/core/model.{type UIRender, type UIRenders}
 /// List of typos grouped.
 ///
 type Behavior {
+  H1
+  H2
+  H3
   H4
   Text
   Paragraph
@@ -33,6 +36,24 @@ pub opaque type UITypo {
 ///
 pub fn span(text: String) -> UITypo {
   UITypo(el.new("span"), text:, behavior: Text)
+}
+
+/// Text super element.
+///
+pub fn h1(text: String) -> UITypo {
+  UITypo(el.new("h1"), text:, behavior: H1)
+}
+
+/// Text super element.
+///
+pub fn h2(text: String) -> UITypo {
+  UITypo(el.new("h2"), text:, behavior: H2)
+}
+
+/// Text super element.
+///
+pub fn h3(text: String) -> UITypo {
+  UITypo(el.new("h3"), text:, behavior: H3)
 }
 
 /// Text super element.
@@ -125,6 +146,9 @@ fn render_inner(in: UITypo, inner: UIRenders(a)) -> UIRender(a) {
   let attrs = el.attrs(el)
 
   case behavior {
+    H1 -> html.h1(attrs, inner)
+    H2 -> html.h2(attrs, inner)
+    H3 -> html.h3(attrs, inner)
     H4 -> html.h4(attrs, inner)
     Text -> html.span(attrs, inner)
     Paragraph -> html.p(attrs, inner)
