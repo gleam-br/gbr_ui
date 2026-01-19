@@ -41,7 +41,7 @@ type Text =
   typo.UITypo
 
 type OnChange(a) =
-  fn(String) -> a
+  fn(String, String) -> a
 
 type OnToggle(a) =
   fn(Bool) -> a
@@ -254,14 +254,20 @@ pub fn view(at: Render(a)) -> UIRender(a) {
 fn view_unique(at) {
   let UISelectRender(in:, onchange:, ontoggle:) = at
   let UISelect(el:, items:, label:, open:, ..) = in
-
+  let id = el.get_id(el)
   let evt_onchange =
     onchange
-    |> option.map(event.on_change)
+    |> option.map(fn(onchange) {
+      onchange(id, _)
+      |> event.on_change()
+    })
     |> option.unwrap(a.none())
   let evt_oninput =
     onchange
-    |> option.map(event.on_input)
+    |> option.map(fn(onchange) {
+      onchange(id, _)
+      |> event.on_input
+    })
     |> option.unwrap(a.none())
   let evt_ontoggle =
     ontoggle
@@ -312,7 +318,6 @@ fn view_unique(at) {
         [
           svg.new(24, 24)
           |> svg_icons.arrow()
-          |> svg.classes([#("rotate-180", open)])
           |> svg.class(
             "h-5 w-5 shrink-0 text-gray-500 transition-transform dark:text-gray-400 stroke-current",
           )
@@ -406,7 +411,7 @@ fn view_multi(at: Render(a)) {
               // if empty show input placeholde
               placeholder,
               // else list of selected options
-              ..items_selected(items, onchange)
+              ..items_selected(id, items, onchange)
             ],
           ),
           // arrow dropdown
@@ -433,7 +438,7 @@ fn view_multi(at: Render(a)) {
         [
           html.div(
             [a.class("overflow-y-auto"), a.style("max-height", "16rem")],
-            items_not_selected(items, onchange),
+            items_not_selected(id, items, onchange),
           ),
         ],
       ),
@@ -445,14 +450,15 @@ fn view_multi(at: Render(a)) {
 //
 
 fn items_selected(
+  id,
   items: List(Item),
-  onchange: Option(fn(String) -> a),
+  onchange: Option(fn(String, String) -> a),
 ) -> List(element.Element(a)) {
   use item <- list.map(items_filter_by_selected(items, True))
 
   let onchange =
     onchange
-    |> option.map(fn(onchange) { onchange(item.value) })
+    |> option.map(fn(onchange) { onchange(id, item.value) })
 
   let onclick =
     onchange
@@ -490,14 +496,15 @@ fn items_selected(
 }
 
 fn items_not_selected(
+  id,
   items: List(Item),
-  onchange: Option(fn(String) -> a),
+  onchange: Option(fn(String, String) -> a),
 ) -> List(element.Element(a)) {
   use item <- list.map(items_filter_by_selected(items, False))
 
   let onchange =
     onchange
-    |> option.map(fn(onchange) { onchange(item.value) })
+    |> option.map(fn(onchange) { onchange(id, item.value) })
 
   let onclick =
     onchange
