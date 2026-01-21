@@ -120,6 +120,12 @@ pub fn classes(in: Button, classes: UISwitches) -> Button {
 
 /// Set button size to medium
 ///
+pub fn sm(in: Button) -> Button {
+  UIButton(..in, size: Sm)
+}
+
+/// Set button size to medium
+///
 pub fn md(in: Button) -> Button {
   UIButton(..in, size: Md)
 }
@@ -324,10 +330,8 @@ fn do_inner(in: Button, inner: UIRenders(a), onclick: Option(a)) -> Render(a) {
   UIButtonRender(in:, inner:, onclick:)
 }
 
-//const primary_class = "w-full inline-flex items-center justify-center gap-2 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 active:bg-brand-500 disabled:cursor-not-allowed"
 const primary_class = "inline-flex items-center gap-2 rounded-lg bg-brand-500 px-5 py-3.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600"
 
-//const secondary_class = "w-full inline-flex items-center gap-2 rounded-lg bg-white text-sm font-medium text-gray-700 shadow-theme-xs ring-1 ring-inset ring-gray-300 transition active:bg-white dark:active:bg-gray-800 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700 dark:hover:bg-white/[0.03] disabled:cursor-not-allowed"
 const secondary_class = "inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3.5 text-sm font-medium text-gray-700 shadow-theme-xs ring-1 ring-inset ring-gray-300 transition hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700 dark:hover:bg-white/[0.03]"
 
 const darkmode_class = "hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"

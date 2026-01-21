@@ -57,9 +57,9 @@ pub opaque type UISearchRender(a) {
   UISearchRender(in: InputRender(a), onsubmit: OnSubmit(a))
 }
 
-pub fn new() -> Search {
+pub fn new(id: String) -> Search {
   let el =
-    input.text("search-form")
+    input.text(id)
     |> input.class(search_input_class)
 
   UISearch(el:)
