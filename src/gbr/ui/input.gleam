@@ -97,6 +97,14 @@ pub fn class(in: Input, class: String) -> Input {
   UIInput(..in, el:)
 }
 
+/// Set element class
+///
+pub fn classes(in: Input, classes: model.UISwitches) -> Input {
+  let el = el.classes(in.el, classes)
+
+  UIInput(..in, el:)
+}
+
 /// Set input value
 ///
 pub fn value(in: Input, value: String) -> Input {

@@ -88,5 +88,5 @@ pub fn view(at: Render(a)) -> UIRender(a) {
     |> option.map(event.on_submit)
     |> option.unwrap(a.none())
 
-  html.form([onsubmit, ..attrs], inner)
+  html.form([event.prevent_default(onsubmit), ..attrs], inner)
 }

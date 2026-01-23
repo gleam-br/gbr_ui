@@ -2,6 +2,7 @@
 //// 📚 UI super table element
 ////
 
+import gbr/ui
 import gleam/list
 import gleam/option.{type Option, None, Some}
 
@@ -10,6 +11,7 @@ import lustre/element
 import lustre/element/html
 
 import gbr/ui/core/el
+import gbr/ui/core/model.{type UIRenders}
 import gbr/ui/typo
 
 // Alias
@@ -50,8 +52,8 @@ pub type Column {
 pub type UITableRender(a) {
   UITableRender(
     in: Table,
-    header: Option(Header(a)),
-    footer: Option(Header(a)),
+    header: UIRenders(a),
+    footer: UIRenders(a),
     column: Option(ColumnData(a)),
     thead: Option(ColumnHead(a)),
   )
@@ -95,7 +97,7 @@ pub fn ids(in: Table, ids: List(String)) -> Table {
 /// Render type from table element
 ///
 pub fn render(in: Table) -> Render(a) {
-  UITableRender(in:, column: None, header: None, footer: None, thead: None)
+  UITableRender(in:, column: None, thead: None, header: [], footer: [])
 }
 
 /// Set column data function view component
@@ -106,14 +108,14 @@ pub fn column(at: Render(a), column: ColumnData(a)) -> Render(a) {
 
 /// Set header function view component
 ///
-pub fn header(at: Render(a), header: Header(a)) -> Render(a) {
-  UITableRender(..at, header: Some(header))
+pub fn header(at: Render(a), header: UIRenders(a)) -> Render(a) {
+  UITableRender(..at, header:)
 }
 
 /// Set footer function view component
 ///
-pub fn footer(at: Render(a), footer: Header(a)) -> Render(a) {
-  UITableRender(..at, footer: Some(footer))
+pub fn footer(at: Render(a), footer: UIRenders(a)) -> Render(a) {
+  UITableRender(..at, footer:)
 }
 
 /// Return view element
@@ -121,14 +123,6 @@ pub fn footer(at: Render(a), footer: Header(a)) -> Render(a) {
 pub fn view(at: Render(a)) -> element.Element(a) {
   let UITableRender(in:, column:, header:, footer:, thead:) = at
   let UITable(el:, columns:, ids:) = in
-  let header =
-    header
-    |> option.map(fn(header) { header() })
-    |> option.unwrap(element.none())
-  let footer =
-    footer
-    |> option.map(fn(footer) { footer() })
-    |> option.unwrap(element.none())
 
   let thead =
     html.thead(
@@ -163,7 +157,6 @@ pub fn view(at: Render(a)) -> element.Element(a) {
         ),
       ],
     )
-
   let tbody =
     html.tbody(
       [attribute.class("divide-y divide-gray-100 dark:divide-gray-800")],
@@ -193,30 +186,10 @@ pub fn view(at: Render(a)) -> element.Element(a) {
         }),
     )
   let content =
-    html.div(
-      [
-        attribute.class(
-          "custom-scrollbar max-w-full overflow-x-auto overflow-y-visible px-5 sm:px-6",
-        ),
-      ],
-      [
-        html.table([attribute.class("min-w-full")], [
-          thead,
-          tbody,
-        ]),
-      ],
-    )
-  html.div(
-    [
-      attribute.class(
-        "mt-6 rounded-2xl border border-gray-200 bg-white pt-4 dark:border-gray-800 dark:bg-white/[0.03]",
-      ),
-    ],
-    [
-      // header
-      header,
-      content,
-      footer,
-    ],
-  )
+    html.table([attribute.class("min-w-full")], [
+      thead,
+      tbody,
+    ])
+
+  ui.content([content], header, footer)
 }

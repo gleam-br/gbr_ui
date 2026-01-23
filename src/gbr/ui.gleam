@@ -298,6 +298,53 @@ pub fn primary_with_breadcrumb(
   ])
 }
 
+/// UI content layout view w/ header, content, footer
+///
+/// - header: View component
+/// - content: View component
+/// - footer: View component
+///
+pub fn content(
+  content: UIRenders(a),
+  header: UIRenders(a),
+  footer: UIRenders(a),
+) -> UIRender(a) {
+  html.div(
+    [
+      attribute.class(
+        "rounded-2xl border border-gray-200 bg-white pt-4 dark:border-gray-800 dark:bg-white/[0.03]",
+      ),
+    ],
+    [
+      // header
+      html.div(
+        [
+          attribute.class(
+            "mb-4 flex flex-col gap-2 px-5 sm:flex-row sm:items-center sm:justify-between sm:px-6",
+          ),
+        ],
+        header,
+      ),
+      html.div(
+        [
+          attribute.class(
+            "space-y-4 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-700 custom-scrollbar max-w-full overflow-x-auto overflow-y-visible px-5 sm:px-6",
+          ),
+        ],
+        content,
+      ),
+      html.div(
+        [
+          attribute.class(
+            "border-t border-gray-200 px-6 py-4 dark:border-gray-800",
+          ),
+        ],
+        footer,
+      ),
+    ],
+  )
+}
+
 // PRIVATE
 //
 

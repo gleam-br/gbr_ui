@@ -32,9 +32,9 @@ type Render(a) =
   UISelectRender(a)
 
 type Item =
-  UISelectItem
+  UISelectOption
 
-type Items =
+type Options =
   List(Item)
 
 type Text =
@@ -49,7 +49,7 @@ type OnToggle(a) =
 /// Select super element
 ///
 /// - el: Element info type
-/// - items: List of options
+/// - options: List of options
 /// - label: Option label for select
 /// - multi: Is multi select
 /// - open: If is open multi select dropdown
@@ -57,7 +57,7 @@ type OnToggle(a) =
 pub opaque type UISelect {
   UISelect(
     el: el.UIEl,
-    items: Items,
+    options: Options,
     label: Option(Text),
     multi: Bool,
     open: Bool,
@@ -84,14 +84,14 @@ pub opaque type UISelectRender(a) {
 /// - label: Label of option
 /// - selected: If is selected or not
 ///
-pub opaque type UISelectItem {
-  UISelectItem(value: String, label: String, selected: Bool)
+pub opaque type UISelectOption {
+  UISelectOption(value: String, label: String, selected: Bool)
 }
 
 /// Constructor of select super element
 ///
 pub fn new(id: String) -> Select {
-  UISelect(el: el.new(id), items: [], multi: False, open: False, label: None)
+  UISelect(el: el.new(id), options: [], multi: False, open: False, label: None)
 }
 
 /// New selection option item
@@ -100,7 +100,7 @@ pub fn new(id: String) -> Select {
 /// - text: Select option inner text
 ///
 pub fn option(value: String, text: String) -> Item {
-  UISelectItem(value:, label: text, selected: False)
+  UISelectOption(value:, label: text, selected: False)
 }
 
 /// Set select title
@@ -119,25 +119,25 @@ pub fn placeholder(in: Select, placeholder: String) -> Select {
   UISelect(..in, el:)
 }
 
-/// Set select items (options)
+/// Set select options (options)
 ///
-pub fn items(in: Select, items) -> Select {
-  UISelect(..in, items:)
+pub fn options(in: Select, options) -> Select {
+  UISelect(..in, options:)
 }
 
-/// Set select multi items can selected
+/// Set select multi options can selected
 ///
 pub fn multi(in: Select, multi: Bool) -> Select {
   UISelect(..in, multi:)
 }
 
-/// Set select open mulit select items
+/// Set select open mulit select options
 ///
 pub fn open(in: Select, open: Bool) -> Select {
   UISelect(..in, open:)
 }
 
-/// Toggle select open multi select items
+/// Toggle select open multi select options
 ///
 pub fn toggle(in: Select) -> Select {
   UISelect(..in, open: !in.open)
@@ -146,10 +146,10 @@ pub fn toggle(in: Select) -> Select {
 /// Update select based by event occurs.
 ///
 pub fn selected(in: Select, value: String) -> Select {
-  let UISelect(items:, multi:, ..) = in
-  let items = items_select(items, value, multi)
+  let UISelect(options:, multi:, ..) = in
+  let options = options_select(options, value, multi)
 
-  UISelect(..in, items:)
+  UISelect(..in, options:)
 }
 
 /// New select render type
@@ -180,10 +180,10 @@ pub fn ontoggle(at: Render(a), ontoggle: OnToggle(a)) -> Render(a) {
   UISelectRender(..at, ontoggle: Some(ontoggle))
 }
 
-pub fn new_options(items: List(Item)) {
-  use item <- list.map(items)
+pub fn new_options(options: Options) {
+  use item <- list.map(options)
 
-  let UISelectItem(value:, label:, selected:) = item
+  let UISelectOption(value:, label:, selected:) = item
 
   html.option(
     [
@@ -215,27 +215,27 @@ pub fn new_label(id, label) {
   |> option.unwrap(element.none())
 }
 
-/// Filter select items, options, by selected
+/// Filter select options, options, by selected
 ///
-/// - items: List of items (options)
+/// - options: List of options (options)
 /// - selected: True or False
 ///
-pub fn items_filter_by_selected(items: List(Item), selected: Bool) -> List(Item) {
-  use item <- list.filter(items)
+pub fn options_filter_by_selected(options: Options, selected: Bool) -> Options {
+  use option <- list.filter(options)
 
-  item.selected == selected
+  option.selected == selected
 }
 
-/// If items is empty filter by selected or not
+/// If options is empty filter by selected or not
 ///
-/// - items: List of options
+/// - options: List of options
 /// - selected: True or False
 ///
-pub fn items_filter_by_selected_is_empty(
-  items: List(Item),
+pub fn options_filter_by_selected_is_empty(
+  options: Options,
   selected: Bool,
 ) -> Bool {
-  items_filter_by_selected(items, selected)
+  options_filter_by_selected(options, selected)
   |> list.is_empty()
 }
 
@@ -253,7 +253,7 @@ pub fn view(at: Render(a)) -> UIRender(a) {
 
 fn view_unique(at) {
   let UISelectRender(in:, onchange:, ontoggle:) = at
-  let UISelect(el:, items:, label:, open:, ..) = in
+  let UISelect(el:, options:, label:, open:, ..) = in
   let id = el.get_id(el)
   let evt_onchange =
     onchange
@@ -299,7 +299,7 @@ fn view_unique(at) {
 
   let id = el.get_id(el)
   let label = new_label(id, label)
-  let options = new_options(items)
+  let options = new_options(options)
   let placeholder =
     el.att_get(el, "placeholder")
     |> option.map(transform)
@@ -333,14 +333,14 @@ fn view_unique(at) {
   ])
 }
 
-fn items_select(items: Items, value, multi) {
-  use item <- list.map(items)
-  let is_equals = item.value == value
+fn options_select(options: Options, value, multi) {
+  use option <- list.map(options)
+  let is_equals = option.value == value
 
   case is_equals, multi {
-    _, False -> UISelectItem(..item, selected: is_equals)
-    True, True -> UISelectItem(..item, selected: !item.selected)
-    False, True -> item
+    _, False -> UISelectOption(..option, selected: is_equals)
+    True, True -> UISelectOption(..option, selected: !option.selected)
+    False, True -> option
   }
 }
 
@@ -348,15 +348,16 @@ fn items_select(items: Items, value, multi) {
 ///
 fn view_multi(at: Render(a)) {
   let UISelectRender(in:, onchange:, ontoggle:) = at
-  let UISelect(el:, items:, label:, open:, ..) = in
+  let UISelect(el:, options:, label:, open:, ..) = in
 
   let id = el.get_id(el)
   let label = new_label(id, label)
-  let items_selected_empty = items_filter_by_selected_is_empty(items, True)
+  let options_selected_empty =
+    options_filter_by_selected_is_empty(options, True)
   let placeholder =
     el.att_get(el, "placeholder")
-    |> new_placeholder(items_selected_empty)
-  let options = new_options(items)
+    |> new_placeholder(options_selected_empty)
+  let view_options = new_options(options)
 
   let ontoggleclick =
     ontoggle
@@ -373,8 +374,8 @@ fn view_multi(at: Render(a)) {
   // let attrs = el.attrs(el)
 
   let values =
-    items
-    |> items_filter_by_selected(True)
+    options
+    |> options_filter_by_selected(True)
     |> list.map(fn(item) { item.value })
     |> string.join(",")
 
@@ -390,7 +391,7 @@ fn view_multi(at: Render(a)) {
           a.class("hidden"),
           a.name("select-multi-values"),
         ],
-        options,
+        view_options,
       ),
       // bag with remove icon to selected options
       html.div(
@@ -411,7 +412,7 @@ fn view_multi(at: Render(a)) {
               // if empty show input placeholde
               placeholder,
               // else list of selected options
-              ..items_selected(id, items, onchange)
+              ..options_selected(id, options, onchange)
             ],
           ),
           // arrow dropdown
@@ -438,7 +439,7 @@ fn view_multi(at: Render(a)) {
         [
           html.div(
             [a.class("overflow-y-auto"), a.style("max-height", "16rem")],
-            items_not_selected(id, items, onchange),
+            options_not_selected(id, options, onchange),
           ),
         ],
       ),
@@ -449,12 +450,12 @@ fn view_multi(at: Render(a)) {
 // PRIVATE
 //
 
-fn items_selected(
+fn options_selected(
   id,
-  items: List(Item),
+  options: Options,
   onchange: Option(fn(String, String) -> a),
 ) -> List(element.Element(a)) {
-  use item <- list.map(items_filter_by_selected(items, True))
+  use item <- list.map(options_filter_by_selected(options, True))
 
   let onchange =
     onchange
@@ -495,12 +496,12 @@ fn items_selected(
   )
 }
 
-fn items_not_selected(
+fn options_not_selected(
   id,
-  items: List(Item),
+  options: Options,
   onchange: Option(fn(String, String) -> a),
 ) -> List(element.Element(a)) {
-  use item <- list.map(items_filter_by_selected(items, False))
+  use item <- list.map(options_filter_by_selected(options, False))
 
   let onchange =
     onchange
@@ -529,9 +530,9 @@ fn items_not_selected(
   )
 }
 
-fn new_placeholder(placeholder: Option(String), items_selected_empty: Bool) {
+fn new_placeholder(placeholder: Option(String), options_selected_empty: Bool) {
   // x-show=selected == 0
-  use <- bool.guard(!items_selected_empty, element.none())
+  use <- bool.guard(!options_selected_empty, element.none())
 
   let transform = fn(placeholder) {
     html.span([a.class("text-sm text-gray-500 dark:text-gray-400")], [

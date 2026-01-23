@@ -23,6 +23,7 @@
 //// ```
 ////
 
+import gbr/ui/svg/icons
 import lustre/attribute as a
 import lustre/element/html
 import lustre/event
@@ -65,6 +66,12 @@ pub fn new(id: String) -> Search {
   UISearch(el:)
 }
 
+pub fn value(in: Search, value: String) -> Search {
+  let el = input.value(in.el, value)
+
+  UISearch(el:)
+}
+
 pub fn render(in: Search, onsubmit: OnSubmit(a)) -> Render(a) {
   let in = input.render(in.el, [], [])
 
@@ -75,7 +82,7 @@ pub fn onchange(at: Render(a), onchange: fn(String) -> a) -> Render(a) {
   let in =
     at.in
     |> input.on_change(onchange)
-    |> input.on_keypress(onchange)
+    |> input.on_input(onchange)
 
   UISearchRender(..at, in:)
 }
@@ -104,8 +111,12 @@ fn inline(in) {
     ]),
     input.view(in),
     html.button([a.type_("submit"), a.class(search_button_class)], [
-      html.span([], [html.text(" ⌘ ")]),
-      html.span([], [html.text(" K ")]),
+      svg.new(20, 20)
+      |> icons.arrow_forward()
+      |> svg.view(),
+      // todo onkeydown
+    // html.span([], [html.text(" ⌘ ")]),
+    // html.span([], [html.text(" K ")]),
     ]),
   ]
 }
