@@ -96,6 +96,16 @@ pub fn class(in: UITypo, class: String) -> UITypo {
   UITypo(..in, el:)
 }
 
+/// Set typo class attribute
+///
+/// - class: Class attribute value
+///
+pub fn classes(in: UITypo, classes: model.UISwitches) -> UITypo {
+  let el = el.classes(in.el, classes)
+
+  UITypo(..in, el:)
+}
+
 /// Render inline typos layout.
 ///
 pub fn inline(in: UITypos) -> UIRender(a) {

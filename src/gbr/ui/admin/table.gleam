@@ -3,6 +3,9 @@
 ////
 
 import gbr/ui
+import gbr/ui/admin/button
+import gbr/ui/svg
+import gbr/ui/svg/icons
 import gleam/list
 import gleam/option.{type Option, None, Some}
 
@@ -192,4 +195,76 @@ pub fn view(at: Render(a)) -> element.Element(a) {
     ])
 
   ui.content([content], header, footer)
+}
+
+/// WIP table pagination
+///
+pub fn footer_pagination() {
+  [
+    html.div([attribute.class("flex items-center justify-between")], [
+      // todo onclick
+      button.new("table_propriedade_footer_btn_next")
+        |> button.tertiary()
+        |> button.label("Anterior")
+        |> button.sm()
+        |> button.render_left([
+          svg.new(20, 20)
+          |> icons.arrow_back()
+          |> svg.view(),
+        ])
+        |> button.view(),
+      // todo pagination to table
+      typo.span("Página 1 de 10")
+        |> typo.class(
+          "block text-sm font-medium text-gray-700 sm:hidden dark:text-gray-400",
+        )
+        |> typo.view(),
+      // tod gbr_list
+      html.ul(
+        [attribute.class("hidden items-center gap-0.5 sm:flex")],
+        [
+          #("1", True),
+          #("2", False),
+          #("3", False),
+          #("...", False),
+          #("8", False),
+          #("9", False),
+          #("10", False),
+        ]
+          |> list.map(fn(page) {
+            let #(page, selected) = page
+            html.li([], [
+              html.a(
+                [
+                  attribute.classes([
+                    #(
+                      "bg-brand-500/[0.08] text-brand-500 dark:text-brand-500",
+                      selected,
+                    ),
+                  ]),
+                  attribute.classes([
+                    #("text-gray-700 dark:text-gray-400", !selected),
+                  ]),
+                  attribute.class(
+                    "text-theme-sm hover:bg-brand-500/[0.08] hover:text-brand-500 dark:hover:text-brand-500 flex h-10 w-10 items-center justify-center rounded-lg font-medium cursor-pointer",
+                  ),
+                ],
+                [html.text(" " <> page <> " ")],
+              ),
+            ])
+          }),
+      ),
+      // todo onclick
+      button.new("table_propriedade_footer_btn_next")
+        |> button.tertiary()
+        |> button.label("Próximo")
+        |> button.sm()
+        |> button.render_right([
+          svg.new(20, 20)
+          |> icons.arrow_forward()
+          |> svg.view(),
+        ])
+        |> button.view(),
+    ]),
+  ]
 }

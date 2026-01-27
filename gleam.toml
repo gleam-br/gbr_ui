@@ -4,7 +4,7 @@ version = "1.0.2-alpha+005"
 description = "🎨 Gleam UI lustre library by @gleam-br"
 licences = ["Apache-2.0"]
 repository = { type = "github", user = "gleam-br", repo = "gbr_ui" }
-# links = [{ title = "Website", href = "" }]
+links = []
 
 [dependencies]
 lustre = "~> 5.5"

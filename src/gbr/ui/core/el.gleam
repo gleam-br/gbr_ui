@@ -17,7 +17,7 @@ import gleam/option.{type Option}
 
 import lustre/attribute
 
-import gbr/ui/core/model.{type UIAttrs, type UIProperties, type UISwitches}
+import gbr/ui/core/model
 
 // Alias
 
@@ -25,13 +25,13 @@ type El =
   UIEl
 
 type Attrs(a) =
-  UIAttrs(a)
+  model.UIAttrs(a)
 
 type Properties =
-  UIProperties
+  model.UIProperties
 
 type Switches =
-  UISwitches
+  model.UISwitches
 
 type Classes =
   UIClasses
@@ -41,17 +41,6 @@ type Style =
 
 type Att =
   UIAtt
-
-/// Element super ui.
-///
-/// - id: Equals `lustre/attribute.classes`
-/// - classes: `lustre/attribute.classes`
-/// - style: `lustre/attribute.style`
-/// - att: `lustre/attribute.attribute`
-///
-pub opaque type UIEl {
-  UIEl(id: String, classes: Classes, styles: Style, att: Att)
-}
 
 /// Attributes of element with key
 ///
@@ -83,6 +72,17 @@ pub type UIClasses =
 ///
 pub type UIStyles =
   dict.Dict(String, Properties)
+
+/// Element super ui.
+///
+/// - id: Equals `lustre/attribute.classes`
+/// - classes: `lustre/attribute.classes`
+/// - style: `lustre/attribute.style`
+/// - att: `lustre/attribute.attribute`
+///
+pub opaque type UIEl {
+  UIEl(id: String, classes: Classes, styles: Style, att: Att)
+}
 
 /// New element type
 ///
@@ -173,10 +173,14 @@ pub fn att_get_key(el: El, key: String, name: String) -> Option(String) {
   |> option.map(fn(found) { found.1 })
 }
 
+/// Return any attribute with name equals.
+///
 pub fn att_any(el: El, name: String) -> Bool {
   att_any_key(el, el.id, name)
 }
 
+/// Return any attribute by key with name equals.
+///
 pub fn att_any_key(el: El, key: String, name: String) -> Bool {
   dict.get(el.att, key)
   |> option.from_result()
@@ -321,6 +325,10 @@ fn random_str(id: String) -> String {
   id_prefix <> random <> "-" <> id
 }
 
+/// Prefix element id
+///
 const id_prefix = "gbr-ui-"
 
+/// Id range random avoid conflict
+///
 const random_range = 1_000_000
