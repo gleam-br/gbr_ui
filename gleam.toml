@@ -1,5 +1,5 @@
 name = "gbr_ui"
-version = "1.0.2-alpha+005"
+version = "1.0.2-alpha+006"
 
 description = "🎨 Gleam UI lustre library by @gleam-br"
 licences = ["Apache-2.0"]
