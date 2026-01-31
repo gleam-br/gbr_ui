@@ -1,15 +1,13 @@
-# 🎨 Gleam UI lustre library
+[![Package Version](https://img.shields.io/hexpm/v/gbr_ui)](https://hex.pm/packages/gbr_ui)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/gbr_ui/)
 
-🚧 **Work in progress** not production ready.
+# 📺 Gleam UI lustre library
 
 [Gleam](https://gleam.run/) UI [lustre](https://lustre.build/) library by @gleam-br
 
 Library based on [TailAdmin](https://tailadmin.com/)
 
 🌝 Nothing stateful only stateless uses only lustre render functions.
-
-[![Package Version](https://img.shields.io/hexpm/v/gbr_ui)](https://hex.pm/packages/gbr_ui)
-[![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/gbr_ui/)
 
 ## Demo
 
