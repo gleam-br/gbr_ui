@@ -2,10 +2,13 @@
 //// Falcon admin security module
 ////
 
+import gbr/ui/admin/user
+import gbr/ui/admin/user/dropdown
 import gleam/bool
 import gleam/dict
 import gleam/dynamic/decode
 import gleam/float
+import gleam/option.{type Option, None, Some}
 import gleam/order
 import gleam/result
 import gleam/time/duration
@@ -245,4 +248,39 @@ pub fn claim(
   jwt
   |> jwt.get_payload_claim(key, decode)
   |> result.map_error(DecodeError)
+}
+
+/// New user from security token jwt info
+///
+/// - in: Security jwt info
+///
+pub fn to_user(in: Option(Security)) -> user.UIUser {
+  let user = user.new("user", "")
+
+  case in {
+    None -> user
+    Some(in) -> {
+      let username =
+        subject(in)
+        |> result.unwrap("")
+      let email =
+        mail(in)
+        |> result.unwrap("")
+      let department =
+        department(in)
+        |> result.unwrap("")
+      let name =
+        name(in)
+        |> result.unwrap("")
+
+      user
+      |> user.username(username)
+      |> user.email(email)
+      |> user.department(department)
+      |> user.name_full(name)
+      // TODO
+      |> user.picture("/profile.png")
+      |> user.dropdown(dropdown.new(False))
+    }
+  }
 }
