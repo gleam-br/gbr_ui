@@ -62,10 +62,10 @@ pub type UITableRender(a) {
   )
 }
 
-/// Header table view component
-///
-type Header(a) =
-  fn() -> element.Element(a)
+// Header table view component
+//
+// type Header(a) =
+//   fn() -> element.Element(a)
 
 /// Column key to thead view component
 ///
@@ -125,7 +125,7 @@ pub fn footer(at: Render(a), footer: UIRenders(a)) -> Render(a) {
 ///
 pub fn view(at: Render(a)) -> element.Element(a) {
   let UITableRender(in:, column:, header:, footer:, thead:) = at
-  let UITable(el:, columns:, ids:) = in
+  let UITable(columns:, ids:, ..) = in
 
   let thead =
     html.thead(

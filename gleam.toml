@@ -1,5 +1,6 @@
 name = "gbr_ui"
-version = "1.0.2-alpha+006"
+version = "1.0.2-alpha+007"
+target = "javascript"
 
 description = "🎨 Gleam UI lustre library by @gleam-br"
 licences = ["Apache-2.0"]
@@ -7,7 +8,15 @@ repository = { type = "github", user = "gleam-br", repo = "gbr_ui" }
 links = []
 
 [dependencies]
+gbr_shared = "~> 1.0"
+gbr_js = "~> 1.0"
+
 lustre = "~> 5.5"
+rsvp = "~> 1.1"
+
+gleam_time = "~> 1.6"
+gleam_http = "~> 4.3"
+gleam_json = "~> 3.1"
 gleam_stdlib = "~> 0.68"
 
 [dev-dependencies]

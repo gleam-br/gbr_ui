@@ -42,12 +42,20 @@ import lustre/attribute.{class}
 import lustre/element
 import lustre/element/html
 
+import gbr/ui/admin/pages/domain as pages
+import gbr/ui/admin/sidebar/menu
 import gbr/ui/svg
 
 import gbr/ui/core/model.{
   type UIAttrs, type UIBoxes, type UIOptRender, type UIRender, type UIRenders,
   UIBox,
 }
+
+// Alias
+//
+
+type Page(a) =
+  pages.UIPage(a)
 
 /// Construct new super svg element `gbr/ui/svg.{new}`.
 ///
@@ -300,8 +308,8 @@ pub fn primary_with_breadcrumb(
 
 /// UI content layout view w/ header, content, footer
 ///
-/// - header: View component
 /// - content: View component
+/// - header: View component
 /// - footer: View component
 ///
 pub fn content(
@@ -343,6 +351,13 @@ pub fn content(
       ),
     ],
   )
+}
+
+/// TODO Move it to util module
+///
+pub fn page_to_menu(in: Page(a)) {
+  menu.new(in.id)
+  |> menu.title(in.title)
 }
 
 // PRIVATE

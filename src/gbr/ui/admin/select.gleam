@@ -152,6 +152,53 @@ pub fn selected(in: Select, value: String) -> Select {
   UISelect(..in, options:)
 }
 
+pub fn diselected(in: Select, value: String) -> Select {
+  let options = {
+    use opt <- list.filter_map(in.options)
+
+    case opt.value == value {
+      False -> Ok(opt)
+      True -> Ok(UISelectOption(..opt, selected: False))
+    }
+  }
+
+  UISelect(..in, options:)
+}
+
+pub fn reset_options(in: Select) -> Select {
+  let options = {
+    use opt <- list.map(in.options)
+
+    UISelectOption(..opt, selected: False)
+  }
+
+  UISelect(..in, options:)
+}
+
+/// Get selected options.
+///
+/// - in: Select type instance.
+///
+pub fn selected_get_one(in: Select) -> Option(String) {
+  case selected_get(in) {
+    [] -> None
+    [head] | [head, ..] -> Some(head)
+  }
+}
+
+/// Get selected options.
+///
+/// - in: Select type instance.
+///
+pub fn selected_get(in: Select) -> List(String) {
+  use opt <- list.filter_map(in.options)
+
+  case opt.selected {
+    True -> Ok(opt.value)
+    False -> Error(Nil)
+  }
+}
+
 /// New select render type
 ///
 /// - in: Select element info type
@@ -322,11 +369,6 @@ fn view_unique(at) {
             "h-5 w-5 shrink-0 text-gray-500 transition-transform dark:text-gray-400 stroke-current",
           )
           |> svg.view(),
-          //
-        // svg.new(20, 20)
-        // |> svg_icons.arrow()
-        // |> svg.class("stroke-current")
-        // |> svg.view(),
         ],
       ),
     ]),

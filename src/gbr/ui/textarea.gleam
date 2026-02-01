@@ -65,7 +65,10 @@ pub fn label(in: Textarea, label: String) -> Textarea {
   UITextarea(..in, label: Some(label))
 }
 
+/// Set message info to user.
 ///
+/// - in: Textarea
+/// - message: Text info user.
 ///
 pub fn message(in: Textarea, message: String) -> Textarea {
   let msg =

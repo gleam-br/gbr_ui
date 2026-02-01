@@ -23,7 +23,6 @@
 //// ```
 ////
 
-import gbr/ui/svg/icons
 import lustre/attribute as a
 import lustre/element/html
 import lustre/event
@@ -32,6 +31,7 @@ import gbr/ui/form
 import gbr/ui/input
 import gbr/ui/svg
 import gbr/ui/svg/form as svg_form
+import gbr/ui/svg/icons
 
 import gbr/ui/core/model.{type UIProperties, type UIRender}
 
@@ -66,10 +66,18 @@ pub fn new(id: String) -> Search {
   UISearch(el:)
 }
 
+/// Set value attribute to element.
+///
 pub fn value(in: Search, value: String) -> Search {
   let el = input.value(in.el, value)
 
   UISearch(el:)
+}
+
+/// Get wrapper input element.
+///
+pub fn input(in: Search) -> Input {
+  in.el
 }
 
 pub fn render(in: Search, onsubmit: OnSubmit(a)) -> Render(a) {

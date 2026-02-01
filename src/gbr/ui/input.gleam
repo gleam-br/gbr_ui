@@ -111,6 +111,12 @@ pub fn value(in: Input, value: String) -> Input {
   attrs(in, [#("value", value)])
 }
 
+/// Get input value
+///
+pub fn value_get(in: Input) -> Option(String) {
+  el.att_get(in.el, "value")
+}
+
 pub fn label(in: Input, label: String) -> Input {
   let id = el.get_id(in.el)
   let label = typo.label(id, label)
