@@ -269,7 +269,8 @@ fn do_auth(web: Web, auth, on) {
   case auth {
     Ok(token) -> {
       let security =
-        security.persist(const_storage_jwt, token)
+        security.persist(token, const_storage_jwt)
+        |> echo
         |> option.from_result()
 
       let api = api.authorization(web.api, token)

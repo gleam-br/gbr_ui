@@ -91,13 +91,23 @@ pub fn new() -> Login {
   )
 }
 
+pub fn username(in: LoginPage, value: String) -> LoginPage {
+  let username = input.value(in.username, value)
+  LoginPage(..in, username:)
+}
+
+pub fn password(in: LoginPage, value: String) -> LoginPage {
+  let password = input.value(in.password, value)
+  LoginPage(..in, password:)
+}
+
 /// Set logo element to login
 ///
 pub fn logo(in: LoginPage, logo: logo.UILogo) -> LoginPage {
   LoginPage(..in, logo: Some(logo))
 }
 
-pub fn at(in: Login) -> Render(a) {
+pub fn render(in: Login) -> Render(a) {
   LoginPageRender(in:, onform: None, onsubmit: None, ondark: None)
 }
 
@@ -116,7 +126,7 @@ pub fn onsubmit(
   LoginPageRender(..in, onsubmit: Some(onsubmit))
 }
 
-pub fn render(at: Render(a)) -> element.Element(a) {
+pub fn view(at: Render(a)) -> element.Element(a) {
   let LoginPageRender(in:, ..) = at
 
   let hero =

@@ -151,7 +151,7 @@ pub fn sidebar_select(in: Home, id: String) -> Home {
 
 ///
 ///
-pub fn at(in: Home) -> Render(a) {
+pub fn render(in: Home) -> Render(a) {
   HomePageRender(in:, onhome: None, ondark: None)
 }
 

@@ -9,6 +9,41 @@ Library based on [TailAdmin](https://tailadmin.com/)
 
 🌝 Nothing stateful only stateless uses only lustre render functions.
 
+## 🌄 Roadmap
+
+- [ ] Unit tests
+- [ ] More docs
+- [ ] UI notify
+- [x] UI login page
+  - [ ] basic(user,passwd) WIP
+    - [ ] remove hardcode input title, labels, etc
+  - [ ] provider WIP
+- [x] UI home page
+  - [x] Header
+  - [x] Sidebar
+- [x] UI box
+- [x] UI header
+- [x] UI sidebar
+- [x] UI search
+- [x] UI profile
+- [x] UI layout
+- [x] UI core
+- [x] UI input
+- [x] UI typo
+- [x] UI alert
+- [x] UI svg
+- [x] UI form
+- [x] UI button
+- [x] UI select
+- [x] UI checkbox
+- [x] UI logotype
+- [x] UI breadcrumb
+- [x] UI separator
+- [x] GH workflow
+  - [x] test & build
+  - [x] changelog & issue to doc
+  - [x] ~~auto publish~~ manual publish
+    - [x] `gleam publish`
 ## Demo
 
 - [gbr-ui-demo](https://github.com/gleam-br/gbr-ui-demo): Project using this library and [vite](https://vite.dev/) with [vite-plugin-gleam](https://github.com/gleam-br/vite-plugin-gleam).
@@ -564,35 +599,3 @@ stylesheets = [
 gleam run   # Run the project
 gleam test  # Run the tests
 ```
-
-## 🌄 Roadmap
-
-- [ ] Unit tests
-- [ ] More docs
-- [ ] UI notify
-- [ ] UI login
-  - [ ] basic
-  - [ ] provider
-- [x] UI box
-- [x] UI header
-- [x] UI sidebar
-- [x] UI search
-- [x] UI profile
-- [x] UI layout
-- [x] UI core
-- [x] UI input
-- [x] UI typo
-- [x] UI alert
-- [x] UI svg
-- [x] UI form
-- [x] UI button
-- [x] UI select
-- [x] UI checkbox
-- [x] UI logotype
-- [x] UI breadcrumb
-- [x] UI separator
-- [x] GH workflow
-  - [x] test & build
-  - [x] changelog & issue to doc
-  - [x] ~~auto publish~~ manual publish
-    - [x] `gleam publish`
