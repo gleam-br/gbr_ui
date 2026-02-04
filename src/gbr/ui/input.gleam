@@ -18,11 +18,15 @@ import lustre/element/html
 import lustre/event
 
 import gbr/ui/core/el
+import gbr/ui/core/render
 import gbr/ui/typo
 
 import gbr/ui/core/model.{
   type UIAttrs, type UIProperties, type UIRender, type UIRenders,
 }
+
+// Alias
+//
 
 type Input =
   UIInput
@@ -30,14 +34,14 @@ type Input =
 type Render(a) =
   UIInputRender(a)
 
-type OnChange(a) =
-  fn(String) -> a
-
 type Text =
   typo.UITypo
 
 type Attrs =
   UIProperties
+
+type OnChange(a) =
+  fn(String) -> a
 
 /// Input super element.
 ///
@@ -48,16 +52,11 @@ pub opaque type UIInput {
 /// Input super element.
 ///
 pub opaque type UIInputRender(a) {
-  UIInputRender(
-    in: Input,
-    inner: UIRenders(a),
-    onclick: Option(a),
-    onpaste: Option(a),
-    oninput: Option(OnChange(a)),
-    onchange: Option(OnChange(a)),
-    onkeypress: Option(OnChange(a)),
-  )
+  UIInputRender(in: Input, render: render.UIElRender(a))
 }
+
+// Constructors
+//
 
 /// New input type text super element.
 ///
@@ -95,6 +94,9 @@ pub fn new(id: String, kind: String) -> Input {
   UIInput(el:, label: None, note: None)
 }
 
+// Accessors
+//
+
 /// Set element class
 ///
 pub fn class(in: Input, class: String) -> Input {
@@ -113,10 +115,15 @@ pub fn classes(in: Input, classes: model.UISwitches) -> Input {
 
 /// Set input value
 ///
+/// > 🕹️ Controled vs 🌪️ Uncontroled inputs
+/// > https://github.com/lustre-labs/lustre/blob/main/pages/hints/controlled-vs-uncontrolled-inputs.md
+///
 pub fn value(in: Input, value: String) -> Input {
-  attrs(in, [#("value", value)])
+  att_set(in, [#("value", value)])
 }
 
+/// Set label to input control, <label for="{id}"/>.
+///
 pub fn label(in: Input, label: String) -> Input {
   let id = el.id_get(in.el)
   let label = typo.label(id, label)
@@ -124,6 +131,11 @@ pub fn label(in: Input, label: String) -> Input {
   UIInput(..in, label: Some(label))
 }
 
+/// Set label class attribute.
+///
+/// - in: Input type instance.
+/// - class: Class value attribute to label.
+///
 pub fn label_class(in: Input, class: String) -> Input {
   let label =
     in.label
@@ -132,6 +144,11 @@ pub fn label_class(in: Input, class: String) -> Input {
   UIInput(..in, label:)
 }
 
+/// Set footer note to input control, uses with input states.
+///
+/// - in: Input type instance.
+/// - note: Input footer note, uses to info user about validations, etc.
+///
 pub fn note(in: Input, note: Text) -> Input {
   UIInput(..in, note: Some(note))
 }
@@ -139,49 +156,55 @@ pub fn note(in: Input, note: Text) -> Input {
 /// Append input class sr-only .
 ///
 pub fn sr_only(in: Input) -> Input {
-  attrs(in, [#("class", "sr-only")])
+  att_set(in, [#("class", "sr-only")])
 }
 
 /// Set input name.
 ///
 pub fn name(in: Input, name: String) -> Input {
-  attrs(in, [#("name", name)])
+  att_set(in, [#("name", name)])
 }
 
 /// Set input autocomplete.
 ///
 pub fn autocomplete(in: Input, value: Bool) -> Input {
-  attrs(in, [#("autocomplete", bool.to_string(value))])
+  att_set(in, [#("autocomplete", bool.to_string(value))])
 }
 
 /// Set input placeholder.
 ///
 pub fn placeholder(in: Input, value: String) -> Input {
-  attrs(in, [#("placeholder", value)])
+  att_set(in, [#("placeholder", value)])
 }
 
 /// Set input required.
 ///
 pub fn required(in: Input, value: String) -> Input {
-  attrs(in, [#("required", value)])
+  att_set(in, [#("required", value)])
 }
 
+/// Set input type attribute.
+///
 pub fn kind(in: Input, kind: String) -> Input {
   let el = el.att(in.el, [#("type", kind)])
 
   UIInput(..in, el:)
 }
 
-/// Set input length.
+/// Set input max length.
 ///
 pub fn max(in: Input, value: Int) -> Input {
   length(in, "maxlength", value)
 }
 
+/// Set input min length.
+///
 pub fn min(in: Input, value: Int) -> Input {
   length(in, "minlength", value)
 }
 
+/// Set input length.
+///
 pub fn size(in: Input, value: Int) -> Input {
   length(in, "size", value)
 }
@@ -190,117 +213,85 @@ pub fn size(in: Input, value: Int) -> Input {
 ///
 pub fn render(in: Input, attrs: UIAttrs(a), inner: UIRenders(a)) -> Render(a) {
   let inner = [html.span(attrs, inner)]
+  let render =
+    render.new(in.el)
+    |> render.elements(inner)
 
-  UIInputRender(
-    in:,
-    inner:,
-    onpaste: None,
-    onkeypress: None,
-    oninput: None,
-    onclick: None,
-    onchange: None,
-  )
+  UIInputRender(in:, render:)
 }
 
-/// Set input render event onclick.
+/// Set input render event oninput via option.
 ///
-pub fn on_click(in: Render(a), onclick: a) -> Render(a) {
-  on_click_opt(in, Some(onclick))
-}
-
-/// Set input render event onchange.
+/// > 🕹️ Controled vs 🌪️ Uncontroled inputs
+/// > https://github.com/lustre-labs/lustre/blob/main/pages/hints/controlled-vs-uncontrolled-inputs.md
 ///
-pub fn on_change(in: Render(a), onchange: fn(String) -> a) -> Render(a) {
-  on_change_opt(in, Some(onchange))
-}
-
-/// Set input render event onclick.
 ///
-pub fn on_paste(in: Render(a), onpaste: a) -> Render(a) {
-  on_paste_opt(in, Some(onpaste))
+pub fn oninput(in: Render(a), oninput: Option(OnChange(a))) -> Render(a) {
+  let render =
+    in.render
+    |> render.attributes_opt(oninput, fn(evt) { [event.on_input(evt)] })
+
+  UIInputRender(..in, render:)
 }
 
-/// Set input render event onclick.
+/// Set input render event onchange via option.
 ///
-pub fn on_input(in: Render(a), oninput: fn(String) -> a) -> Render(a) {
-  on_input_opt(in, Some(oninput))
-}
-
-/// Set input render event onclick.
+/// > 🕹️ Controled vs 🌪️ Uncontroled inputs
+/// > https://github.com/lustre-labs/lustre/blob/main/pages/hints/controlled-vs-uncontrolled-inputs.md
 ///
-pub fn on_keypress(in: Render(a), onkeypress: fn(String) -> a) -> Render(a) {
-  on_keypress_opt(in, Some(onkeypress))
+pub fn onchange(in: Render(a), onchange: Option(OnChange(a))) -> Render(a) {
+  let render =
+    in.render
+    |> render.attributes_opt(onchange, fn(evt) { [event.on_change(evt)] })
+
+  UIInputRender(..in, render:)
 }
 
-pub fn on_click_opt(in: Render(a), onclick: Option(a)) -> Render(a) {
-  UIInputRender(..in, onclick:)
+/// Set input render event onpaste via option.
+///
+pub fn onpaste(in: Render(a), onpaste: Option(a)) -> Render(a) {
+  let render =
+    in.render
+    |> render.attributes_opt(onpaste, fn(evt) {
+      [event.on("onpaste", decode.success(evt))]
+    })
+
+  UIInputRender(..in, render:)
 }
 
-pub fn on_change_opt(
-  in: Render(a),
-  onchange: Option(fn(String) -> a),
-) -> Render(a) {
-  UIInputRender(..in, onchange:)
+/// Set input render event onclick via option.
+///
+pub fn onclick(in: Render(a), onclick: Option(a)) -> Render(a) {
+  let render =
+    in.render
+    |> render.attributes_opt(onclick, fn(evt) { [event.on_click(evt)] })
+
+  UIInputRender(..in, render:)
 }
 
-pub fn on_paste_opt(in: Render(a), onpaste: Option(a)) -> Render(a) {
-  UIInputRender(..in, onpaste:)
-}
+/// Set input render event onkeypress via option.
+///
+pub fn onkeypress(in: Render(a), onkeypress: Option(OnChange(a))) -> Render(a) {
+  let render =
+    in.render
+    |> render.attributes_opt(onkeypress, fn(evt) { [event.on_keypress(evt)] })
 
-pub fn on_input_opt(
-  in: Render(a),
-  oninput: Option(fn(String) -> a),
-) -> Render(a) {
-  UIInputRender(..in, oninput:)
-}
-
-pub fn on_keypress_opt(
-  in: Render(a),
-  onkeypress: Option(fn(String) -> a),
-) -> Render(a) {
-  UIInputRender(..in, onkeypress:)
+  UIInputRender(..in, render:)
 }
 
 /// Render input super element to `lustre/element.{type Element}`.
 ///
 pub fn view(at: Render(a)) -> UIRender(a) {
-  let UIInputRender(
-    in:,
-    inner:,
-    onclick:,
-    oninput:,
-    onchange:,
-    onpaste:,
-    onkeypress:,
-  ) = at
-  let UIInput(el:, label:, note:) = in
-  // events
-  let onclick =
-    option.map(onclick, event.on_click)
-    |> option.unwrap(a.none())
-  let oninput =
-    option.map(oninput, event.on_input)
-    |> option.unwrap(a.none())
-  let onchange =
-    option.map(onchange, event.on_change)
-    |> option.unwrap(a.none())
-  let onkeypress =
-    option.map(onkeypress, event.on_keypress)
-    |> option.unwrap(a.none())
-  let onpaste =
-    option.map(onpaste, fn(onpaste) {
-      event.on("onpaste", decode.success(onpaste))
-    })
-    |> option.unwrap(a.none())
-  // attrs
+  let UIInputRender(in:, ..) = at
+  let UIInput(label:, note:, ..) = in
   let label = case label {
     Some(label) -> typo.view(label)
     None -> element.none()
   }
-  let attrs = el.attrs(el)
-  // input
-  let input =
-    html.input([onclick, oninput, onchange, onpaste, onkeypress, ..attrs])
+  let #(attrs, inner) = render.views(at.render)
+  let input = html.input(attrs)
+
+  // if has note or inner elements
   let input = case note, inner {
     None, [] -> html.div([], [input])
     None, inner -> html.div([a.class("relative")], [input, ..inner])
@@ -315,7 +306,7 @@ pub fn view(at: Render(a)) -> UIRender(a) {
 // PRIVATE
 //
 
-fn attrs(in: Input, att: Attrs) -> Input {
+fn att_set(in: Input, att: Attrs) -> Input {
   let el = el.att(in.el, att)
 
   UIInput(..in, el:)

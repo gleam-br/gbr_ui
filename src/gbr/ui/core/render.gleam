@@ -43,6 +43,17 @@ pub fn new(el: el.UIEl) -> UIElRender(a) {
   UIRender(el:, elements:)
 }
 
+/// Append lustre attributes to render element mapping optional param.
+///
+/// - at: Render type instance.
+/// - opt: Option attribute or any value, this is map to function (f).
+/// - f: Function to get attributes from value inside option (opt) param.
+///
+pub fn attributes_opt(at, opt, f: fn(a) -> Attrs(b)) -> UIElRender(b) {
+  option.map(opt, fn(evt) { attributes(at, f(evt)) })
+  |> option.unwrap(at)
+}
+
 /// Append lustre attributes to render element
 ///
 pub fn attributes(in: UIElRender(a), attributes: Attrs(a)) -> UIElRender(a) {

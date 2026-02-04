@@ -23,6 +23,8 @@
 //// ```
 ////
 
+import gleam/option.{Some}
+
 import lustre/attribute as a
 import lustre/element/html
 import lustre/event
@@ -89,8 +91,8 @@ pub fn render(in: Search, onsubmit: OnSubmit(a)) -> Render(a) {
 pub fn onchange(at: Render(a), onchange: fn(String) -> a) -> Render(a) {
   let in =
     at.in
-    |> input.on_change(onchange)
-    |> input.on_input(onchange)
+    |> input.onchange(Some(onchange))
+    |> input.oninput(Some(onchange))
 
   UISearchRender(..at, in:)
 }
