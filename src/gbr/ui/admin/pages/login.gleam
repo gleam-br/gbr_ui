@@ -238,8 +238,9 @@ fn login_form_render(in, onform, onsubmit) {
     button.new("login-submit")
     |> button.kind("submit")
     |> button.label("Entrar")
-    |> button.primary_class("w-1/3 justify-center")
-    |> button.render()
+    |> button.primary()
+    |> button.class_append("w-1/3 justify-center")
+    |> button.render([])
     |> button.view()
 
   let inner =
@@ -296,7 +297,7 @@ fn login_provider_render(onsubmit) {
       |> transform
       |> svg.view(),
     ])
-    |> button.on_click_opt(
+    |> button.onclick(
       onsubmit
       |> option.map(fn(onsubmit) { onsubmit([#("provider", "microsoft")]) }),
     )

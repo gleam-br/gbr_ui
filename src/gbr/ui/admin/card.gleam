@@ -109,7 +109,7 @@ pub fn view(at: Render(a)) -> UIRender(a) {
     |> button.label("Read more")
     |> button.primary()
     |> button.class("mt-4")
-    |> button.render()
+    |> button.render([])
     |> button.view()
 
   html.div([], [

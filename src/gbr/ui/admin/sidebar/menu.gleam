@@ -148,7 +148,6 @@ pub fn view(at: Render(a), open: Bool, selected: Option(String)) -> UIRender(a) 
       html.div([], [
         html.h3(
           [
-            // "mb-4 text-xs uppercase leading-[20px] text-gray-400"
             a.class(menu_class),
           ],
           [
