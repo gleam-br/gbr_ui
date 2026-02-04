@@ -268,18 +268,19 @@ fn show_alert(duration: Option(Int), on) {
 fn do_auth(web: Web, auth, on) {
   case auth {
     Ok(token) -> {
+      let api = api.authorization(web.api, token)
       let security =
         security.persist(token, const_storage_jwt)
-        |> echo
         |> option.from_result()
 
-      let api = api.authorization(web.api, token)
       let home =
         security
         |> security.to_user()
         |> home.user(web.home, _)
+
       let web =
         Web(..web, api:, alert: new_alert(), security:, home:, loading: False)
+
       let assert Ok(Nil) = router.replace("/home")
 
       #(web, show_alert(Some(10), on))

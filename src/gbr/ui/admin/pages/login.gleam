@@ -274,6 +274,7 @@ fn login_form_render(in, onform, onsubmit) {
     button.new("login-submit")
     |> button.kind("submit")
     |> button.label("Entrar")
+    |> button.class("w-1/3 justify-center")
     |> button.primary()
     |> button.render()
     |> button.view()
@@ -291,7 +292,7 @@ fn login_form_render(in, onform, onsubmit) {
     |> option.map(fn(onsubmit) { fn(values) { onsubmit(values) } })
 
   form
-  |> form.render_inner([inner])
+  |> form.render([inner])
   |> form.onsubmit_opt(onsubmit)
   |> form.view()
 }

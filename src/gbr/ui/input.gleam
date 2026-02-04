@@ -2,6 +2,7 @@
 //// 🧑‍💻 Gleam UI input super element.
 ////
 
+import gleam/bool
 import gleam/dynamic/decode
 import gleam/int
 import gleam/option.{type Option, None, Some}
@@ -146,6 +147,12 @@ pub fn sr_only(in: Input) -> Input {
 ///
 pub fn name(in: Input, name: String) -> Input {
   attrs(in, [#("name", name)])
+}
+
+/// Set input autocomplete.
+///
+pub fn autocomplete(in: Input, value: Bool) -> Input {
+  attrs(in, [#("autocomplete", bool.to_string(value))])
 }
 
 /// Set input placeholder.

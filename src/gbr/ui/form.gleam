@@ -49,15 +49,23 @@ pub fn class(in: Form, class: String) -> Form {
   UIForm(el:)
 }
 
-/// New form render at default behavior.
+/// Set form autocomplete attribute.
 ///
-pub fn render(in: Form) -> Render(a) {
-  UIFormRender(in:, inner: [], onsubmit: None)
+pub fn autocomplete(in: Form, autofill: Bool) -> Form {
+  let el =
+    el.att(in.el, [
+      #("autocomplete", case autofill {
+        True -> "on"
+        False -> "off"
+      }),
+    ])
+
+  UIForm(el:)
 }
 
 /// New form render at inline behavior.
 ///
-pub fn render_inner(in: Form, inner: UIRenders(a)) -> Render(a) {
+pub fn render(in: Form, inner: UIRenders(a)) -> Render(a) {
   UIFormRender(in:, inner:, onsubmit: None)
 }
 

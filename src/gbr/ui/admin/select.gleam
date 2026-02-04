@@ -8,6 +8,7 @@
 import gleam/bool
 import gleam/list
 import gleam/option.{type Option, None, Some}
+import gleam/result
 import gleam/string
 
 import lustre/attribute as a
@@ -84,7 +85,7 @@ pub opaque type UISelectRender(a) {
 /// - label: Label of option
 /// - selected: If is selected or not
 ///
-pub opaque type UISelectOption {
+pub type UISelectOption {
   UISelectOption(value: String, label: String, selected: Bool)
 }
 
@@ -179,7 +180,7 @@ pub fn reset_options(in: Select) -> Select {
 ///
 /// - in: Select type instance.
 ///
-pub fn selected_get_one(in: Select) -> Option(String) {
+pub fn selected_get_one(in: Select) -> Option(Item) {
   case selected_get(in) {
     [] -> None
     [head] | [head, ..] -> Some(head)
@@ -190,11 +191,11 @@ pub fn selected_get_one(in: Select) -> Option(String) {
 ///
 /// - in: Select type instance.
 ///
-pub fn selected_get(in: Select) -> List(String) {
+pub fn selected_get(in: Select) -> List(Item) {
   use opt <- list.filter_map(in.options)
 
   case opt.selected {
-    True -> Ok(opt.value)
+    True -> Ok(opt)
     False -> Error(Nil)
   }
 }
@@ -235,6 +236,7 @@ pub fn new_options(options: Options) {
   html.option(
     [
       a.value(value),
+      a.selected(selected),
       a.class("text-gray-700 dark:bg-gray-900 dark:text-gray-400"),
       a.classes([
         #("text-gray-800 dark:text-white/90", selected),

@@ -101,7 +101,7 @@ pub fn view(at: Render(a)) -> UIRender(a) {
   html.div([a.class(search_class), event.on_submit(onsubmit)], [
     form.new("form-input-search")
     |> form.class("relative")
-    |> form.render_inner(inline(in))
+    |> form.render(inline(in))
     |> form.view(),
   ])
 }

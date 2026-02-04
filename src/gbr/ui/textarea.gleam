@@ -7,6 +7,7 @@ import gleam/int
 import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/string
+import lustre/event
 
 import lustre/element
 import lustre/element/html
@@ -46,8 +47,8 @@ pub opaque type UITextareaRender(a) {
 ///
 /// - text: Content of textarea
 ///
-pub fn new(text: String) {
-  UITextarea(el: el.new("textarea"), text:, label: None, msg: None)
+pub fn new(id: String) {
+  UITextarea(el: el.new(id), text: "", label: None, msg: None)
 }
 
 /// Label for textarea is optional
@@ -63,6 +64,17 @@ pub fn label(in: Textarea, label: String) -> Textarea {
     |> option.unwrap(typo.label(id, label))
 
   UITextarea(..in, label: Some(label))
+}
+
+/// Set value to textarea
+///
+/// - in: Textarea type instance.
+/// - text: Text value to textarea.
+///
+pub fn value(in: Textarea, text: String) -> Textarea {
+  let el = el.att(in.el, [#("value", text)])
+
+  UITextarea(..in, el:, text:)
 }
 
 /// Set message info to user.
@@ -250,6 +262,26 @@ pub fn render(in: Textarea) -> Render(a) {
   UITextareaRender(in:, render: render.new(in.el))
 }
 
+/// Set on input event to textarea
+///
+pub fn oninput(at: Render(a), oninput: fn(String) -> a) -> Render(a) {
+  let render =
+    at.render
+    |> render.attributes([event.on_input(oninput)])
+
+  UITextareaRender(..at, render:)
+}
+
+/// Set on change event to textarea
+///
+pub fn onchange(at: Render(a), onchange: fn(String) -> a) -> Render(a) {
+  let render =
+    at.render
+    |> render.attributes([event.on_change(onchange)])
+
+  UITextareaRender(..at, render:)
+}
+
 /// Render textarea
 ///
 pub fn view(at: Render(a)) -> model.UIRender(a) {
@@ -271,6 +303,7 @@ pub fn view(at: Render(a)) -> model.UIRender(a) {
   let views =
     [label, html.textarea(attrs, text), msg]
     |> list.append(views)
+
   html.div(attrs_container, views)
 }
 

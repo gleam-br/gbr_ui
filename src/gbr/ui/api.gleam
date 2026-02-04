@@ -29,7 +29,7 @@ import gbr/ui/env
 type Method =
   http.Method
 
-type Header =
+type Param =
   #(String, String)
 
 type Error =
@@ -38,8 +38,8 @@ type Error =
 type OnData(a, b) =
   fn(Result(a, Error)) -> b
 
-type Headers =
-  List(Header)
+type Params =
+  List(Param)
 
 /// Api http request type
 ///
@@ -56,9 +56,9 @@ pub opaque type Api {
   Api(
     uri: uri.Uri,
     path: String,
-    query: List(#(String, String)),
+    query: Params,
     method: Method,
-    headers: Headers,
+    headers: Params,
     body: Option(json.Json),
   )
 }
@@ -191,9 +191,9 @@ pub fn error(err: rsvp.Error) -> String {
 ///
 pub fn authorization(in: Api, token: String) -> Api {
   let token = const_header_auth_prefix <> token
-  let token = #(const_header_auth, token)
+  let headers = list.key_set(in.headers, const_header_auth, token)
 
-  Api(..in, headers: [token, ..in.headers])
+  Api(..in, headers:)
 }
 
 // PRIVATE
@@ -244,7 +244,7 @@ fn send_(uri, path, query, method, body, headers, handler) -> effect.Effect(b) {
   |> rsvp.send(handler)
 }
 
-fn set_headers(req, headers: Headers) {
+fn set_headers(req, headers: Params) {
   case headers {
     [] -> req
     [first, ..rest] ->
@@ -272,10 +272,3 @@ fn error_json(err: json.DecodeError) -> String {
       |> string.join("\n")
   }
 }
-// fn to_uri(uri_string: String) -> Result(uri.Uri, rsvp.Error) {
-//   case uri_string {
-//     "./" <> _ | "../" <> _ -> rsvp.parse_relative_uri(uri_string)
-//     _ -> uri.parse(uri_string)
-//   }
-//   |> result.replace_error(rsvp.BadUrl(uri_string))
-// }

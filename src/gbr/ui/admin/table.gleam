@@ -57,6 +57,7 @@ pub type UITableRender(a) {
     in: Table,
     header: UIRenders(a),
     footer: UIRenders(a),
+    empty: UIRenders(a),
     column: Option(ColumnData(a)),
     thead: Option(ColumnHead(a)),
   )
@@ -85,6 +86,14 @@ pub fn new(id: String) -> Table {
   UITable(el:, columns: [], ids: [])
 }
 
+/// Append class to element
+///
+pub fn class(in: Table, class: String) -> Table {
+  let el = el.class(in.el, class)
+
+  UITable(..in, el:)
+}
+
 /// Set list of columns
 ///
 pub fn columns(in: Table, columns: Columns) -> Table {
@@ -100,7 +109,14 @@ pub fn ids(in: Table, ids: List(String)) -> Table {
 /// Render type from table element
 ///
 pub fn render(in: Table) -> Render(a) {
-  UITableRender(in:, column: None, thead: None, header: [], footer: [])
+  UITableRender(
+    in:,
+    column: None,
+    thead: None,
+    header: [],
+    footer: [],
+    empty: [],
+  )
 }
 
 /// Set column data function view component
@@ -121,11 +137,18 @@ pub fn footer(at: Render(a), footer: UIRenders(a)) -> Render(a) {
   UITableRender(..at, footer:)
 }
 
+/// Set when is empty table function view component
+///
+pub fn empty(at: Render(a), footer: UIRenders(a)) -> Render(a) {
+  UITableRender(..at, footer:)
+}
+
 /// Return view element
 ///
 pub fn view(at: Render(a)) -> element.Element(a) {
-  let UITableRender(in:, column:, header:, footer:, thead:) = at
-  let UITable(columns:, ids:, ..) = in
+  let UITableRender(in:, column:, header:, footer:, thead:, empty:) = at
+  let UITable(el:, columns:, ids:) = in
+  let attrs = el.attrs(el)
 
   let thead =
     html.thead(
@@ -160,36 +183,55 @@ pub fn view(at: Render(a)) -> element.Element(a) {
         ),
       ],
     )
+  let has_ids = !list.is_empty(ids)
+  let has_empty = !list.is_empty(empty)
   let tbody =
     html.tbody(
       [attribute.class("divide-y divide-gray-100 dark:divide-gray-800")],
       // list of ids
-      ids
-        |> list.map(fn(id) {
-          html.tr(
-            [],
-            columns
-              |> list.map(fn(td) {
-                let Column(key, _) = td
+      case has_ids, has_empty {
+        False, False -> [
+          html.tr([], [
+            html.td(
+              [attribute.colspan(2), attribute.class("text-center py-10")],
+              [
+                typo.span("No avaiable items")
+                |> typo.class("text-gray-500 dark:text-gray-400")
+                |> typo.view(),
+              ],
+            ),
+          ]),
+        ]
+        False, True -> empty
+        True, _ -> {
+          ids
+          |> list.map(fn(id) {
+            html.tr(
+              [],
+              columns
+                |> list.map(fn(td) {
+                  let Column(key, _) = td
 
-                html.td([], [
-                  // fn view_data from get_data
-                  column
-                  |> option.map(fn(column) { column(id, key) })
-                  |> option.unwrap(
-                    typo.p(key <> id)
-                    |> typo.class(
-                      "text-theme-sm text-gray-500 dark:text-gray-400",
-                    )
-                    |> typo.view(),
-                  ),
-                ])
-              }),
-          )
-        }),
+                  html.td([], [
+                    // fn view_data from get_data
+                    column
+                    |> option.map(fn(column) { column(id, key) })
+                    |> option.unwrap(
+                      typo.p(key <> id)
+                      |> typo.class(
+                        "text-theme-sm text-gray-500 dark:text-gray-400",
+                      )
+                      |> typo.view(),
+                    ),
+                  ])
+                }),
+            )
+          })
+        }
+      },
     )
   let content =
-    html.table([attribute.class("min-w-full")], [
+    html.table([attribute.class("min-w-full"), ..attrs], [
       thead,
       tbody,
     ])

@@ -265,10 +265,12 @@ pub fn primary_with_breadcrumb(
       header,
       // main area
       html.main([], [
-        html.div([class(main_body_class)], [
-          breadcrumb,
-          content,
-        ]),
+        content,
+        // TODO breadcrumb in fn page(...)
+      // html.div([class(main_body_class)], [
+      //   breadcrumb,
+      //   content,
+      // ]),
       ]),
       //element.none(), footer area ... todo ...
     ]),
@@ -289,35 +291,47 @@ pub fn content(
   html.div(
     [
       attribute.class(
-        "rounded-2xl border border-gray-200 bg-white pt-4 dark:border-gray-800 dark:bg-white/[0.03]",
+        "rounded-2xl border border-gray-200 bg-white pt-4 my-2 dark:border-gray-800 dark:bg-white/[0.03]",
       ),
     ],
     [
       // header
-      html.div(
-        [
-          attribute.class(
-            "mb-4 flex flex-col gap-2 px-5 sm:flex-row sm:items-center sm:justify-between sm:px-6",
-          ),
-        ],
-        header,
-      ),
-      html.div(
-        [
-          attribute.class(
-            "space-y-4 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-700 custom-scrollbar max-w-full overflow-x-auto overflow-y-visible px-5 sm:px-6",
-          ),
-        ],
-        content,
-      ),
-      html.div(
-        [
-          attribute.class(
-            "border-t border-gray-200 px-6 py-4 dark:border-gray-800",
-          ),
-        ],
-        footer,
-      ),
+      case header {
+        [] -> element.none()
+        header ->
+          html.div(
+            [
+              attribute.class(
+                "mb-4 flex flex-col gap-2 px-5 sm:flex-row sm:items-center sm:justify-between sm:px-6",
+              ),
+            ],
+            header,
+          )
+      },
+      case content {
+        [] -> element.none()
+        content ->
+          html.div(
+            [
+              attribute.class(
+                "space-y-4 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-700 custom-scrollbar max-w-full overflow-x-auto overflow-y-visible px-5 sm:px-6",
+              ),
+            ],
+            content,
+          )
+      },
+      case footer {
+        [] -> element.none()
+        footer ->
+          html.div(
+            [
+              attribute.class(
+                "border-t border-gray-200 px-6 py-4 dark:border-gray-800",
+              ),
+            ],
+            footer,
+          )
+      },
     ],
   )
 }
@@ -330,25 +344,21 @@ pub fn content(
 pub fn page(title: String, inner: UIRenders(a)) -> UIRender(a) {
   html.div(
     [
-      class(
-        "rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]",
-      ),
+      class("mx-auto max-w-(--breakpoint-2xl) p-4 pb-20 md:p-6 md:pb-6"),
     ],
     [
-      html.div([class("px-5 py-4 sm:px-6 sm:py-5")], [
-        html.h3(
-          [class("text-base font-medium text-gray-800 dark:text-white/90")],
-          [html.text(title)],
-        ),
-      ]),
       html.div(
+        [class("flex flex-wrap items-center justify-between gap-3 pb-6")],
         [
-          class(
-            "space-y-6 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-800",
+          html.h2(
+            [class("text-xl font-semibold text-gray-800 dark:text-white/90")],
+            [html.text(title)],
           ),
+          // TODO
+        // <nav></nav> breadcrumb here!
         ],
-        inner,
       ),
+      ..inner
     ],
   )
 }
@@ -381,8 +391,6 @@ const loader_spin_class = "h-16 w-16 animate-spin rounded-full border-4 border-s
 const main_class = "flex h-screen overflow-hidden bg-gray-100 dark:bg-gray-900"
 
 const main_content_class = "relative flex flex-1 flex-col overflow-x-hidden overflow-y-auto"
-
-const main_body_class = "mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6"
 
 const box_class = "mx-auto mb-10 w-full max-w-60 rounded-2xl bg-gray-50 px-4 py-5 text-center dark:bg-white/[0.03]"
 

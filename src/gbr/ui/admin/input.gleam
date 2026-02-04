@@ -152,7 +152,7 @@ fn set_label(in: Input, label: Option(String)) -> Input {
   |> option.map(input.label(in, _))
   |> option.map(input.label_class(
     _,
-    "mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400",
+    "mt-2.5 mb-1 block text-sm font-medium text-gray-700 dark:text-gray-400",
   ))
   |> option.unwrap(in)
 }

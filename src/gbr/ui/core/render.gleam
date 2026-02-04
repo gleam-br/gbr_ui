@@ -105,7 +105,7 @@ pub fn attrs(render: UIElRender(a)) -> Attrs(a) {
 ///
 pub fn attrs_key(render: UIElRender(a), key: String) -> Attrs(a) {
   let UIRender(el:, attributes:, ..) = render
-  let attrs = el.attrs(el)
+  let attrs = el.attrs_key(el, key)
   let render_attrs =
     dict.get(attributes, key)
     |> result.unwrap([])
