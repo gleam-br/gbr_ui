@@ -13,14 +13,13 @@ import lustre/element/html
 import gbr/ui
 import gbr/ui/core/model
 import gbr/ui/form
-import gbr/ui/input
 import gbr/ui/logo
 import gbr/ui/svg
 import gbr/ui/svg/social
 import gbr/ui/typo
 
 import gbr/ui/admin/button
-import gbr/ui/admin/input as adm_input
+import gbr/ui/admin/input
 import gbr/ui/admin/input/checkbox
 import gbr/ui/admin/separator
 
@@ -80,11 +79,11 @@ pub fn new() -> Login {
     passwd_visible: False,
     keep_login: checkbox.new("keepme-loggedin")
       |> checkbox.label("Manter-me logado?")
-      |> checkbox.checked(True)
-      |> checkbox.checked(False),
+      |> checkbox.checked(True),
     username: input.text("username")
       |> input.placeholder("Digite seu usuário aqui"),
-    password: input.password("password")
+    password: input.new("password", "password")
+      |> input.password(False)
       |> input.placeholder("Digite sua senha aqui"),
   )
 }
@@ -143,18 +142,7 @@ pub fn view(at: Render(a)) -> element.Element(a) {
 pub fn update(in: Login, evt: Event) -> Login {
   case evt {
     OnKeepLogin -> LoginPage(..in, keep_login: checkbox.toggle(in.keep_login))
-    OnPasswordVisible -> {
-      let in = LoginPage(..in, passwd_visible: !in.passwd_visible)
-
-      let kind = case in.passwd_visible {
-        True -> "text"
-        False -> "password"
-      }
-
-      let password = input.kind(in.password, kind)
-
-      LoginPage(..in, password:)
-    }
+    OnPasswordVisible -> LoginPage(..in, passwd_visible: !in.passwd_visible)
   }
 }
 
@@ -213,19 +201,22 @@ fn login_form_render(in, onform, onsubmit) {
     in
   let username = {
     username
-    |> adm_input.primary(Some("Usuário:"))
+    |> input.label("Usuário:")
+    |> input.primary()
+    |> input.render([], [])
     |> input.view()
   }
   let password = {
     password
-    |> adm_input.password(
-      passwd_visible,
-      Some("Senha:"),
+    |> input.label("Senha:")
+    |> input.password(passwd_visible)
+    |> input.render([], [])
+    |> input.inner_onclick(
       onform
-        |> option.map(fn(onform) {
-          OnPasswordVisible
-          |> onform()
-        }),
+      |> option.map(fn(onform) {
+        OnPasswordVisible
+        |> onform()
+      }),
     )
     |> input.view()
   }
@@ -247,8 +238,7 @@ fn login_form_render(in, onform, onsubmit) {
     button.new("login-submit")
     |> button.kind("submit")
     |> button.label("Entrar")
-    |> button.class("w-1/3 justify-center")
-    |> button.primary()
+    |> button.primary_class("w-1/3 justify-center")
     |> button.render()
     |> button.view()
 
@@ -299,8 +289,8 @@ fn login_provider_render(onsubmit) {
     ])
 
     button.new("btn-login-" <> id)
-    |> button.class(const_class_login_provider)
     |> button.label("Login " <> string.capitalise(id))
+    |> button.class(const_class_login_provider)
     |> button.render_left([
       svg.new(23, 23)
       |> transform

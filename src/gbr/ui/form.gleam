@@ -2,14 +2,14 @@
 //// Gleam UI form super element.
 ////
 
-import gbr/ui/core/render
-import gleam/option.{type Option, None, Some}
+import gleam/option.{type Option}
 
-import lustre/attribute as a
 import lustre/element/html
 import lustre/event
 
 import gbr/ui/core/el
+import gbr/ui/core/render
+
 import gbr/ui/core/model.{type UIProperties, type UIRender, type UIRenders}
 
 // Alias

@@ -2,11 +2,9 @@
 //// Gleam UI admin input element
 ////
 
-import gleam/option.{type Option}
-import lustre/event
+import gleam/string
 
 import lustre/attribute as a
-import lustre/element/html
 
 import gbr/ui/input
 import gbr/ui/svg
@@ -15,35 +13,89 @@ import gbr/ui/typo
 
 import gbr/ui/core/model.{type UIRenders}
 
-type Input =
+// Alias
+//
+
+pub const new = input.new
+
+pub const text = input.text
+
+pub const email = input.email
+
+pub const checkbox = input.checkbox
+
+pub const value = input.value
+
+pub const name = input.name
+
+pub const autocomplete = input.autocomplete
+
+pub const placeholder = input.placeholder
+
+pub const label = input.label
+
+pub const label_class = input.label_class
+
+pub const note = input.note
+
+pub const class = input.class
+
+pub const classes = input.classes
+
+pub const inner_svg = input.inner_svg
+
+pub const inner_class = input.inner_class
+
+pub const inner_onclick = input.inner_onclick
+
+pub const render = input.render
+
+pub const view = input.view
+
+pub type UIInput =
   input.UIInput
 
-type Render(a) =
+pub type UIInputRender(a) =
   input.UIInputRender(a)
 
-pub fn primary(in: Input, label: Option(String)) -> Render(a) {
-  let in = set_label(in, label)
+type Input =
+  UIInput
 
-  input.class(
-    in,
+type Render(a) =
+  UIInputRender(a)
+
+/// Set input primary style behavior.
+///
+pub fn primary(in: Input) -> Input {
+  in
+  |> class(
     "dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 "
-      <> "focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full "
-      <> "rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm "
-      <> "text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden "
-      <> "dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30",
+    <> "focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full "
+    <> "rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm "
+    <> "text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden "
+    <> "dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30",
   )
-  |> input.render([], [])
+  |> label_class(
+    "mt-2.5 mb-1 block text-sm font-medium text-gray-700 dark:text-gray-400",
+  )
 }
 
-pub fn password(
-  in: Input,
-  visible: Bool,
-  label: Option(String),
-  ontoggle: Option(a),
-) -> Render(a) {
+/// Set password input behavior with icon eye
+///
+/// Set eye icon open/close to visible input content.
+///
+/// - This only put icon and control about what icon show open/close also
+/// - This control input.type attribute if open show "text" else "password".
+///
+pub fn password(in: Input, open: Bool) -> Input {
+  let type_ = case open {
+    True -> "text"
+    False -> "password"
+  }
+
   in
-  |> set_label(label)
-  |> input.class(
+  |> input.kind(type_)
+  |> class(
     "dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 "
     <> "focus:ring-brand-500/10 dark:focus:border-brand-800 "
     <> "h-11 w-full rounded-lg border border-gray-300 bg-transparent "
@@ -51,26 +103,29 @@ pub fn password(
     <> "focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 "
     <> "dark:text-white/90 dark:placeholder:text-white/30",
   )
-  |> render_right([eye(!visible, ontoggle)])
+  |> label_class(
+    "mt-2.5 mb-1 block text-sm font-medium text-gray-700 dark:text-gray-400",
+  )
+  |> inner_svg(eye(open))
 }
 
-pub fn success(in: Input, text: String) -> Render(a) {
+pub fn success(in: Input, text: String) -> Input {
   state_set(in, text, state_success_class, state_success_label, form.success)
 }
 
-pub fn alert(in: Input, text: String) -> Render(a) {
+pub fn alert(in: Input, text: String) -> Input {
   state_set(in, text, state_alert_class, state_alert_label, form.success)
 }
 
-pub fn error(in: Input, text: String) -> Render(a) {
+pub fn error(in: Input, text: String) -> Input {
   state_set(in, text, state_error_class, state_error_label, form.error)
 }
 
-pub fn disabled(in: Input, text: String) -> Render(a) {
+pub fn disabled(in: Input, text: String) -> Input {
   state_set(in, text, disabled_class, label_disabled_class, form.info)
 }
 
-pub fn loading(in: Input, text: String) -> Render(a) {
+pub fn loading(in: Input, text: String) -> Input {
   //todo: dev spinner
   disabled(in, text)
 }
@@ -86,21 +141,21 @@ pub fn render_left(in: Input, inner: UIRenders(a)) {
 //PRIVATE
 //
 
-fn state_set(in, text, class, class_note, svg) -> Render(a) {
-  let svg =
-    svg.new(16, 16)
-    |> svg()
-    |> svg.view()
-
-  let input_class = state_class <> " " <> class
-  let note_class = state_label_class <> " " <> class_note
+fn state_set(in, text, class, class_note, svg_transform) -> Input {
+  let input_class = string.join([state_class, class], " ")
+  let note_class = string.join([state_label_class, class_note], " ")
   let note =
     typo.span(text)
     |> typo.class(note_class)
 
-  input.class(in, input_class)
+  in
+  |> input.inner_svg(
+    svg.new(16, 16)
+    |> svg_transform(),
+  )
+  |> input.inner_class(state_icon_class)
+  |> input.class(input_class)
   |> input.note(note)
-  |> input.render([a.class(state_icon_class)], [svg])
 }
 
 const state_label_class = "text-theme-xs text-error-500 mt-1.5"
@@ -129,30 +184,12 @@ const class_right = "absolute z-30 text-gray-500 -translate-y-1/2 cursor-pointer
 
 const class_left = "absolute top-1/2 left-0 flex h-11 -translate-y-1/2 items-center justify-center border-r border-gray-200 dark:border-gray-800 inline-flex gap-1 px-3"
 
-fn eye(open, ontoggle) {
+fn eye(open) {
   let transform = case open {
     True -> form.eye_open
     False -> form.eye_close
   }
 
-  let ontoggle =
-    ontoggle
-    |> option.map(event.on_click)
-    |> option.unwrap(a.none())
-
-  html.span([ontoggle], [
-    svg.new(20, 20)
-    |> transform()
-    |> svg.view(),
-  ])
-}
-
-fn set_label(in: Input, label: Option(String)) -> Input {
-  label
-  |> option.map(input.label(in, _))
-  |> option.map(input.label_class(
-    _,
-    "mt-2.5 mb-1 block text-sm font-medium text-gray-700 dark:text-gray-400",
-  ))
-  |> option.unwrap(in)
+  svg.new(20, 20)
+  |> transform()
 }

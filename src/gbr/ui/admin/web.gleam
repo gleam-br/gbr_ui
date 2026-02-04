@@ -129,17 +129,11 @@ const const_storage_jwt = "auth/token"
 pub fn onsecurity(web: Web, on: fn(WebEvent) -> a) -> #(Web, effect.Effect(a)) {
   let #(web, onsecurity) = case security.load(const_storage_jwt) {
     Ok(security) -> {
-      let home =
-        security
-        |> Some()
-        |> security.to_user()
-        |> home.user(web.home, _)
-
       let api =
         security.to_string(security)
         |> api.authorization(web.api, _)
 
-      let web = Web(..web, api:, home:, security: Some(security))
+      let web = Web(..web, api:, security: Some(security))
 
       #(web, effect.none())
     }
@@ -272,14 +266,7 @@ fn do_auth(web: Web, auth, on) {
       let security =
         security.persist(token, const_storage_jwt)
         |> option.from_result()
-
-      let home =
-        security
-        |> security.to_user()
-        |> home.user(web.home, _)
-
-      let web =
-        Web(..web, api:, alert: new_alert(), security:, home:, loading: False)
+      let web = Web(..web, api:, security:, alert: new_alert(), loading: False)
 
       let assert Ok(Nil) = router.replace("/home")
 

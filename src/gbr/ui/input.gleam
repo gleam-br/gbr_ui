@@ -10,6 +10,7 @@
 import gleam/bool
 import gleam/dynamic/decode
 import gleam/int
+import gleam/list
 import gleam/option.{type Option, None, Some}
 
 import lustre/attribute as a
@@ -19,6 +20,7 @@ import lustre/event
 
 import gbr/ui/core/el
 import gbr/ui/core/render
+import gbr/ui/svg
 import gbr/ui/typo
 
 import gbr/ui/core/model.{
@@ -46,7 +48,12 @@ type OnChange(a) =
 /// Input super element.
 ///
 pub opaque type UIInput {
-  UIInput(el: el.UIEl, label: Option(Text), note: Option(Text))
+  UIInput(
+    el: el.UIEl,
+    label: Option(Text),
+    note: Option(Text),
+    svg: Option(svg.Svg),
+  )
 }
 
 /// Input super element.
@@ -91,7 +98,7 @@ pub fn new(id: String, kind: String) -> Input {
     |> el.att([#("type", kind)])
     |> el.att([#("name", id)])
 
-  UIInput(el:, label: None, note: None)
+  UIInput(el:, label: None, note: None, svg: None)
 }
 
 // Accessors
@@ -186,9 +193,7 @@ pub fn required(in: Input, value: String) -> Input {
 /// Set input type attribute.
 ///
 pub fn kind(in: Input, kind: String) -> Input {
-  let el = el.att(in.el, [#("type", kind)])
-
-  UIInput(..in, el:)
+  att_set(in, [#("type", kind)])
 }
 
 /// Set input max length.
@@ -209,13 +214,37 @@ pub fn size(in: Input, value: Int) -> Input {
   length(in, "size", value)
 }
 
+const const_input_inner = "input-inner"
+
+/// Set icon svg
+///
+pub fn inner_svg(in: Input, svg: svg.Svg) -> Input {
+  UIInput(..in, svg: Some(svg))
+}
+
+/// Set icon svg class attribute.
+///
+pub fn inner_class(in: Input, class: String) -> Input {
+  let el = el.class_key(in.el, const_input_inner, class)
+
+  UIInput(..in, el:)
+}
+
 /// New input render at inner.
 ///
 pub fn render(in: Input, attrs: UIAttrs(a), inner: UIRenders(a)) -> Render(a) {
-  let inner = [html.span(attrs, inner)]
+  let inner =
+    in.svg
+    |> option.map(fn(svg) { [svg.view(svg), ..inner] })
+    |> option.unwrap(inner)
+  let attrs =
+    el.attrs_key(in.el, const_input_inner)
+    |> list.append(attrs)
   let render =
     render.new(in.el)
     |> render.elements(inner)
+    |> render.elements_key(const_input_inner, inner)
+    |> render.attributes_key(const_input_inner, attrs)
 
   UIInputRender(in:, render:)
 }
@@ -279,18 +308,39 @@ pub fn onkeypress(in: Render(a), onkeypress: Option(OnChange(a))) -> Render(a) {
   UIInputRender(..in, render:)
 }
 
+/// Set event ontoggle on click into icon svg.
+///
+pub fn inner_onclick(at: Render(a), onclick) -> Render(a) {
+  let render =
+    at.render
+    |> render.attributes_key_opt(const_input_inner, onclick, fn(evt) {
+      [event.on_click(evt)]
+    })
+
+  UIInputRender(..at, render:)
+}
+
 /// Render input super element to `lustre/element.{type Element}`.
 ///
 pub fn view(at: Render(a)) -> UIRender(a) {
   let UIInputRender(in:, ..) = at
   let UIInput(label:, note:, ..) = in
+
   let label = case label {
     Some(label) -> typo.view(label)
     None -> element.none()
   }
-  let #(attrs, inner) = render.views(at.render)
-  let input = html.input(attrs)
+  // ignore inner elements by id, controlled by `const_input_inner`.
+  let #(attrs, inner_) = render.views(at.render)
+  let #(inner_attrs, inner) =
+    at.render
+    |> render.views_key(const_input_inner)
+  let inner = case inner {
+    [] -> []
+    inner -> [html.span(inner_attrs, inner), ..inner_]
+  }
 
+  let input = html.input(attrs)
   // if has note or inner elements
   let input = case note, inner {
     None, [] -> html.div([], [input])

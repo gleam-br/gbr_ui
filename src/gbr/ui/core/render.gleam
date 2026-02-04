@@ -49,8 +49,18 @@ pub fn new(el: el.UIEl) -> UIElRender(a) {
 /// - opt: Option attribute or any value, this is map to function (f).
 /// - f: Function to get attributes from value inside option (opt) param.
 ///
-pub fn attributes_opt(at, opt, f: fn(a) -> Attrs(b)) -> UIElRender(b) {
-  option.map(opt, fn(evt) { attributes(at, f(evt)) })
+pub fn attributes_opt(at: UIElRender(a), opt, f) {
+  attributes_key_opt(at, el.id_get(at.el), opt, f)
+}
+
+/// Append lustre attributes to render element mapping optional param.
+///
+/// - at: Render type instance.
+/// - opt: Option attribute or any value, this is map to function (f).
+/// - f: Function to get attributes from value inside option (opt) param.
+///
+pub fn attributes_key_opt(at, key, opt, f: fn(a) -> Attrs(b)) -> UIElRender(b) {
+  option.map(opt, fn(evt) { attributes_key(at, key, f(evt)) })
   |> option.unwrap(at)
 }
 
@@ -118,25 +128,6 @@ pub fn elements_get(render: UIElRender(a)) -> Renders(a) {
   |> result.unwrap([])
 }
 
-/// Return lustre attributes from render element
-///
-pub fn attrs(render: UIElRender(a)) -> Attrs(a) {
-  attrs_key(render, el.id_get(render.el))
-}
-
-/// Return lustre attributes from render element
-///
-pub fn attrs_key(render: UIElRender(a), key: String) -> Attrs(a) {
-  let UIRender(el:, elements:) = render
-  let attrs = el.attrs_key(el, key)
-  let render_attrs =
-    dict.get(elements, key)
-    |> result.map(fn(el) { el.attributes })
-    |> result.unwrap([])
-
-  list.append(attrs, render_attrs)
-}
-
 /// Return element views is a tuple of #(attributes, elements).
 ///
 /// This can be use to view a `div`:
@@ -162,7 +153,9 @@ pub fn views(render: UIElRender(a)) -> #(Attrs(a), Renders(a)) {
 /// Return element views is a tuple of #(attributes, elements).
 ///
 pub fn views_key(render: UIElRender(a), key: String) -> #(Attrs(a), Renders(a)) {
+  let el_attrs = el.attrs_key(render.el, key)
+
   dict.get(render.elements, key)
-  |> result.map(fn(el) { #(el.attributes, el.elements) })
+  |> result.map(fn(el) { #(list.append(el_attrs, el.attributes), el.elements) })
   |> result.unwrap(#([], []))
 }

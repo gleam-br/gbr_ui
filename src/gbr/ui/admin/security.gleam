@@ -254,7 +254,10 @@ pub fn claim(
 ///
 /// - in: Security jwt info
 ///
-pub fn to_user(in: Option(Security)) -> user.UIUser {
+pub fn to_user(
+  in: Option(Security),
+  dropdown: dropdown.UIDropdown,
+) -> user.UIUser {
   let user = user.new("user", "")
 
   case in {
@@ -280,7 +283,7 @@ pub fn to_user(in: Option(Security)) -> user.UIUser {
       |> user.name_full(name)
       // TODO
       |> user.picture("/profile.png")
-      |> user.dropdown(dropdown.new(False))
+      |> user.dropdown(dropdown)
     }
   }
 }

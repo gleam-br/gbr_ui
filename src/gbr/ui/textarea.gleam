@@ -300,8 +300,8 @@ pub fn view(at: Render(a)) -> model.UIRender(a) {
     msg
     |> option.map(typo.view)
     |> option.unwrap(element.none())
-  let attrs_container = render.attrs_key(render, const_el_container)
-  let attrs = render.attrs(render)
+  let #(attrs_container, _) = render.views_key(render, const_el_container)
+  let #(attrs, _) = render.views(render)
   let views = render.elements_get(render)
 
   let views =
