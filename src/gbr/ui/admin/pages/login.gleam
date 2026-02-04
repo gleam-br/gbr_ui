@@ -266,7 +266,7 @@ fn login_form_render(in, onform, onsubmit) {
 
   form
   |> form.render([inner])
-  |> form.onsubmit_opt(onsubmit)
+  |> form.onsubmit(onsubmit)
   |> form.view()
 }
 

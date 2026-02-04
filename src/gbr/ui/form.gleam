@@ -2,6 +2,7 @@
 //// Gleam UI form super element.
 ////
 
+import gbr/ui/core/render
 import gleam/option.{type Option, None, Some}
 
 import lustre/attribute as a
@@ -11,14 +12,17 @@ import lustre/event
 import gbr/ui/core/el
 import gbr/ui/core/model.{type UIProperties, type UIRender, type UIRenders}
 
+// Alias
+//
+
+type El =
+  el.UIEl
+
 type Form =
   UIForm
 
 type Render(a) =
   UIFormRender(a)
-
-type El =
-  el.UIEl
 
 type OnSubmit(a) =
   fn(UIProperties) -> a
@@ -31,8 +35,11 @@ pub opaque type UIForm {
 
 /// Form render element.
 ///
+/// - in: Form type instance (stateless).
+/// - render: Form render type instance (statefull).
+///
 pub opaque type UIFormRender(a) {
-  UIFormRender(in: Form, inner: UIRenders(a), onsubmit: Option(OnSubmit(a)))
+  UIFormRender(in: Form, render: render.UIElRender(a))
 }
 
 /// New form super element.
@@ -66,32 +73,29 @@ pub fn autocomplete(in: Form, autofill: Bool) -> Form {
 /// New form render at inline behavior.
 ///
 pub fn render(in: Form, inner: UIRenders(a)) -> Render(a) {
-  UIFormRender(in:, inner:, onsubmit: None)
+  let render =
+    render.new(in.el)
+    |> render.elements(inner)
+
+  UIFormRender(in:, render:)
 }
 
 /// Set form render on submit event.
 ///
-pub fn onsubmit(in: Render(a), onsubmit: OnSubmit(a)) -> Render(a) {
-  onsubmit_opt(in, Some(onsubmit))
-}
+pub fn onsubmit(at: Render(a), onsubmit: Option(OnSubmit(a))) -> Render(a) {
+  let render =
+    at.render
+    |> render.attributes_opt(onsubmit, fn(evt) {
+      [event.on_submit(evt) |> event.prevent_default()]
+    })
 
-/// Set form render on submit event.
-///
-pub fn onsubmit_opt(in: Render(a), onsubmit: Option(OnSubmit(a))) -> Render(a) {
-  UIFormRender(..in, onsubmit:)
+  UIFormRender(..at, render:)
 }
 
 /// Render form super element to `lustre/element/html.{form}`.
 ///
 pub fn view(at: Render(a)) -> UIRender(a) {
-  let UIFormRender(in:, inner:, onsubmit:) = at
-  let UIForm(el:) = in
+  let #(attrs, inner) = render.views(at.render)
 
-  let attrs = el.attrs(el)
-  let onsubmit =
-    onsubmit
-    |> option.map(event.on_submit)
-    |> option.unwrap(a.none())
-
-  html.form([event.prevent_default(onsubmit), ..attrs], inner)
+  html.form(attrs, inner)
 }
