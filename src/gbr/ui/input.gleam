@@ -1,5 +1,10 @@
 ////
-//// 🧑‍💻 Gleam UI input super element.
+//// 🧑‍💻 UI input element.
+////
+//// Element to controle user input types, like <input type="password" />, etc.
+////
+//// > 🕹️ Controled vs 🌪️ Uncontroled inputs
+//// > https://github.com/lustre-labs/lustre/blob/main/pages/hints/controlled-vs-uncontrolled-inputs.md
 ////
 
 import gleam/bool
@@ -112,14 +117,8 @@ pub fn value(in: Input, value: String) -> Input {
   attrs(in, [#("value", value)])
 }
 
-/// Get input value
-///
-pub fn value_get(in: Input) -> Option(String) {
-  el.att_get(in.el, "value")
-}
-
 pub fn label(in: Input, label: String) -> Input {
-  let id = el.get_id(in.el)
+  let id = el.id_get(in.el)
   let label = typo.label(id, label)
 
   UIInput(..in, label: Some(label))

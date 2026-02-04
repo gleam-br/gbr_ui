@@ -58,8 +58,6 @@ pub opaque type LoginPage {
 pub type LoginFormEvent {
   OnKeepLogin
   OnPasswordVisible
-  OnUsername(String)
-  OnPassword(String)
 }
 
 pub opaque type LoginPageRender(a) {
@@ -157,10 +155,6 @@ pub fn update(in: Login, evt: Event) -> Login {
 
       LoginPage(..in, password:)
     }
-    OnUsername(value) ->
-      LoginPage(..in, username: input.value(in.username, value))
-    OnPassword(value) ->
-      LoginPage(..in, password: input.value(in.password, value))
   }
 }
 
@@ -217,28 +211,9 @@ fn login_render(at) {
 fn login_form_render(in, onform, onsubmit) {
   let LoginPage(form:, username:, password:, keep_login:, passwd_visible:, ..) =
     in
-
-  let onusername =
-    onform
-    |> option.map(fn(onform) {
-      fn(value) {
-        OnUsername(value)
-        |> onform()
-      }
-    })
-  let onpassword =
-    onform
-    |> option.map(fn(onform) {
-      fn(value) {
-        OnPassword(value)
-        |> onform()
-      }
-    })
   let username = {
     username
     |> adm_input.primary(Some("Usuário:"))
-    |> input.on_change_opt(onusername)
-    |> input.on_input_opt(onusername)
     |> input.view()
   }
   let password = {
@@ -252,8 +227,6 @@ fn login_form_render(in, onform, onsubmit) {
           |> onform()
         }),
     )
-    |> input.on_change_opt(onpassword)
-    |> input.on_input_opt(onpassword)
     |> input.view()
   }
   let keep_login =

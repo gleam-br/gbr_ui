@@ -48,7 +48,11 @@ pub opaque type UITextareaRender(a) {
 /// - text: Content of textarea
 ///
 pub fn new(id: String) {
-  UITextarea(el: el.new(id), text: "", label: None, msg: None)
+  let el =
+    el.new(id)
+    |> el.att([#("type", "text"), #("name", id)])
+
+  UITextarea(el:, text: "", label: None, msg: None)
 }
 
 /// Label for textarea is optional
@@ -57,7 +61,7 @@ pub fn new(id: String) {
 /// - label: Text of label
 ///
 pub fn label(in: Textarea, label: String) -> Textarea {
-  let id = el.get_id(in.el)
+  let id = el.id_get(in.el)
   let label =
     in.label
     |> option.map(typo.text(_, label))
@@ -298,7 +302,7 @@ pub fn view(at: Render(a)) -> model.UIRender(a) {
     |> option.unwrap(element.none())
   let attrs_container = render.attrs_key(render, const_el_container)
   let attrs = render.attrs(render)
-  let views = render.views(render)
+  let views = render.elements_get(render)
 
   let views =
     [label, html.textarea(attrs, text), msg]

@@ -89,12 +89,12 @@ pub opaque type UIEl {
 /// - id: `lustre/attribute.id`
 ///
 /// Create dictonary and insert item with id element to represent
-/// default custom attributes, classes, styles, etc of element.
+/// default custom attributes, classes, styles of element.
 ///
 pub fn new(id: String) {
   let att =
     dict.new()
-    |> dict.insert(id, [])
+    |> dict.insert(id, [#("id", random_str(id))])
   let classes =
     dict.new()
     |> dict.insert(id, [])
@@ -102,7 +102,7 @@ pub fn new(id: String) {
     dict.new()
     |> dict.insert(id, [])
 
-  UIEl(id: random_str(id), att:, classes:, styles:)
+  UIEl(id:, att:, classes:, styles:)
 }
 
 /// Replace id element
@@ -118,11 +118,11 @@ pub fn id(el: El, id: String) -> El {
 ///
 /// - el: Element info type
 ///
-pub fn get_id(el: El) -> String {
+pub fn id_get(el: El) -> String {
   el.id
 }
 
-/// Append list of custom attributes
+/// Append or update custom attribute of list.
 ///
 /// - el: Element info
 /// - att: Properties to set in key
@@ -135,30 +135,41 @@ pub fn att(el: El, att: Properties) -> El {
   att_key(el, el.id, att)
 }
 
-/// Append custom attributes
+/// Append or update custom attrubute of list by key slot.
 ///
 /// - el: Element info
 /// - key: Key identification
 /// - att: Properties to set in key
 ///
 pub fn att_key(el: El, key, att: Properties) -> El {
+  // Get element attributes
   let att_el =
-    dict.get(el.att, el.id)
+    dict.get(el.att, key)
     |> option.from_result()
     |> option.unwrap([])
+    |> list.fold(att, fn(acc, att) {
+      let #(key, value) = att
+      list.key_set(acc, key, value)
+    })
 
-  let att = dict.insert(el.att, key, list.append(att_el, att))
-
-  UIEl(..el, att:)
+  // Update attributes by dict key slot
+  UIEl(..el, att: dict.insert(el.att, key, att_el))
 }
 
-/// Get attribute element by name
+/// Get attribute element by name.
+///
+/// - el: Element info.
+/// - name: Attribute name to find.
 ///
 pub fn att_get(el: El, name: String) -> Option(String) {
   att_get_key(el, el.id, name)
 }
 
-/// Get attribute element by key and name
+/// Get attribute element by key and name.
+///
+/// - el: Element info.
+/// - key: Element slot key.
+/// - name: Attribute name to find in slot.
 ///
 pub fn att_get_key(el: El, key: String, name: String) -> Option(String) {
   dict.get(el.att, key)
@@ -166,20 +177,26 @@ pub fn att_get_key(el: El, key: String, name: String) -> Option(String) {
   |> option.unwrap([])
   |> list.find(fn(att_el) {
     let #(name_el, _) = att_el
-
     name == name_el
   })
   |> option.from_result()
   |> option.map(fn(found) { found.1 })
 }
 
-/// Return any attribute with name equals.
+/// Return if exists any attribute this name.
+///
+/// - el: Element info.
+/// - name: Attribute name to find.
 ///
 pub fn att_any(el: El, name: String) -> Bool {
   att_any_key(el, el.id, name)
 }
 
-/// Return any attribute by key with name equals.
+/// Return if exists any attribute by slot key with name equals.
+///
+/// - el: Element info.
+/// - key: Element slot key.
+/// - name: Attribute name to find in slot.
 ///
 pub fn att_any_key(el: El, key: String, name: String) -> Bool {
   dict.get(el.att, key)
@@ -187,12 +204,14 @@ pub fn att_any_key(el: El, key: String, name: String) -> Bool {
   |> option.unwrap([])
   |> list.any(fn(att_el) {
     let #(name_el, _) = att_el
-
     name == name_el
   })
 }
 
-/// Replace class attribute element
+/// Append if not exists or update class attribute element
+///
+/// - el: Element info.
+/// - class: Attribute class.
 ///
 /// Uses id like key to set class attribute
 ///
@@ -202,11 +221,20 @@ pub fn class(el: El, class: String) -> El {
   class_key(el, el.id, class)
 }
 
+/// Append if not exists or update class attribute element
+///
+/// - el: Element info.
+/// - key: Element slot key.
+/// - class: Attribute class.
+///
 pub fn class_key(el: El, key: String, class: String) -> El {
   att_key(el, key, [#("class", class)])
 }
 
-/// Append classes attribute element
+/// Append if not exists or update classes attribute element
+///
+/// - el: Element info
+/// - classes: Properties `lustre.attribute.classes`
 ///
 /// Uses id like key to set classes attribute
 ///
@@ -216,7 +244,7 @@ pub fn classes(el: El, classes: Switches) -> El {
   classes_key(el, el.id, classes)
 }
 
-/// Append classes attribute element
+/// Append if not exists or update classes attribute element
 ///
 /// - el: Element info
 /// - key: Key identification
@@ -224,11 +252,15 @@ pub fn classes(el: El, classes: Switches) -> El {
 ///
 pub fn classes_key(el: El, key: String, classes: Switches) -> El {
   let el_classes =
-    dict.get(el.classes, el.id)
+    dict.get(el.classes, key)
     |> option.from_result()
     |> option.unwrap([])
+    |> list.fold(classes, fn(acc, classes) {
+      let #(key, value) = classes
+      list.key_set(acc, key, value)
+    })
 
-  let classes = dict.insert(el.classes, key, list.append(el_classes, classes))
+  let classes = dict.insert(el.classes, key, el_classes)
 
   UIEl(..el, classes:)
 }
@@ -241,11 +273,15 @@ pub fn classes_key(el: El, key: String, classes: Switches) -> El {
 ///
 pub fn style_key(el: El, key: String, styles: Properties) -> El {
   let el_styles =
-    dict.get(el.styles, el.id)
+    dict.get(el.styles, key)
     |> option.from_result()
     |> option.unwrap([])
+    |> list.fold(styles, fn(acc, styles) {
+      let #(key, value) = styles
+      list.key_set(acc, key, value)
+    })
 
-  let styles = dict.insert(el.styles, key, list.append(el_styles, styles))
+  let styles = dict.insert(el.styles, key, el_styles)
 
   UIEl(..el, styles:)
 }
@@ -276,9 +312,7 @@ pub fn attrs(el: El) -> Attrs(a) {
 }
 
 pub fn attrs_key(el: El, key: String) -> Attrs(a) {
-  let UIEl(id:, classes:, styles:, att:) = el
-
-  let id = attribute.id(id)
+  let UIEl(classes:, styles:, att:, ..) = el
   let classes =
     dict.get(classes, key)
     |> option.from_result()
@@ -295,9 +329,9 @@ pub fn attrs_key(el: El, key: String) -> Attrs(a) {
     |> option.map(map_atts)
     |> option.unwrap([])
 
-  let attrs = list.append(att, styles)
-
-  [id, classes, ..attrs]
+  att
+  |> list.append(styles)
+  |> list.append([classes])
 }
 
 // PRIVATE

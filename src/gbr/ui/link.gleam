@@ -58,7 +58,7 @@ pub fn new(id: String) -> Link {
 /// Get id element
 ///
 pub fn id(in: Link) -> String {
-  el.get_id(in.el)
+  el.id_get(in.el)
 }
 
 pub fn href(in: Link, href: String) -> Link {

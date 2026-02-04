@@ -251,7 +251,8 @@ pub fn primary_with_breadcrumb(
   content content: UIOptRender(a),
   breadcrumb breadcrumb: UIOptRender(a),
 ) -> UIRender(a) {
-  let breadcrumb = option.unwrap(breadcrumb, element.none())
+  // TODO
+  let _breadcrumb = option.unwrap(breadcrumb, element.none())
   let content = option.unwrap(content, element.none())
 
   // page wrapper
@@ -344,7 +345,7 @@ pub fn content(
 pub fn page(title: String, inner: UIRenders(a)) -> UIRender(a) {
   html.div(
     [
-      class("mx-auto max-w-(--breakpoint-2xl) p-4 pb-20 md:p-6 md:pb-6"),
+      class("mx-auto max-w-(--breakpoint-2xl) p-4 pb-2 md:p-6 md:pb-6"),
     ],
     [
       html.div(

@@ -139,8 +139,8 @@ pub fn footer(at: Render(a), footer: UIRenders(a)) -> Render(a) {
 
 /// Set when is empty table function view component
 ///
-pub fn empty(at: Render(a), footer: UIRenders(a)) -> Render(a) {
-  UITableRender(..at, footer:)
+pub fn empty(at: Render(a), empty: UIRenders(a)) -> Render(a) {
+  UITableRender(..at, empty:)
 }
 
 /// Return view element
@@ -149,6 +149,8 @@ pub fn view(at: Render(a)) -> element.Element(a) {
   let UITableRender(in:, column:, header:, footer:, thead:, empty:) = at
   let UITable(el:, columns:, ids:) = in
   let attrs = el.attrs(el)
+  let has_ids = !list.is_empty(ids)
+  let has_empty = !list.is_empty(empty)
 
   let thead =
     html.thead(
@@ -183,8 +185,6 @@ pub fn view(at: Render(a)) -> element.Element(a) {
         ),
       ],
     )
-  let has_ids = !list.is_empty(ids)
-  let has_empty = !list.is_empty(empty)
   let tbody =
     html.tbody(
       [attribute.class("divide-y divide-gray-100 dark:divide-gray-800")],
@@ -232,7 +232,10 @@ pub fn view(at: Render(a)) -> element.Element(a) {
     )
   let content =
     html.table([attribute.class("min-w-full"), ..attrs], [
-      thead,
+      case has_ids {
+        True -> thead
+        False -> element.none()
+      },
       tbody,
     ])
 

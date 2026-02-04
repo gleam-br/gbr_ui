@@ -127,7 +127,7 @@ pub fn view(at: Render(a)) -> UIRender(a) {
   let UIBadgeRender(in:, inner:, onclick:) = at
   let UIBadge(el:, background:, behavior:, ..) = in
 
-  let id = el.get_id(el)
+  let id = el.id_get(el)
   let attrs =
     el.attrs(el)
     |> set_behavior(background, behavior)

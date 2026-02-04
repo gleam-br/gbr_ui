@@ -8,7 +8,6 @@
 import gleam/bool
 import gleam/list
 import gleam/option.{type Option, None, Some}
-import gleam/result
 import gleam/string
 
 import lustre/attribute as a
@@ -187,6 +186,12 @@ pub fn selected_get_one(in: Select) -> Option(Item) {
   }
 }
 
+pub fn selected_get_map(in: Select, map: fn(Item) -> a) -> Option(a) {
+  in
+  |> selected_get_one
+  |> option.map(map)
+}
+
 /// Get selected options.
 ///
 /// - in: Select type instance.
@@ -303,7 +308,7 @@ pub fn view(at: Render(a)) -> UIRender(a) {
 fn view_unique(at) {
   let UISelectRender(in:, onchange:, ontoggle:) = at
   let UISelect(el:, options:, label:, open:, ..) = in
-  let id = el.get_id(el)
+  let id = el.id_get(el)
   let evt_onchange =
     onchange
     |> option.map(fn(onchange) {
@@ -346,7 +351,7 @@ fn view_unique(at) {
     )
   }
 
-  let id = el.get_id(el)
+  let id = el.id_get(el)
   let label = new_label(id, label)
   let options = new_options(options)
   let placeholder =
@@ -394,7 +399,7 @@ fn view_multi(at: Render(a)) {
   let UISelectRender(in:, onchange:, ontoggle:) = at
   let UISelect(el:, options:, label:, open:, ..) = in
 
-  let id = el.get_id(el)
+  let id = el.id_get(el)
   let label = new_label(id, label)
   let options_selected_empty =
     options_filter_by_selected_is_empty(options, True)
