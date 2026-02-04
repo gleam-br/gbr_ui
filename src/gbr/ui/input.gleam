@@ -7,7 +7,6 @@
 //// > https://github.com/lustre-labs/lustre/blob/main/pages/hints/controlled-vs-uncontrolled-inputs.md
 ////
 
-import gleam/bool
 import gleam/dynamic/decode
 import gleam/int
 import gleam/list
@@ -97,6 +96,7 @@ pub fn new(id: String, kind: String) -> Input {
     el.new(id)
     |> el.att([#("type", kind)])
     |> el.att([#("name", id)])
+    |> el.new_key(const_input_inner)
 
   UIInput(el:, label: None, note: None, svg: None)
 }
@@ -132,7 +132,7 @@ pub fn value(in: Input, value: String) -> Input {
 /// Set label to input control, <label for="{id}"/>.
 ///
 pub fn label(in: Input, label: String) -> Input {
-  let id = el.id_get(in.el)
+  let assert Some(id) = el.att_get(in.el, "id")
   let label = typo.label(id, label)
 
   UIInput(..in, label: Some(label))
@@ -260,7 +260,6 @@ pub fn render(in: Input, attrs: UIAttrs(a), inner: UIRenders(a)) -> Render(a) {
     |> list.append(attrs)
   let render =
     render.new(in.el)
-    |> render.elements(inner)
     |> render.elements_key(const_input_inner, inner)
     |> render.attributes_key(const_input_inner, attrs)
 
@@ -359,16 +358,17 @@ pub fn view(at: Render(a)) -> UIRender(a) {
   }
 
   let input = html.input(attrs)
+
   // if has note or inner elements
   let input = case note, inner {
-    None, [] -> html.div([], [input])
-    None, inner -> html.div([a.class("relative")], [input, ..inner])
+    None, [] -> html.div([], [label, input])
+    None, inner -> html.div([a.class("relative")], [label, input, ..inner])
     Some(note), inner ->
-      html.div([a.class("relative")], [input, typo.view(note), ..inner])
+      html.div([a.class("relative")], [label, input, typo.view(note), ..inner])
   }
 
   // label and input
-  html.div([], [label, input])
+  html.div([], [input])
 }
 
 // PRIVATE

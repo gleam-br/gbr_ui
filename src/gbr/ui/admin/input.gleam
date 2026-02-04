@@ -127,6 +127,8 @@ pub fn disabled(in: Input, text: String) -> Input {
   in
   |> input.disabled(True)
   |> state_set(text, disabled_class, label_disabled_class, form.info)
+  |> input.class(disabled_class)
+  |> input.label_class(label_disabled_class)
 }
 
 pub fn loading(in: Input, text: String) -> Input {
@@ -180,7 +182,7 @@ const state_alert_label = "text-xs text-yellow-600 mt-1.5"
 
 const state_error_label = "text-xs text-red-700 mt-1.5"
 
-const disabled_class = "shadow-theme-xs focus:border-brand-300 focus:shadow-focus-ring dark:focus:border-brand-300 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-hidden disabled:border-gray-100 disabled:placeholder:text-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-gray-400 dark:disabled:border-gray-800 dark:disabled:placeholder:text-white/15"
+const disabled_class = "shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-gray-400 disabled:border-gray-100 disabled:placeholder:text-gray-300 dark:disabled:bg-gray-400 dark:disabled:border-gray-600 dark:disabled:text-white/40 dark:disabled:placeholder:text-white/15"
 
 const label_disabled_class = "mb-1.5 block text-sm font-medium text-gray-300 dark:text-white/15"
 

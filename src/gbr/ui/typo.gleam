@@ -18,6 +18,7 @@ type Behavior {
   H2
   H3
   H4
+  Pre
   Text
   Paragraph
   Label(String)
@@ -36,6 +37,12 @@ pub opaque type UITypo {
 ///
 pub fn span(text: String) -> UITypo {
   UITypo(el.new("span"), text:, behavior: Text)
+}
+
+/// Html <pre></pre> super element.
+///
+pub fn pre(text: String) -> UITypo {
+  UITypo(el.new("pre"), text:, behavior: Pre)
 }
 
 /// Text super element.
@@ -160,6 +167,7 @@ fn render_inner(in: UITypo, inner: UIRenders(a)) -> UIRender(a) {
     H2 -> html.h2(attrs, inner)
     H3 -> html.h3(attrs, inner)
     H4 -> html.h4(attrs, inner)
+    Pre -> html.pre(attrs, inner)
     Text -> html.span(attrs, inner)
     Paragraph -> html.p(attrs, inner)
     Label(id) -> html.label([a.for(id), ..attrs], inner)

@@ -92,7 +92,7 @@ pub opaque type UIEl {
 /// Create dictonary and insert item with id element to represent
 /// default custom attributes, classes, styles of element.
 ///
-pub fn new(id: String) {
+pub fn new(id: String) -> El {
   let att =
     dict.new()
     |> dict.insert(id, [#("id", random_str(id))])
@@ -104,6 +104,17 @@ pub fn new(id: String) {
     |> dict.insert(id, [])
 
   UIEl(id:, att:, classes:, styles:)
+}
+
+/// New dictionary to key slot element.
+///
+pub fn new_key(in: El, key: String) -> El {
+  UIEl(
+    ..in,
+    att: dict.insert(in.att, key, []),
+    classes: dict.insert(in.classes, key, []),
+    styles: dict.insert(in.styles, key, []),
+  )
 }
 
 /// Replace id element
