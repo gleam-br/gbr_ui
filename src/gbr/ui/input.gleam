@@ -175,7 +175,12 @@ pub fn name(in: Input, name: String) -> Input {
 /// Set input autocomplete.
 ///
 pub fn autocomplete(in: Input, value: Bool) -> Input {
-  att_set(in, [#("autocomplete", bool.to_string(value))])
+  att_set(in, [
+    #("autocomplete", case value {
+      True -> "on"
+      False -> "off"
+    }),
+  ])
 }
 
 /// Set input placeholder.
@@ -188,6 +193,19 @@ pub fn placeholder(in: Input, value: String) -> Input {
 ///
 pub fn required(in: Input, value: String) -> Input {
   att_set(in, [#("required", value)])
+}
+
+/// Set input disabled attribute.
+///
+pub fn disabled(in: Input, disabled: Bool) -> Input {
+  case disabled {
+    True -> att_set(in, [#("disabled", "")])
+    False -> {
+      let el = el.att_del(in.el, "disabled")
+
+      UIInput(..in, el:)
+    }
+  }
 }
 
 /// Set input type attribute.

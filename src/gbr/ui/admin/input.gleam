@@ -68,6 +68,7 @@ type Render(a) =
 ///
 pub fn primary(in: Input) -> Input {
   in
+  |> input.disabled(False)
   |> class(
     "dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 "
     <> "focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full "
@@ -95,6 +96,7 @@ pub fn password(in: Input, open: Bool) -> Input {
 
   in
   |> input.kind(type_)
+  |> input.disabled(False)
   |> class(
     "dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 "
     <> "focus:ring-brand-500/10 dark:focus:border-brand-800 "
@@ -122,7 +124,9 @@ pub fn error(in: Input, text: String) -> Input {
 }
 
 pub fn disabled(in: Input, text: String) -> Input {
-  state_set(in, text, disabled_class, label_disabled_class, form.info)
+  in
+  |> input.disabled(True)
+  |> state_set(text, disabled_class, label_disabled_class, form.info)
 }
 
 pub fn loading(in: Input, text: String) -> Input {

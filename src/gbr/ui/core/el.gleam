@@ -14,6 +14,7 @@ import gleam/dict
 import gleam/int
 import gleam/list
 import gleam/option.{type Option}
+import gleam/pair
 
 import lustre/attribute
 
@@ -163,6 +164,24 @@ pub fn att_key(el: El, key, att: Properties) -> El {
 ///
 pub fn att_get(el: El, name: String) -> Option(String) {
   att_get_key(el, el.id, name)
+}
+
+/// Get attribute element by name.
+///
+/// - el: Element info.
+/// - name: Attribute name to find.
+///
+pub fn att_del(el: El, name: String) -> El {
+  dict.get(el.att, el.id)
+  |> option.from_result()
+  |> option.map(fn(att) {
+    list.key_pop(att, name)
+    |> option.from_result()
+  })
+  |> option.flatten()
+  |> option.map(fn(pop) { pair.second(pop) })
+  |> option.map(fn(att_) { att(el, att_) })
+  |> option.unwrap(el)
 }
 
 /// Get attribute element by key and name.
