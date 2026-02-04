@@ -161,7 +161,6 @@ pub fn view(at: Render(a), open: Bool, selected: Option(String)) -> UIRender(a) 
             ),
 
             svg.new(24, 24)
-              |> svg_icons.reticence()
               |> svg.class(
                 "menu-group-icon mx-auto fill-current sm:hidden "
                 <> case open {
@@ -169,6 +168,7 @@ pub fn view(at: Render(a), open: Bool, selected: Option(String)) -> UIRender(a) 
                   True -> "hidden"
                 },
               )
+              |> svg_icons.reticence()
               |> svg.view(),
           ],
         ),
