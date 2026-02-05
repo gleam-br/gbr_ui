@@ -2,7 +2,7 @@
 //// Gleam UI admin alert element
 ////
 
-import gbr/ui/link
+import gbr/ui/core/render
 import gleam/bool
 
 import lustre/attribute as a
@@ -12,9 +12,13 @@ import lustre/element/html
 import gbr/ui/core/el
 import gbr/ui/core/model.{type UIRender, type UIRenders}
 import gbr/ui/desc
+import gbr/ui/link
 
 import gbr/ui/svg
 import gbr/ui/svg/alert as svg_alert
+
+// Alias
+//
 
 type Alert =
   UIAlert
@@ -51,7 +55,7 @@ pub opaque type UIAlert {
 /// in: Alert info
 ///
 pub opaque type UIAlertRender(a) {
-  UIAlertRender(in: Alert, inner: UIRenders(a))
+  UIAlertRender(in: Alert, render: render.UIElRender(a))
 }
 
 /// New alert super element pass title and description.
@@ -124,7 +128,11 @@ pub fn error(in: Alert) -> Alert {
 /// - inner: List of elements to show in footer alert dialog
 ///
 pub fn render(in: Alert, inner: UIRenders(a)) -> Render(a) {
-  UIAlertRender(in:, inner:)
+  let render =
+    render.new(in.el)
+    |> render.elements(inner)
+
+  UIAlertRender(in:, render:)
 }
 
 /// New alert render element with footer link
@@ -150,15 +158,14 @@ pub fn render_link(in: Alert, href: String, text: String) -> Render(a) {
 /// Render super alert element to `lustre/element/html.{div}`.
 ///
 pub fn view(at: Render(a)) -> UIRender(a) {
-  let UIAlertRender(in:, inner:) = at
-  let UIAlert(el:, info:, status:, open:) = in
-
+  let UIAlertRender(in:, render:) = at
+  let UIAlert(info:, status:, open:, ..) = in
   use <- bool.guard(!open, element.none())
 
-  let attrs =
-    classes_el(el, status)
-    |> el.class("max-w-1/4")
-    |> el.attrs()
+  let #(attrs, inner) =
+    render
+    |> render.attributes([classes_el(status)])
+    |> render.views()
 
   html.div(attrs, [
     html.div([a.class("flex items-start gap-3")], [
@@ -189,14 +196,14 @@ fn svg_status(status) {
 fn create_el() {
   el.new("alert")
   |> el.class(
-    "fixed top-20 right-10 z-999999 rounded-xl border p-4 pr-2 max-w-1/3 "
+    "fixed top-20 right-10 z-999999 rounded-xl border p-4 pr-2 max-w-1/3 max-w-1/4"
     // todo
-    <> "animate-bounce",
+    <> " animate-bounce",
   )
 }
 
-fn classes_el(el, status) {
-  el.classes(el, [
+fn classes_el(status) {
+  a.classes([
     #(
       "border-blue-light-500 bg-blue-light-50 dark:border-blue-light-500/30 dark:bg-blue-light-500/15",
       status == Info,
