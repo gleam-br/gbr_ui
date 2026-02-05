@@ -69,7 +69,7 @@ type Render(a) =
 /// Button super element.
 ///
 pub opaque type UIButton {
-  UIButton(el: El, size: Size, disabled: Bool, text: Option(String))
+  UIButton(el: El, disabled: Bool, text: Option(String), size: Option(Size))
 }
 
 /// Button render type.
@@ -81,7 +81,7 @@ pub type UIButtonRender(a) {
 /// New button super element.
 ///
 pub fn new(id: String) -> Button {
-  UIButton(el: el.new(id), size: Md, disabled: False, text: None)
+  UIButton(el: el.new(id), size: None, disabled: False, text: None)
 }
 
 /// Set button label.
@@ -133,19 +133,19 @@ pub fn classes(in: Button, classes: UISwitches) -> Button {
 /// Set button size to medium
 ///
 pub fn sm(in: Button) -> Button {
-  UIButton(..in, size: Sm)
+  UIButton(..in, size: Some(Sm))
 }
 
 /// Set button size to medium
 ///
 pub fn md(in: Button) -> Button {
-  UIButton(..in, size: Md)
+  UIButton(..in, size: Some(Md))
 }
 
 /// Set button size to large
 ///
 pub fn lg(in: Button) -> Button {
-  UIButton(..in, size: Lg)
+  UIButton(..in, size: Some(Lg))
 }
 
 /// New button render at right inner and onclick event.
@@ -214,9 +214,9 @@ pub fn view(at: Render(a)) -> UIRender(a) {
     |> render.attributes([
       attribute.disabled(disabled),
       attribute.classes([
-        #("px-4 py-3", size == Md),
-        #("px-5 py-3.5", size == Lg),
-        #("px-0 py-0", size == Sm),
+        #("px-4 py-3", size == Some(Md)),
+        #("px-5 py-3.5", size == Some(Lg)),
+        #("px-0 py-0", size == Some(Sm)),
       ]),
     ])
     |> render.views()

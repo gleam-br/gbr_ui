@@ -187,20 +187,22 @@ pub fn do_update(
   #(web, effect.batch([onsecurity, onupdate]))
 }
 
+/// Set onchange uri event.
+///
+/// This uses lib gbr_ui_router.
+///
+/// TODO: FIX the gbr_ui_router.on_change is call twice in setup js events.
+///
+pub fn onchange_uri(onuri) {
+  use dispatch <- effect.from()
+  use uri <- router.on_change(None)
+
+  onuri(uri)
+  |> dispatch
+}
+
 // PRIVATE
 //
-
-pub fn onchange_uri(oncontent) {
-  let on_uri_change = {
-    use dispatch <- effect.from()
-    use uri <- router.on_change(None)
-
-    oncontent(uri)
-    |> dispatch
-  }
-
-  on_uri_change
-}
 
 fn new_alert() {
   alert.new(

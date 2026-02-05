@@ -73,6 +73,33 @@ pub fn tertiary(in: Button) -> Button {
   class(in, const_tertiary_class)
 }
 
+/// View button refresh with icon and animation.
+///
+/// - id: Id button.
+/// - loading: If is loading or not (animete or not).
+/// - onclick: Evento onclick uses with `loading` param.
+///
+pub fn refresh(id: String, loading: Bool, onclick_: a) -> UIRender(a) {
+  let inner =
+    svg.new(20, 20)
+    |> svg_icons.refresh()
+    |> svg.class("group-active:rotate-180 transition-transform duration-500")
+    |> svg.classes([#("animate-spin", loading)])
+    |> svg.view()
+  let class_ =
+    "flex h-10 w-full max-w-10 items-center justify-center rounded-lg border "
+    <> "border-gray-200 text-gray-500 transition-colors hover:bg-gray-100 "
+    <> "hover:text-gray-700 dark:border-gray-800 dark:text-gray-400 "
+    <> "dark:hover:bg-gray-800 dark:hover:text-white"
+
+  new(id)
+  |> disabled(loading)
+  |> class(class_)
+  |> render_left([inner])
+  |> onclick(Some(onclick_))
+  |> view()
+}
+
 /// Render back history button.
 ///
 pub fn back(id: String, text: String, onclick_: a) -> UIRender(a) {
