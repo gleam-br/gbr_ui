@@ -159,7 +159,7 @@ pub fn att_key(el: El, key, att: Properties) -> El {
     dict.get(el.att, key)
     |> option.from_result()
     |> option.unwrap([])
-    |> list.fold(att, fn(acc, att) {
+    |> list.fold(att, _, fn(acc, att) {
       let #(key, value) = att
       list.key_set(acc, key, value)
     })
@@ -285,7 +285,7 @@ pub fn classes_key(el: El, key: String, classes: Switches) -> El {
     dict.get(el.classes, key)
     |> option.from_result()
     |> option.unwrap([])
-    |> list.fold(classes, fn(acc, classes) {
+    |> list.fold(classes, _, fn(acc, classes) {
       let #(key, value) = classes
       list.key_set(acc, key, value)
     })
@@ -306,7 +306,7 @@ pub fn style_key(el: El, key: String, styles: Properties) -> El {
     dict.get(el.styles, key)
     |> option.from_result()
     |> option.unwrap([])
-    |> list.fold(styles, fn(acc, styles) {
+    |> list.fold(styles, _, fn(acc, styles) {
       let #(key, value) = styles
       list.key_set(acc, key, value)
     })
