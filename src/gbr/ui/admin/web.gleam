@@ -2,6 +2,7 @@
 //// Falcon admin web module
 ////
 
+import gbr/ui/admin/user/dropdown
 import gleam/bool
 import gleam/io
 import gleam/option.{type Option, None, Some}
@@ -62,6 +63,7 @@ pub type Web {
     uri: Option(uri.Uri),
     loading: Bool,
     keep_logged: Bool,
+    user_dropdown: Option(dropdown.UIDropdown),
   )
 }
 
@@ -113,6 +115,7 @@ pub fn start(web: WebStart, init, update, view) -> lustre.Runtime(a) {
       security: None,
       loading: False,
       keep_logged: False,
+      user_dropdown: None,
     )
 
   let assert Ok(runtime) =
@@ -124,16 +127,27 @@ pub fn start(web: WebStart, init, update, view) -> lustre.Runtime(a) {
 
 const const_storage_jwt = "auth/token"
 
+///
+///
+pub fn user_dropdown(web: Web, dropdown: dropdown.UIDropdown) -> Web {
+  Web(..web, user_dropdown: Some(dropdown))
+}
+
 /// Lustre init flow
 ///
 pub fn onsecurity(web: Web, on: fn(WebEvent) -> a) -> #(Web, effect.Effect(a)) {
   let #(web, onsecurity) = case security.load(const_storage_jwt) {
     Ok(security) -> {
+      let home =
+        security
+        |> Some()
+        |> security.to_user(web.user_dropdown)
+        |> home.user(web.home, _)
       let api =
         security.to_string(security)
         |> api.authorization(web.api, _)
 
-      let web = Web(..web, api:, security: Some(security))
+      let web = Web(..web, api:, home:, security: Some(security))
 
       #(web, effect.none())
     }
@@ -268,7 +282,12 @@ fn do_auth(web: Web, auth, on) {
       let security =
         security.persist(token, const_storage_jwt)
         |> option.from_result()
-      let web = Web(..web, api:, security:, alert: new_alert(), loading: False)
+      let home =
+        security
+        |> security.to_user(web.user_dropdown)
+        |> home.user(web.home, _)
+      let web =
+        Web(..web, api:, home:, security:, alert: new_alert(), loading: False)
 
       let assert Ok(Nil) = router.replace("/home")
 

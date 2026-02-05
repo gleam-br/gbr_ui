@@ -8,6 +8,7 @@ import gleam/bool
 import gleam/dict
 import gleam/dynamic/decode
 import gleam/float
+import gleam/function
 import gleam/option.{type Option, None, Some}
 import gleam/order
 import gleam/result
@@ -256,7 +257,7 @@ pub fn claim(
 ///
 pub fn to_user(
   in: Option(Security),
-  dropdown: dropdown.UIDropdown,
+  dropdown: Option(dropdown.UIDropdown),
 ) -> user.UIUser {
   let user = user.new("user", "")
 
@@ -283,7 +284,11 @@ pub fn to_user(
       |> user.name_full(name)
       // TODO
       |> user.picture("/profile.png")
-      |> user.dropdown(dropdown)
+      |> user.dropdown(
+        dropdown
+        |> option.map(function.identity)
+        |> option.unwrap(dropdown.new(False)),
+      )
     }
   }
 }
