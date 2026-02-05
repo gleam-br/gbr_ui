@@ -61,7 +61,7 @@ pub fn new(id: String) {
 /// - label: Text of label
 ///
 pub fn label(in: Textarea, label: String) -> Textarea {
-  let id = el.id_get(in.el)
+  let assert Some(id) = el.att_get(in.el, "id")
   let label =
     in.label
     |> option.map(typo.text(_, label))
