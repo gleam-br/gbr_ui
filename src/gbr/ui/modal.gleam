@@ -3,6 +3,7 @@
 ////
 
 import lustre/attribute as a
+import lustre/element as e
 import lustre/element/html as h
 import lustre/event
 
@@ -140,11 +141,17 @@ pub fn view(at: Render(a)) -> UIRender(a) {
     h.div(attrs_backdrop, inner_backdrop),
     h.div(attrs_wrapper, [
       // close
-      h.button(attrs_close, inner_close),
+      case inner_close {
+        [] -> e.none()
+        inner_close -> h.button(attrs_close, inner_close)
+      },
       // modal-content
       h.div(attrs_content, [
         h.div([], inner_content),
-        h.div(attrs_footer, inner_footer),
+        case inner_footer {
+          [] -> e.none()
+          inner_footer -> h.div(attrs_footer, inner_footer)
+        },
       ]),
     ]),
   ])

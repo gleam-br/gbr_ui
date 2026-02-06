@@ -42,6 +42,7 @@ pub fn simple(
   title: String,
   content: String,
   footer: UIRenders(a),
+  close: UIRenders(a),
   onclose: a,
 ) -> Render(a) {
   let modal =
@@ -65,7 +66,7 @@ pub fn simple(
     )
     |> modal.class_slot(
       modal.Footer,
-      "flex items-center justify-center w-full gap-3 mt-8",
+      "flex items-center justify-end w-full gap-3 mt-8",
     )
     |> modal.class_slot(
       modal.Close,
@@ -90,9 +91,5 @@ pub fn simple(
     content |> typo.view(),
   ])
   |> modal.render_slot(modal.Footer, [], footer)
-  |> modal.render_slot(modal.Close, [], [
-    svg.new(24, 24)
-    |> icons.cross()
-    |> svg.view(),
-  ])
+  |> modal.render_slot(modal.Close, [], close)
 }
