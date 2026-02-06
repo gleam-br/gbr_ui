@@ -95,7 +95,25 @@ pub fn refresh(id: String, loading: Bool, onclick_: a) -> UIRender(a) {
   new(id)
   |> disabled(loading)
   |> class(class_)
-  |> render_left([inner])
+  |> render([inner])
+  |> onclick(Some(onclick_))
+  |> view()
+}
+
+pub fn close(id: String, onclick_: a) -> UIRender(a) {
+  let inner =
+    svg.new(24, 24)
+    |> svg_icons.cross()
+    |> svg.view()
+  let class_ =
+    "absolute right-3 top-3 z-999 flex h-9.5 w-9.5 items-center justify-center "
+    <> "rounded-full bg-gray-100 text-gray-400 transition-colors hover:bg-gray-200 "
+    <> "hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 "
+    <> "dark:hover:text-white sm:right-6 sm:top-6 sm:h-11 sm:w-11"
+
+  new(id)
+  |> class(class_)
+  |> render([inner])
   |> onclick(Some(onclick_))
   |> view()
 }

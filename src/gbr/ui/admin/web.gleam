@@ -127,28 +127,45 @@ pub fn start(web: WebStart, init, update, view) -> lustre.Runtime(a) {
 
 const const_storage_jwt = "auth/token"
 
+/// Set user dropdown element, when is logged in.
 ///
+/// - web: Web type instance.
+/// - dropdown: User dropdown to logged in session.
 ///
 pub fn user_dropdown(web: Web, dropdown: dropdown.UIDropdown) -> Web {
   Web(..web, user_dropdown: Some(dropdown))
 }
 
+/// Load security token from local storage.
+///
+/// - web: Web type instance.
+///
+pub fn security_load(web: Web) -> Result(Web, security.SecurityError) {
+  const_storage_jwt
+  |> security.load()
+  |> result.map(fn(security) {
+    let api =
+      security.to_string(security)
+      |> api.authorization(web.api, _)
+    let home =
+      security
+      |> Some()
+      |> security.to_user(web.user_dropdown)
+      |> home.user(web.home, _)
+
+    Web(..web, api:, home:, security: Some(security))
+  })
+}
+
 /// Lustre init flow
 ///
-pub fn onsecurity(web: Web, on: fn(WebEvent) -> a) -> #(Web, effect.Effect(a)) {
-  let #(web, onsecurity) = case security.load(const_storage_jwt) {
-    Ok(security) -> {
-      let home =
-        security
-        |> Some()
-        |> security.to_user(web.user_dropdown)
-        |> home.user(web.home, _)
-      let api =
-        security.to_string(security)
-        |> api.authorization(web.api, _)
+/// TODO
+///
+fn onsecurity(web: Web, on: fn(WebEvent) -> a) -> #(Web, effect.Effect(a)) {
+  todo as "Dynamic providers and try call default provider when error loading jwt token from localStorage"
 
-      let web = Web(..web, api:, home:, security: Some(security))
-
+  let #(web, onsecurity) = case security_load(web) {
+    Ok(_) -> {
       #(web, effect.none())
     }
     Error(err) -> {

@@ -81,7 +81,11 @@ pub fn attributes_key(
 ) -> UIElRender(a) {
   let UIRender(elements:, ..) = in
   let elements =
-    dict.get(elements, key)
+    case dict.has_key(elements, key) {
+      True -> elements
+      False -> dict.insert(elements, key, Element([], []))
+    }
+    |> dict.get(key)
     |> result.map(fn(el) {
       let att_el = el.attributes
       let element = Element(..el, attributes: list.append(att_el, att))
@@ -110,7 +114,11 @@ pub fn elements_key(
 ) -> UIElRender(a) {
   let UIRender(elements:, ..) = in
   let elements =
-    dict.get(elements, key)
+    case dict.has_key(elements, key) {
+      True -> elements
+      False -> dict.insert(elements, key, Element([], []))
+    }
+    |> dict.get(key)
     |> result.map(fn(el) {
       let att_el = el.elements
       let element = Element(..el, elements: list.append(att_el, att))
@@ -155,7 +163,13 @@ pub fn views(render: UIElRender(a)) -> #(Attrs(a), Renders(a)) {
 pub fn views_key(render: UIElRender(a), key: String) -> #(Attrs(a), Renders(a)) {
   let el_attrs = el.attrs_key(render.el, key)
 
-  dict.get(render.elements, key)
+  case dict.has_key(render.elements, key) {
+    True -> render.elements
+    False ->
+      render.elements
+      |> dict.insert(key, Element([], []))
+  }
+  |> dict.get(key)
   |> result.map(fn(el) { #(list.append(el_attrs, el.attributes), el.elements) })
   |> result.unwrap(#([], []))
 }

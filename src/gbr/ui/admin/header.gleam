@@ -255,7 +255,7 @@ pub fn view(at: Render(a)) -> UIRender(a) {
 // PRIVATE
 //
 
-const header_class = "sticky top-0 z-99999 flex w-full border-gray-200 lg:border-b bg-white dark:border-gray-800 dark:bg-gray-900"
+const header_class = "sticky top-0 flex w-full border-gray-200 lg:border-b bg-white dark:border-gray-800 dark:bg-gray-900"
 
 const header_content_class = "flex grow flex-col items-center justify-between lg:flex-row lg:px-6"
 

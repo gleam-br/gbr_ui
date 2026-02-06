@@ -106,17 +106,6 @@ pub fn new(id: String) -> El {
   UIEl(id:, att:, classes:, styles:)
 }
 
-/// New dictionary to key slot element.
-///
-pub fn new_key(in: El, key: String) -> El {
-  UIEl(
-    ..in,
-    att: dict.insert(in.att, key, []),
-    classes: dict.insert(in.classes, key, []),
-    styles: dict.insert(in.styles, key, []),
-  )
-}
-
 /// Replace id element
 ///
 /// - el: Element info
@@ -156,7 +145,11 @@ pub fn att(el: El, att: Properties) -> El {
 pub fn att_key(el: El, key, att: Properties) -> El {
   // Get element attributes
   let att_el =
-    dict.get(el.att, key)
+    case dict.has_key(el.att, key) {
+      False -> dict.insert(el.att, key, [])
+      True -> el.att
+    }
+    |> dict.get(key)
     |> option.from_result()
     |> option.unwrap([])
     |> list.fold(att, _, fn(acc, att) {
@@ -282,7 +275,11 @@ pub fn classes(el: El, classes: Switches) -> El {
 ///
 pub fn classes_key(el: El, key: String, classes: Switches) -> El {
   let el_classes =
-    dict.get(el.classes, key)
+    case dict.has_key(el.classes, key) {
+      True -> el.classes
+      False -> dict.insert(el.classes, key, [])
+    }
+    |> dict.get(key)
     |> option.from_result()
     |> option.unwrap([])
     |> list.fold(classes, _, fn(acc, classes) {
@@ -303,7 +300,11 @@ pub fn classes_key(el: El, key: String, classes: Switches) -> El {
 ///
 pub fn style_key(el: El, key: String, styles: Properties) -> El {
   let el_styles =
-    dict.get(el.styles, key)
+    case dict.has_key(el.styles, key) {
+      True -> el.styles
+      False -> dict.insert(el.styles, key, [])
+    }
+    |> dict.get(key)
     |> option.from_result()
     |> option.unwrap([])
     |> list.fold(styles, _, fn(acc, styles) {

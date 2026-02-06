@@ -96,7 +96,6 @@ pub fn new(id: String, kind: String) -> Input {
     el.new(id)
     |> el.att([#("type", kind)])
     |> el.att([#("name", id)])
-    |> el.new_key(const_input_inner)
 
   UIInput(el:, label: None, note: None, svg: None)
 }
