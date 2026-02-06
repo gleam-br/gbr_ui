@@ -220,11 +220,7 @@ pub fn view(at: Render(a)) -> UIRender(a) {
     |> option.map(user.on_submit_opt(_, on_submit))
     |> option.map(user.on_dropdown_opt(_, on_dropdown))
     |> option.map(user.view)
-    |> option.map(fn(user) {
-      html.div([a.class(header_left_user_class)], [
-        user,
-      ])
-    })
+    |> option.map(fn(user) { user })
     |> option.unwrap(element.none())
 
   let attrs = el.attrs(el)
@@ -255,7 +251,7 @@ pub fn view(at: Render(a)) -> UIRender(a) {
 // PRIVATE
 //
 
-const header_class = "sticky top-0 flex w-full border-gray-200 lg:border-b bg-white dark:border-gray-800 dark:bg-gray-900"
+const header_class = "z-999 sticky top-0 flex w-full border-gray-200 lg:border-b bg-white dark:border-gray-800 dark:bg-gray-900"
 
 const header_content_class = "flex grow flex-col items-center justify-between lg:flex-row lg:px-6"
 
@@ -264,5 +260,3 @@ const header_right_class = "flex w-full items-center justify-between gap-2 borde
 const header_left_class = "shadow-theme-md w-full items-center justify-between gap-4 px-5 py-4 lg:flex lg:justify-end lg:px-0 lg:shadow-none"
 
 const header_left_content_class = "2xsm:gap-3 flex items-center gap-2"
-
-const header_left_user_class = "2xsm:gap-3 flex items-center gap-2"
