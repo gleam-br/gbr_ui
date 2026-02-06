@@ -3,8 +3,6 @@
 ////
 
 import gbr/ui/modal
-import gbr/ui/svg
-import gbr/ui/svg/icons
 import gbr/ui/typo
 
 import gbr/ui/core/model.{type UIRenders}
@@ -66,7 +64,7 @@ pub fn simple(
     )
     |> modal.class_slot(
       modal.Footer,
-      "flex items-center justify-end w-full gap-3 mt-8",
+      "flex items-center justify-center w-full gap-3 mt-8",
     )
     |> modal.class_slot(
       modal.Close,

@@ -51,7 +51,7 @@ pub opaque type UIInput {
     el: el.UIEl,
     label: Option(Text),
     note: Option(Text),
-    svg: Option(svg.Svg),
+    inner_svg: Option(svg.Svg),
   )
 }
 
@@ -97,7 +97,7 @@ pub fn new(id: String, kind: String) -> Input {
     |> el.att([#("type", kind)])
     |> el.att([#("name", id)])
 
-  UIInput(el:, label: None, note: None, svg: None)
+  UIInput(el:, label: None, note: None, inner_svg: None)
 }
 
 // Accessors
@@ -157,6 +157,12 @@ pub fn label_class(in: Input, class: String) -> Input {
 ///
 pub fn note(in: Input, note: Text) -> Input {
   UIInput(..in, note: Some(note))
+}
+
+/// Set icon svg
+///
+pub fn inner_svg(in: Input, svg: svg.Svg) -> Input {
+  UIInput(..in, inner_svg: Some(svg))
 }
 
 /// Append input class sr-only .
@@ -231,13 +237,9 @@ pub fn size(in: Input, value: Int) -> Input {
   length(in, "size", value)
 }
 
-const const_input_inner = "input-inner"
-
-/// Set icon svg
+/// Identification slot of input inner elements.
 ///
-pub fn inner_svg(in: Input, svg: svg.Svg) -> Input {
-  UIInput(..in, svg: Some(svg))
-}
+const const_input_inner = "input-inner"
 
 /// Set icon svg class attribute.
 ///
@@ -251,7 +253,7 @@ pub fn inner_class(in: Input, class: String) -> Input {
 ///
 pub fn render(in: Input, attrs: UIAttrs(a), inner: UIRenders(a)) -> Render(a) {
   let inner =
-    in.svg
+    in.inner_svg
     |> option.map(fn(svg) { [svg.view(svg), ..inner] })
     |> option.unwrap(inner)
   let attrs =
@@ -363,7 +365,14 @@ pub fn view(at: Render(a)) -> UIRender(a) {
     None, [] -> html.div([], [label, input])
     None, inner -> html.div([a.class("relative")], [label, input, ..inner])
     Some(note), inner ->
-      html.div([a.class("relative")], [label, input, typo.view(note), ..inner])
+      html.div([], [
+        label,
+        input,
+        html.div([a.class("relative flex")], [
+          html.div([a.class("pt-1 mr-1")], inner),
+          typo.view(note),
+        ]),
+      ])
   }
 
   // label and input

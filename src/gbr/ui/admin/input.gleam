@@ -101,9 +101,12 @@ pub fn password(in: Input, open: Bool) -> Input {
     "dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 "
     <> "focus:ring-brand-500/10 dark:focus:border-brand-800 "
     <> "h-10 w-full rounded-lg border border-gray-300 bg-transparent "
-    <> "py-2.5 pl-4 pr-11 text-sm text-gray-800 placeholder:text-gray-400 "
+    <> "py-2.5 pl-4 pr-10 text-sm text-gray-800 placeholder:text-gray-400 "
     <> "focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 "
     <> "dark:text-white/90 dark:placeholder:text-white/30",
+  )
+  |> inner_class(
+    "absolute top-9 right-4 z-30 cursor-pointer text-gray-500 dark:text-gray-400",
   )
   |> label_class(
     "mt-2.5 mb-1 block text-sm font-medium text-gray-700 dark:text-gray-400",
@@ -152,21 +155,17 @@ fn state_set(in, text, class, class_note, svg_transform) -> Input {
     typo.span(text)
     |> typo.class(note_class)
 
-  in
+  input.class(in, input_class)
+  |> input.note(note)
   |> input.inner_svg(
     svg.new(16, 16)
     |> svg_transform(),
   )
-  |> input.inner_class(state_icon_class)
-  |> input.class(input_class)
-  |> input.note(note)
 }
 
 const state_label_class = "text-theme-xs text-error-500 mt-1.5"
 
-const state_icon_class = "absolute top-1/2 right-3.5:-translate-y-1/2"
-
-const state_class = "dark:bg-dark-900 shadow-theme-xs w-full rounded-lg border bg-transparent px-4 py-2.5 pr-10 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
+const state_class = "dark:bg-dark-900 shadow-theme-xs h-10 w-full rounded-lg border bg-transparent px-4 pr-10 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
 
 const state_success_class = " border-green-300 focus:border-green-300 focus:ring-green-500/10 dark:border-green-700 dark:focus:border-green-800"
 
