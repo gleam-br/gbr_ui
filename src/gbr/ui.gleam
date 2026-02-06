@@ -292,7 +292,7 @@ pub fn content(
   html.div(
     [
       attribute.class(
-        "rounded-2xl border border-gray-200 bg-white pt-4 my-2 dark:border-gray-800 dark:bg-white/[0.03]",
+        "pt-4 my-2 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]",
       ),
     ],
     [
@@ -303,7 +303,7 @@ pub fn content(
           html.div(
             [
               attribute.class(
-                "mb-4 flex flex-col gap-2 px-5 sm:flex-row sm:items-center sm:justify-between sm:px-6",
+                "flex gap-2 px-5 mb-4 items-center justify-between",
               ),
             ],
             header,
@@ -315,7 +315,7 @@ pub fn content(
           html.div(
             [
               attribute.class(
-                "space-y-4 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-700 custom-scrollbar max-w-full overflow-x-auto overflow-y-visible px-5 sm:px-6",
+                "p-5 space-y-4 border-t border-gray-100 dark:border-gray-700 custom-scrollbar max-w-full overflow-x-auto overflow-y-visible",
               ),
             ],
             content,
@@ -345,11 +345,11 @@ pub fn content(
 pub fn page(title: String, inner: UIRenders(a)) -> UIRender(a) {
   html.div(
     [
-      class("mx-auto max-w-(--breakpoint-2xl) p-4 pb-2 md:p-6 md:pb-6"),
+      class("mx-auto max-w-(--breakpoint-2xl) p-2 md:pt-2 md:p-4"),
     ],
     [
       html.div(
-        [class("flex flex-wrap items-center justify-between gap-3 pb-6")],
+        [class("flex flex-wrap items-center justify-between gap-3 pb-1")],
         [
           html.h2(
             [class("text-xl font-semibold text-gray-800 dark:text-white/90")],
