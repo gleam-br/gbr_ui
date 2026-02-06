@@ -2,9 +2,7 @@
 //// Falcon admin web module
 ////
 
-import gbr/ui/admin/user/dropdown
 import gleam/bool
-import gleam/io
 import gleam/option.{type Option, None, Some}
 import gleam/result
 import gleam/uri
@@ -24,6 +22,7 @@ import gbr/ui/admin/alert
 import gbr/ui/admin/pages/home
 import gbr/ui/admin/pages/login
 import gbr/ui/admin/security
+import gbr/ui/admin/user/dropdown
 
 // Alias
 //
@@ -157,41 +156,33 @@ pub fn security_load(web: Web) -> Result(Web, security.SecurityError) {
   })
 }
 
-/// Lustre init flow
-///
-/// TODO
-///
-fn onsecurity(web: Web, on: fn(WebEvent) -> a) -> #(Web, effect.Effect(a)) {
-  todo as "Dynamic providers and try call default provider when error loading jwt token from localStorage"
-
-  let #(web, onsecurity) = case security_load(web) {
-    Ok(_) -> {
-      #(web, effect.none())
-    }
-    Error(err) -> {
-      // log
-      security.error(err)
-      |> io.println_error()
-
-      // try auth apache mod_msal
-      let do_msal = {
-        use dispatch <- effect.from()
-
-        OnLogin([#("provider", "microsoft")])
-        |> on()
-        |> dispatch()
-      }
-
-      let web = Web(..web, security: None)
-
-      #(web, do_msal)
-    }
-  }
-
-  let web = Web(..web, loading: True)
-
-  #(web, onsecurity)
-}
+// todo as
+// "Dynamic providers and try call default provider when
+// loading error jwt token from localStorage"
+//
+// fn onsecurity(web: Web, on: fn(WebEvent) -> a) -> #(Web, effect.Effect(a)) {
+//   let #(web, onsecurity) = case security_load(web) {
+//     Ok(_) -> {
+//       #(web, effect.none())
+//     }
+//     Error(err) -> {
+//       // log
+//       security.error(err)
+//       |> io.println_error()
+//       // try auth apache mod_msal
+//       let do_msal = {
+//         use dispatch <- effect.from()
+//         OnLogin([#("provider", "microsoft")])
+//         |> on()
+//         |> dispatch()
+//       }
+//       let web = Web(..web, security: None)
+//       #(web, do_msal)
+//     }
+//   }
+//   let web = Web(..web, loading: True)
+//   #(web, onsecurity)
+// }
 
 /// Lustre update flow
 ///
