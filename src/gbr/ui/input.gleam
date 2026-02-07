@@ -369,7 +369,7 @@ pub fn view(at: Render(a)) -> UIRender(a) {
         label,
         input,
         html.div([a.class("relative flex")], [
-          html.div([a.class("pt-1 mr-1")], inner),
+          html.div([a.class("m-1")], inner),
           typo.view(note),
         ]),
       ])

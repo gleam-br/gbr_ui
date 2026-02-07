@@ -154,18 +154,14 @@ pub fn view(at: Render(a), open: Bool, selected: Option(String)) -> UIRender(a) 
             html.span(
               [
                 a.class("menu-group-title"),
-                a.classes([#("lg:hidden", !open)]),
+                a.classes([#("hidden", !open)]),
               ],
               [html.text(text)],
             ),
-
             svg.new(24, 24)
+              |> svg.classes([#("hidden", open)])
               |> svg.class(
-                "menu-group-icon mx-auto fill-current sm:hidden "
-                <> case open {
-                  False -> "lg:block hidden"
-                  True -> "hidden"
-                },
+                "menu-group-icon mx-auto fill-current sm:hidden lg:block",
               )
               |> svg_icons.reticence()
               |> svg.view(),
@@ -362,6 +358,6 @@ fn menu_item(menu, open, selected, onclick) -> UIKeyed(a) {
   )
 }
 
-const menu_class = "mb-4 text-xs uppercase leading-[20px] text-gray-400"
+const menu_class = "mb-4 align-center justify-center text-xs uppercase leading-[20px] text-gray-400"
 
 const menu_item_class = "mb-6 flex flex-col gap-4"
