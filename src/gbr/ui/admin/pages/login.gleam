@@ -220,16 +220,15 @@ fn login_form_render(in, onform, onsubmit) {
     )
     |> input.view()
   }
+  let onkeeplogin =
+    option.map(onform, fn(onform) {
+      OnKeepLogin
+      |> onform()
+    })
   let keep_login =
     keep_login
     |> checkbox.render()
-    |> checkbox.on_click_opt(
-      onform
-      |> option.map(fn(onform) {
-        OnKeepLogin
-        |> onform()
-      }),
-    )
+    |> checkbox.onclick(onkeeplogin)
     |> checkbox.view()
 
   let links =

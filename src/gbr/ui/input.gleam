@@ -94,8 +94,8 @@ pub fn checkbox(id: String) -> Input {
 pub fn new(id: String, kind: String) -> Input {
   let el =
     el.new(id)
+    |> el.name(id)
     |> el.att([#("type", kind)])
-    |> el.att([#("name", id)])
 
   UIInput(el:, label: None, note: None, inner_svg: None)
 }

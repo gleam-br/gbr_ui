@@ -41,7 +41,7 @@ pub fn new(id: String) -> Checkbox {
   let label =
     typo.label(id, "")
     |> typo.class(
-      "flex cursor-pointer items-center text-sm font-normal text-gray-700 select-none dark:text-gray-400",
+      "flex cursor-pointer items-center text-sm text-gray-700 select-none dark:text-gray-400",
     )
 
   UICheckbox(id:, label:, checked: False)
@@ -77,12 +77,8 @@ pub fn render(in: Checkbox) -> Render(a) {
 
 /// Set checkbox render onclick event.
 ///
-pub fn on_click_opt(at: Render(a), onclick: Option(a)) -> Render(a) {
+pub fn onclick(at: Render(a), onclick: Option(a)) -> Render(a) {
   UICheckboxRender(..at, onclick:)
-}
-
-pub fn on_click(in: Render(a), onclick: a) -> Render(a) {
-  on_click_opt(in, Some(onclick))
 }
 
 /// Render checkbox super element to `lustre/element.{type Element}`.
@@ -96,33 +92,36 @@ pub fn view(at: Render(a)) -> Element(a) {
     |> option.map(event.on_click)
     |> option.unwrap(a.none())
 
-  typo.render_left(label, [
-    html.div([onclick, a.class("relative")], [
-      html.input([
-        a.id(id),
-        a.name(id),
-        a.type_("checkbox"),
-        a.class("sr-only"),
-        onclick,
+  html.div([], [
+    typo.render_left(label, [
+      html.div([a.class("relative")], [
+        html.input([
+          a.id(id),
+          a.name(id),
+          a.class("sr-only"),
+          a.type_("checkbox"),
+          a.checked(checked),
+          onclick,
+        ]),
+        html.div(
+          [
+            a.classes([
+              #("border-brand-500 bg-brand-500", checked),
+              #("bg-transparent border-gray-300 dark:border-gray-700", !checked),
+            ]),
+            a.class(
+              "mr-3 flex h-5 w-5 items-center justify-center rounded-md border-[1.25px]",
+            ),
+          ],
+          [
+            html.span([a.classes([#("opacity-0", !checked)])], [
+              svg.new(14, 14)
+              |> svg_form.checkbox()
+              |> svg.view(),
+            ]),
+          ],
+        ),
       ]),
-      html.div(
-        [
-          a.classes([
-            #("border-brand-500 bg-brand-500", checked),
-            #("bg-transparent border-gray-300 dark:border-gray-700", !checked),
-          ]),
-          a.class(
-            "mr-3 flex h-5 w-5 items-center justify-center rounded-md border-[1.25px]",
-          ),
-        ],
-        [
-          html.span([a.classes([#("opacity-0", !checked)])], [
-            svg.new(14, 14)
-            |> svg_form.checkbox()
-            |> svg.view(),
-          ]),
-        ],
-      ),
     ]),
   ])
 }

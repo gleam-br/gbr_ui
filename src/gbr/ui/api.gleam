@@ -100,6 +100,8 @@ pub fn send_bytes(in: Api, ondata: OnData(BitArray, b)) -> effect.Effect(b) {
       let res =
         res
         |> result.map(fn(res) {
+          echo "Download headers:"
+          echo res.headers
           res.body
           |> bit_array.from_string
         })

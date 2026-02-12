@@ -91,7 +91,10 @@ pub type UISelectOption {
 /// Constructor of select super element
 ///
 pub fn new(id: String) -> Select {
-  UISelect(el: el.new(id), options: [], multi: False, open: False, label: None)
+  let el =
+    el.new(id)
+    |> el.name(id)
+  UISelect(el:, options: [], multi: False, open: False, label: None)
 }
 
 /// New selection option item
@@ -143,7 +146,8 @@ pub fn toggle(in: Select) -> Select {
   UISelect(..in, open: !in.open)
 }
 
-/// Update select based by event occurs.
+/// Set selected option by value
+///
 ///
 pub fn selected(in: Select, value: String) -> Select {
   let UISelect(options:, multi:, ..) = in
@@ -480,7 +484,7 @@ fn view_multi(at: Render(a)) {
       html.div(
         [
           a.class(
-            "absolute z-50 w-full overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900",
+            "absolute z-999 w-full overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900",
           ),
           a.style("max-height", "16rem"),
           a.classes([#("hidden", !open)]),

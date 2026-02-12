@@ -115,6 +115,15 @@ pub fn id(el: El, id: String) -> El {
   UIEl(..el, id:)
 }
 
+/// Replace name attribute element
+///
+/// - el: Element info
+/// - name: `lustre.attribute.name`
+///
+pub fn name(el: El, name: String) -> El {
+  att(el, [#("name", name)])
+}
+
 /// Get identification from element
 ///
 /// - el: Element info type
