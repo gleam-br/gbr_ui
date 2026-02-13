@@ -1,5 +1,5 @@
 ////
-//// Falcon admin web module
+//// Web admin module
 ////
 
 import gleam/bool
@@ -26,6 +26,7 @@ import gbr/ui/admin/user/dropdown
 
 // Alias
 //
+const const_storage_jwt = "auth/token"
 
 type DarkInfo =
   darkmode.BrowserDarkMode
@@ -124,12 +125,53 @@ pub fn start(web: WebStart, init, update, view) -> lustre.Runtime(a) {
   runtime
 }
 
-const const_storage_jwt = "auth/token"
+/// Lustre update flow
+///
+pub fn update(
+  web: Web,
+  event: WebEvent,
+  on: fn(WebEvent) -> a,
+) -> #(Web, effect.Effect(a)) {
+  let #(web, onsecurity) = security_guard(web, on)
+
+  let #(web, onupdate) = case event {
+    // geral
+    OnDarkMode -> do_dark_mode_toggle(web)
+    OnAlert(open) -> do_alert_open_toggle(web, open)
+    // login
+    OnLoginForm(evt) -> do_login_form_update(web, evt)
+    OnAuth(auth) -> do_auth(web, auth, on)
+    // home
+    OnHomePage(home.OnUserDropdownClick("signout")) -> do_signout(web)
+    OnHomePage(evt) -> do_home_update(web, evt)
+    _ -> #(web, effect.none())
+  }
+
+  #(web, effect.batch([onsecurity, onupdate]))
+}
+
+// Utils
+//
+
+/// Set onchange uri event.
+///
+/// This uses lib gbr_ui_router.
+/// TODO maybe private fn here
+///
+pub fn onchange_uri(onuri) {
+  use dispatch <- effect.from()
+  use uri <- router.on_change(None)
+
+  onuri(uri)
+  |> dispatch
+}
 
 /// Set user dropdown element, when is logged in.
 ///
 /// - web: Web type instance.
 /// - dropdown: User dropdown to logged in session.
+///
+/// TODO search alternatives to this
 ///
 pub fn user_dropdown(web: Web, dropdown: dropdown.UIDropdown) -> Web {
   Web(..web, user_dropdown: Some(dropdown))
@@ -156,71 +198,49 @@ pub fn security_load(web: Web) -> Result(Web, security.SecurityError) {
   })
 }
 
-// todo as
-// "Dynamic providers and try call default provider when
-// loading error jwt token from localStorage"
-//
-// fn onsecurity(web: Web, on: fn(WebEvent) -> a) -> #(Web, effect.Effect(a)) {
-//   let #(web, onsecurity) = case security_load(web) {
-//     Ok(_) -> {
-//       #(web, effect.none())
-//     }
-//     Error(err) -> {
-//       // log
-//       security.error(err)
-//       |> io.println_error()
-//       // try auth apache mod_msal
-//       let do_msal = {
-//         use dispatch <- effect.from()
-//         OnLogin([#("provider", "microsoft")])
-//         |> on()
-//         |> dispatch()
-//       }
-//       let web = Web(..web, security: None)
-//       #(web, do_msal)
-//     }
-//   }
-//   let web = Web(..web, loading: True)
-//   #(web, onsecurity)
-// }
-
-/// Lustre update flow
+/// Guard security token if expires and/or needs refresh and/or invalid one logout user.
 ///
-pub fn do_update(
-  web: Web,
-  event: WebEvent,
-  on: fn(WebEvent) -> a,
-) -> #(Web, effect.Effect(a)) {
-  let #(web, onsecurity) = security_guard(web, on)
+/// - web: Web admin type instance.
+///
+pub fn security_guard(web: Web, on) {
+  // guard return if none security
+  use <- bool.guard(option.is_none(web.security), #(web, effect.none()))
 
-  let #(web, onupdate) = case event {
-    // geral
-    OnDarkMode -> do_dark_mode_toggle(web)
-    OnAlert(open) -> do_alert_open_toggle(web, open)
-    // login
-    OnLoginForm(evt) -> do_login_form_update(web, evt)
-    OnAuth(auth) -> do_auth(web, auth, on)
-    // home
-    OnHomePage(home.OnUserDropdownClick("signout")) -> do_signout(web)
-    OnHomePage(evt) -> do_home_update(web, evt)
-    _ -> #(web, effect.none())
+  // guard security token
+  let assert Some(security) = web.security
+
+  let expired = security.expired(security)
+  let refresh = security.refresh(security, 30)
+
+  case expired, refresh {
+    // refresh
+    Ok(_), Ok(True) -> {
+      let web = Web(..web, security: None)
+      let assert Ok(Nil) = security.remove(const_storage_jwt)
+      let token = security.to_string(security)
+      let evt = {
+        use dispatch <- effect.from()
+
+        OnRefresh(token)
+        |> on()
+        |> dispatch()
+      }
+
+      #(web, evt)
+    }
+    // expired
+    Ok(exp), Ok(False) if exp <= 0 -> {
+      do_signout(web)
+    }
+    // error
+    Error(_), _ | _, Error(_) -> {
+      do_signout(web)
+    }
+    // no refresh and not expired
+    _, _ -> {
+      #(web, effect.none())
+    }
   }
-
-  #(web, effect.batch([onsecurity, onupdate]))
-}
-
-/// Set onchange uri event.
-///
-/// This uses lib gbr_ui_router.
-///
-/// TODO: FIX the gbr_ui_router.on_change is call twice in setup js events.
-///
-pub fn onchange_uri(onuri) {
-  use dispatch <- effect.from()
-  use uri <- router.on_change(None)
-
-  onuri(uri)
-  |> dispatch
 }
 
 // PRIVATE
@@ -229,8 +249,8 @@ pub fn onchange_uri(onuri) {
 fn new_alert() {
   alert.new(
     "Seja bem-vindo!",
-    "Falcon admin web é o sistema que administra e gerencia "
-      <> "dados referentes ao sistema Horus Falcon",
+    "Web admin é o sistema que administra e gerencia "
+      <> "dados de maneira eficiente!",
   )
   |> alert.info()
 }
@@ -354,44 +374,30 @@ fn do_signout(web) {
 
   #(web, effect.none())
 }
-
-fn security_guard(web: Web, on) {
-  // guard return if none security
-  use <- bool.guard(option.is_none(web.security), #(web, effect.none()))
-
-  // guard security token
-  let assert Some(security) = web.security
-
-  let expired = security.expired(security)
-  let refresh = security.refresh(security, 30)
-
-  case expired, refresh {
-    // refresh
-    Ok(_), Ok(True) -> {
-      let web = Web(..web, security: None)
-      let assert Ok(Nil) = security.remove(const_storage_jwt)
-      let token = security.to_string(security)
-      let evt = {
-        use dispatch <- effect.from()
-
-        OnRefresh(token)
-        |> on()
-        |> dispatch()
-      }
-
-      #(web, evt)
-    }
-    // expired
-    Ok(exp), Ok(False) if exp <= 0 -> {
-      do_signout(web)
-    }
-    // error
-    Error(_), _ | _, Error(_) -> {
-      do_signout(web)
-    }
-    // no refresh and not expired
-    _, _ -> {
-      #(web, effect.none())
-    }
-  }
-}
+// todo as
+// "Dynamic providers and try call default provider when
+// loading error jwt token from localStorage"
+//
+// fn onsecurity(web: Web, on: fn(WebEvent) -> a) -> #(Web, effect.Effect(a)) {
+//   let #(web, onsecurity) = case security_load(web) {
+//     Ok(_) -> {
+//       #(web, effect.none())
+//     }
+//     Error(err) -> {
+//       // log
+//       security.error(err)
+//       |> io.println_error()
+//       // try auth apache mod_msal
+//       let do_msal = {
+//         use dispatch <- effect.from()
+//         OnLogin([#("provider", "microsoft")])
+//         |> on()
+//         |> dispatch()
+//       }
+//       let web = Web(..web, security: None)
+//       #(web, do_msal)
+//     }
+//   }
+//   let web = Web(..web, loading: True)
+//   #(web, onsecurity)
+// }

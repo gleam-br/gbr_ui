@@ -1,5 +1,5 @@
 ////
-//// Falcon admin security module
+//// Security admin module
 ////
 
 import gbr/ui/admin/user
