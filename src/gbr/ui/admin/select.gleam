@@ -321,13 +321,6 @@ fn view_unique(at) {
       |> event.on_change()
     })
     |> option.unwrap(a.none())
-  let evt_oninput =
-    onchange
-    |> option.map(fn(onchange) {
-      onchange(id, _)
-      |> event.on_input
-    })
-    |> option.unwrap(a.none())
   let evt_ontoggle =
     ontoggle
     |> option.map(fn(ontoggle) { event.on_click(ontoggle(False)) })

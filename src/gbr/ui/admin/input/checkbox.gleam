@@ -2,7 +2,7 @@
 //// ✅ Gleam UI input type checkbox super element.
 ////
 
-import gleam/option.{type Option, None, Some}
+import gleam/option.{type Option, None}
 import lustre/event
 
 import lustre/attribute as a
