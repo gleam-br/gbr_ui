@@ -81,13 +81,6 @@ pub fn value(in: Textarea, text: String) -> Textarea {
   UITextarea(..in, el:, text:)
 }
 
-pub fn is_empty(in: Textarea) {
-  el.att_get(in.el, "value")
-  |> option.map(string.to_option)
-  |> option.flatten()
-  |> option.is_none()
-}
-
 /// Set message info to user.
 ///
 /// - in: Textarea
