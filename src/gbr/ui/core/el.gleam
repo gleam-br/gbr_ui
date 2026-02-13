@@ -113,6 +113,7 @@ pub fn new(id: String) -> El {
 ///
 pub fn id(el: El, id: String) -> El {
   UIEl(..el, id:)
+  |> att([#("id", random_str(id))])
 }
 
 /// Replace name attribute element

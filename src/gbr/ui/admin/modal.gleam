@@ -35,14 +35,14 @@ pub const render_slot = modal.render_slot
 
 pub const view = modal.view
 
-pub fn simple(
+pub fn main(
   modal: Modal,
   title: String,
-  content: String,
+  content: UIRenders(a),
   footer: UIRenders(a),
   close: UIRenders(a),
   onclose: a,
-) -> Render(a) {
+) {
   let modal =
     modal
     |> modal.class(
@@ -79,15 +79,25 @@ pub fn simple(
     |> typo.class(
       "mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90 sm:text-title-sm",
     )
+
+  modal.render(modal, onclose)
+  |> modal.render_slot(modal.Content, [], [title |> typo.view(), ..content])
+  |> modal.render_slot(modal.Footer, [], footer)
+  |> modal.render_slot(modal.Close, [], close)
+}
+
+pub fn simple(
+  modal: Modal,
+  title: String,
+  content: String,
+  footer: UIRenders(a),
+  close: UIRenders(a),
+  onclose: a,
+) -> Render(a) {
   let content =
     typo.p(content)
     |> typo.class("text-sm leading-6 text-gray-500 dark:text-gray-400")
+    |> typo.view()
 
-  modal.render(modal, onclose)
-  |> modal.render_slot(modal.Content, [], [
-    title |> typo.view(),
-    content |> typo.view(),
-  ])
-  |> modal.render_slot(modal.Footer, [], footer)
-  |> modal.render_slot(modal.Close, [], close)
+  main(modal, title, [content], footer, close, onclose)
 }
