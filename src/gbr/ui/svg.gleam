@@ -20,6 +20,8 @@ import gbr/ui/svg/core.{
 
 pub const class = core.class
 
+pub const class_append = core.class_append
+
 pub const classes = core.classes
 
 /// Svg super element.

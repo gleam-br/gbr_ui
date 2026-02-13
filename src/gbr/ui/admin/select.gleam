@@ -341,7 +341,8 @@ fn view_unique(at) {
       <> "focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30",
     )
     |> el.attrs()
-    |> list.append([evt_ontoggle, evt_onchange, evt_oninput])
+    |> list.append([evt_ontoggle, evt_onchange])
+  //todo 2x calls evt_oninput])
 
   let transform = fn(placeholder) {
     html.option(

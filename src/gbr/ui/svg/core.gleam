@@ -54,6 +54,12 @@ pub fn class(in: Svg, class: String) -> Svg {
   Svg(..in, el:)
 }
 
+pub fn class_append(in: Svg, class: String) -> Svg {
+  let el = el.class_append(in.el, class)
+
+  Svg(..in, el:)
+}
+
 /// Replace classes
 ///
 pub fn classes(in: Svg, classes: UISwitches) -> Svg {

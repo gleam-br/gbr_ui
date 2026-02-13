@@ -15,6 +15,7 @@ import gleam/int
 import gleam/list
 import gleam/option.{type Option}
 import gleam/pair
+import gleam/string
 
 import lustre/attribute
 
@@ -252,6 +253,13 @@ pub fn att_any_key(el: El, key: String, name: String) -> Bool {
 ///
 pub fn class(el: El, class: String) -> El {
   class_key(el, el.id, class)
+}
+
+pub fn class_append(el: El, class: String) -> El {
+  att_get(el, "class")
+  |> option.map(fn(class_old) { string.join([class_old, class], " ") })
+  |> option.unwrap(class)
+  |> class_key(el, el.id, _)
 }
 
 /// Append if not exists or update class attribute element

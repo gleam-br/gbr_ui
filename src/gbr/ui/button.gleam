@@ -113,11 +113,7 @@ pub fn class(in: Button, class: String) -> Button {
 }
 
 pub fn class_append(in: Button, class: String) -> Button {
-  let el =
-    el.att_get(in.el, "class")
-    |> option.map(fn(class_old) { string.join([class_old, class], " ") })
-    |> option.unwrap(class)
-    |> el.class(in.el, _)
+  let el = el.class_append(in.el, class)
 
   UIButton(..in, el:)
 }
