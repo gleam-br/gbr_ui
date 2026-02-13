@@ -53,6 +53,10 @@ pub fn checked(in: Checkbox, checked: Bool) -> Checkbox {
   UICheckbox(..in, checked:)
 }
 
+pub fn checked_get(in: Checkbox) -> Bool {
+  in.checked
+}
+
 /// Toggle checkbox checked or not.
 ///
 pub fn toggle(in: Checkbox) -> Checkbox {

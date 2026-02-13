@@ -212,7 +212,7 @@ pub fn view(at: Render(a)) -> element.Element(a) {
                 |> list.map(fn(td) {
                   let Column(key, _) = td
 
-                  html.td([], [
+                  html.td([attribute.class("px-1")], [
                     // fn view_data from get_data
                     column
                     |> option.map(fn(column) { column(id, key) })

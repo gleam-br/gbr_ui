@@ -1,5 +1,5 @@
 name = "gbr_ui"
-version = "1.0.2-alpha+017"
+version = "1.0.2-alpha+018"
 target = "javascript"
 
 description = "🎨 Gleam UI lustre library by @gleam-br"

@@ -167,9 +167,9 @@ pub fn error(err: rsvp.Error) -> String {
       <> "\nThis error can happen when the HTTP request fails to connect to the "
       <> "server or there is some other connectivity issue."
     rsvp.HttpError(r) ->
-      "HTTP Error status="
+      "HTTP Error status ["
       <> int.to_string(r.status)
-      <> "\nThis error can happen when the HTTP response status code is not in "
+      <> "]\nThis error can happen when the HTTP response status code is not in "
       <> "the 2xx range but a handler expected it to be."
     rsvp.UnhandledResponse(r) ->
       "Unhandled Response status="

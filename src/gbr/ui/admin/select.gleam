@@ -149,8 +149,9 @@ pub fn toggle(in: Select) -> Select {
 /// Set selected option by value
 ///
 ///
-pub fn selected(in: Select, value: String) -> Select {
+pub fn selected(in: Select, value: Option(String)) -> Select {
   let UISelect(options:, multi:, ..) = in
+  let value = option.unwrap(value, "")
   let options = options_select(options, value, multi)
 
   UISelect(..in, options:)
