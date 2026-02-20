@@ -39,7 +39,7 @@ type Render(a) =
   LoginPageRender(a)
 
 type Event =
-  LoginFormEvent
+  LoginPageEvent
 
 ///
 ///
@@ -54,7 +54,7 @@ pub opaque type LoginPage {
   )
 }
 
-pub type LoginFormEvent {
+pub type LoginPageEvent {
   OnKeepLogin
   OnPasswordVisible
 }
@@ -152,12 +152,13 @@ pub fn update(in: Login, evt: Event) -> Login {
 const const_class_login_provider = "inline-flex items-center justify-center gap-3 rounded-lg bg-gray-100 px-7 py-3 text-sm font-normal text-gray-700 transition-colors hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10"
 
 fn hero_logo_render(logotype: logo.UILogo) {
+  // todo: make grid.svg dynamic in parameter function
   let logo = [html.img([a.src("/grid-01.svg")])]
   let inner = [
     logo.view(logotype),
     html.p([a.class("text-center text-gray-400 dark:text-white/60")], [
       html.text(
-        "Bem-vindo ao Sistema Administrador Horus, faça seu login para acessar o painel.",
+        "Bem-vindo ao Sistema Administrador, faça seu login para acessar o painel.",
       ),
     ]),
   ]

@@ -118,7 +118,7 @@ pub fn send(
   decoder: decode.Decoder(a),
 ) -> effect.Effect(b) {
   let Api(uri:, path:, query:, method:, headers:, body:) = in
-  let handler = rsvp.expect_json(decoder, ondata)
+  let handler = rsvp.expect_json(decoder, fn(a) { ondata(a) })
 
   send_(uri, path, query, method, body, headers, handler)
 }

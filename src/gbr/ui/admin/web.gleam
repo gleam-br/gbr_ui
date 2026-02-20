@@ -15,7 +15,7 @@ import lustre/effect
 import gbr/js/darkmode
 import gbr/js/jsglobal
 
-import gbr/ui/api.{type Api}
+import gbr/ui/api
 import gbr/ui/router
 
 import gbr/ui/admin/alert
@@ -28,22 +28,30 @@ import gbr/ui/admin/user/dropdown
 //
 const const_storage_jwt = "auth/token"
 
-type DarkInfo =
-  darkmode.BrowserDarkMode
-
-type Alert =
-  alert.UIAlert
+type Api =
+  api.Api
 
 type ApiError =
   rsvp.Error
 
+type Alert =
+  alert.UIAlert
+
+type DarkInfo =
+  darkmode.BrowserDarkMode
+
 type LoginEvent =
-  login.LoginFormEvent
+  login.LoginPageEvent
 
 type HomeEvent =
   home.HomePageEvent
 
 /// Web model type to start
+///
+/// - selector: DOM selector element to start lustre lifecycle.
+/// - alert: Main alert element in web admin (global use case).
+/// - api: Api type instance loading options from `.env` or SO env vars.
+/// - darkinfo: Dark info type instance uses to manager dark/light events.
 ///
 pub opaque type WebStart {
   WebStart(selector: String, alert: Alert, api: Api, darkinfo: DarkInfo)
@@ -51,14 +59,26 @@ pub opaque type WebStart {
 
 /// Web model type running
 ///
+/// - selector: DOM selector element to start lustre lifecycle.
+/// - api: Api type instance loading options from `.env` or SO env vars.
+/// - alert: Main alert element in web admin (global use case).
+/// - darkinfo: Dark info type instance uses to manager dark/light events.
+/// - home: Home page admin type instance.
+/// - login: Login page admin type instance.
+/// - security: Security type instance, manage auth token and user session.
+/// - uri: Current location uri.
+/// - loading: If web admin is loading.
+/// - user_dropdown: User dropdown list, on user logged in show in home header.
+/// TODO: Alternatives to set user dropdown, after remove it here
+///
 pub type Web {
   Web(
     selector: String,
     api: Api,
-    home: home.HomePage,
-    login: login.LoginPage,
     alert: Alert,
     darkinfo: DarkInfo,
+    home: home.HomePage,
+    login: login.LoginPage,
     security: Option(security.Security),
     uri: Option(uri.Uri),
     loading: Bool,
@@ -69,13 +89,22 @@ pub type Web {
 
 /// Web event type
 ///
+/// - OnDarkMode: Switch dark/light mode.
+/// - OnAlert: Switch alert visible.
+/// - OnLogin: On click submit login form.
+/// - OnRefresh: On token needs refresh yourself.
+/// - OnAuth: On authentication result from login, new security or error.
+/// - OnLoginPage: On login page events, like `on keep me logged in` and more controls.
+/// - OnHomePage: On home page events, like `select menu when click it`,
+/// `show content page when change uri` and more.
+///
 pub type WebEvent {
   OnDarkMode
   OnAlert(Bool)
   OnLogin(List(#(String, String)))
   OnRefresh(String)
   OnAuth(Result(String, ApiError))
-  OnLoginForm(LoginEvent)
+  OnLoginPage(LoginEvent)
   OnHomePage(HomeEvent)
 }
 
@@ -125,7 +154,38 @@ pub fn start(web: WebStart, init, update, view) -> lustre.Runtime(a) {
   runtime
 }
 
+/// Lustre init flow
+///
+/// - web: Web admin type instance.
+/// - oncontent: On change uri then call this event.
+///
+pub fn init(web: Web, oncontent: fn(uri.Uri) -> a) -> #(Web, effect.Effect(a)) {
+  let web = case security_load(web) {
+    Ok(web) -> {
+      let assert Some(security) = web.security
+      let home =
+        Some(security)
+        |> security.to_user(web.user_dropdown)
+        |> home.user(web.home, _)
+      let api =
+        security.to_string(security)
+        |> api.authorization(web.api, _)
+
+      Web(..web, api:, home:)
+    }
+    Error(_) -> {
+      web
+    }
+  }
+
+  #(web, onchange_uri(oncontent))
+}
+
 /// Lustre update flow
+///
+/// - web: Web admin type instance.
+/// - event: Web admin event type instance.
+/// - on: Convert web admin event to your event type.
 ///
 pub fn update(
   web: Web,
@@ -139,7 +199,7 @@ pub fn update(
     OnDarkMode -> do_dark_mode_toggle(web)
     OnAlert(open) -> do_alert_open_toggle(web, open)
     // login
-    OnLoginForm(evt) -> do_login_form_update(web, evt)
+    OnLoginPage(evt) -> do_login_form_update(web, evt)
     OnAuth(auth) -> do_auth(web, auth, on)
     // home
     OnHomePage(home.OnUserDropdownClick("signout")) -> do_signout(web)
@@ -156,7 +216,7 @@ pub fn update(
 /// Set onchange uri event.
 ///
 /// This uses lib gbr_ui_router.
-/// TODO maybe private fn here
+/// TODO: maybe private fn here
 ///
 pub fn onchange_uri(onuri) {
   use dispatch <- effect.from()
@@ -170,7 +230,6 @@ pub fn onchange_uri(onuri) {
 ///
 /// - web: Web type instance.
 /// - dropdown: User dropdown to logged in session.
-///
 /// TODO search alternatives to this
 ///
 pub fn user_dropdown(web: Web, dropdown: dropdown.UIDropdown) -> Web {
@@ -185,14 +244,14 @@ pub fn security_load(web: Web) -> Result(Web, security.SecurityError) {
   const_storage_jwt
   |> security.load()
   |> result.map(fn(security) {
-    let api =
-      security.to_string(security)
-      |> api.authorization(web.api, _)
     let home =
       security
       |> Some()
       |> security.to_user(web.user_dropdown)
       |> home.user(web.home, _)
+    let api =
+      security.to_string(security)
+      |> api.authorization(web.api, _)
 
     Web(..web, api:, home:, security: Some(security))
   })
@@ -246,6 +305,8 @@ pub fn security_guard(web: Web, on) {
 // PRIVATE
 //
 
+/// New main alert element
+///
 fn new_alert() {
   alert.new(
     "Seja bem-vindo!",
@@ -253,6 +314,20 @@ fn new_alert() {
       <> "dados de maneira eficiente!",
   )
   |> alert.info()
+}
+
+/// Show main alert
+///
+/// - duration: Option int
+///
+fn show_alert(duration: Option(Int), on) {
+  let alert_open = alert_onopen(on)
+  let alert_close =
+    duration
+    |> alert_duration()
+    |> alert_onclose(on)
+
+  effect.batch([alert_open, alert_close])
 }
 
 fn alert_duration(duration) {
@@ -287,26 +362,11 @@ fn alert_onclose(duration, on: fn(WebEvent) -> a) -> effect.Effect(a) {
   Nil
 }
 
-/// Show main alert
-///
-/// - duration: Option int
-///
-fn show_alert(duration: Option(Int), on) {
-  let alert_open = alert_onopen(on)
-  let alert_close =
-    duration
-    |> alert_duration()
-    |> alert_onclose(on)
-
-  effect.batch([alert_open, alert_close])
-}
-
-///
+/// Auth return process store token or errors.
 ///
 fn do_auth(web: Web, auth, on) {
   case auth {
     Ok(token) -> {
-      let api = api.authorization(web.api, token)
       let security =
         security.persist(token, const_storage_jwt)
         |> option.from_result()
@@ -314,6 +374,7 @@ fn do_auth(web: Web, auth, on) {
         security
         |> security.to_user(web.user_dropdown)
         |> home.user(web.home, _)
+      let api = api.authorization(web.api, token)
       let web =
         Web(..web, api:, home:, security:, alert: new_alert(), loading: False)
 

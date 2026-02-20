@@ -17,7 +17,7 @@ import lustre/element/html
 
 import gbr/ui/admin/pages/domain
 
-type Page(a) =
+pub type Page(a) =
   domain.UIPage(a)
 
 pub type Pages(a) =
