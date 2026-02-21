@@ -91,14 +91,18 @@ pub fn open(in: Modal, open: Bool) -> Modal {
   UIModal(..in, open:)
 }
 
-pub fn render(in: Modal, onclose: a) -> Render(a) {
+pub fn render(in: Modal) -> Render(a) {
+  UIModalRender(in:, render: render.new(in.el))
+}
+
+pub fn onclose(at: Render(a), onclose) {
   let render =
-    render.new(in.el)
+    at.render
     |> render.attributes_key(const_modal_close_id, [
       event.on_click(onclose),
     ])
 
-  UIModalRender(in:, render:)
+  UIModalRender(..at, render:)
 }
 
 pub fn render_slot(

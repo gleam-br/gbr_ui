@@ -248,7 +248,7 @@ fn login_form_render(in, onform, onsubmit) {
       username,
       password,
       links,
-      submit,
+      html.div([a.class("flex justify-end")], [submit]),
     ])
 
   let onsubmit =
