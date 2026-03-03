@@ -55,7 +55,7 @@ pub opaque type LoginPage {
 }
 
 pub type LoginPageEvent {
-  OnKeepLogin
+  OnKeepLogin(Bool)
   OnPasswordVisible
 }
 
@@ -141,7 +141,8 @@ pub fn view(at: Render(a)) -> element.Element(a) {
 
 pub fn update(in: Login, evt: Event) -> Login {
   case evt {
-    OnKeepLogin -> LoginPage(..in, keep_login: checkbox.toggle(in.keep_login))
+    OnKeepLogin(checked) ->
+      LoginPage(..in, keep_login: checkbox.checked(in.keep_login, checked))
     OnPasswordVisible -> LoginPage(..in, passwd_visible: !in.passwd_visible)
   }
 }
@@ -223,8 +224,10 @@ fn login_form_render(in, onform, onsubmit) {
   }
   let onkeeplogin =
     option.map(onform, fn(onform) {
-      OnKeepLogin
-      |> onform()
+      fn(checked) {
+        OnKeepLogin(checked)
+        |> onform()
+      }
     })
   let keep_login =
     keep_login

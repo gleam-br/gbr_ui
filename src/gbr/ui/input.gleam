@@ -82,6 +82,24 @@ pub fn password(id: String) -> Input {
   new(id, "password")
 }
 
+/// New input type date super element.
+///
+pub fn date(id: String) -> Input {
+  new(id, "date")
+}
+
+/// New input type time super element.
+///
+pub fn time(id: String) -> Input {
+  new(id, "time")
+}
+
+/// New input type datetime super element.
+///
+pub fn datetime(id: String) -> Input {
+  new(id, "datetime-local")
+}
+
 /// New input type checkbox super element.
 ///
 pub fn checkbox(id: String) -> Input {
@@ -361,11 +379,11 @@ pub fn view(at: Render(a)) -> UIRender(a) {
   let input = html.input(attrs)
 
   // if has note or inner elements
-  let input = case note, inner {
-    None, [] -> html.div([], [label, input])
-    None, inner -> html.div([a.class("relative")], [label, input, ..inner])
+  case note, inner {
+    None, [] -> html.fieldset([], [label, input])
+    None, inner -> html.fieldset([a.class("relative")], [label, input, ..inner])
     Some(note), inner ->
-      html.div([], [
+      html.fieldset([], [
         label,
         input,
         html.div([a.class("relative flex")], [
@@ -374,9 +392,6 @@ pub fn view(at: Render(a)) -> UIRender(a) {
         ]),
       ])
   }
-
-  // label and input
-  html.div([], [input])
 }
 
 // PRIVATE

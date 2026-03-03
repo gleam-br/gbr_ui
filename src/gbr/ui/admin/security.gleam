@@ -2,14 +2,11 @@
 //// Security admin module
 ////
 
-import gbr/ui/admin/user
-import gbr/ui/admin/user/dropdown
 import gleam/bool
 import gleam/dict
 import gleam/dynamic/decode
 import gleam/float
-import gleam/function
-import gleam/option.{type Option, None, Some}
+import gleam/io
 import gleam/order
 import gleam/result
 import gleam/time/duration
@@ -18,7 +15,7 @@ import gleam/time/timestamp
 import gbr/js/jsstorage as storage
 import gbr/shared/jwt
 
-pub opaque type SecurityError {
+pub type SecurityError {
   ErrorExpired
   LoadError(String)
   PersistError(String)
@@ -205,14 +202,18 @@ pub fn permissions(in: Security) -> Result(Permissions, SecurityError) {
 
 /// Is jwt subject owner matching user arg
 ///
-pub fn is_owner(in: Security, user: String) -> Result(Bool, SecurityError) {
+pub fn is_owner(in: Security, user: String) -> Bool {
   let Security(jwt) = in
 
-  use sub <- result.map(
-    jwt.get_subject(jwt)
-    |> result.map_error(DecodeError),
-  )
-  sub == user
+  {
+    use sub <- result.map(
+      jwt.get_subject(jwt)
+      |> result.map_error(DecodeError),
+    )
+    sub == user
+  }
+  |> result.map_error(fn(err) { io.println_error(error(err)) })
+  |> result.unwrap(False)
 }
 
 /// Translate error to string
@@ -249,46 +250,4 @@ pub fn claim(
   jwt
   |> jwt.get_payload_claim(key, decode)
   |> result.map_error(DecodeError)
-}
-
-/// New user from security token jwt info
-///
-/// - in: Security jwt info
-///
-pub fn to_user(
-  in: Option(Security),
-  dropdown: Option(dropdown.UIDropdown),
-) -> user.UIUser {
-  let user = user.new("user", "")
-
-  case in {
-    None -> user
-    Some(in) -> {
-      let username =
-        subject(in)
-        |> result.unwrap("")
-      let email =
-        mail(in)
-        |> result.unwrap("")
-      let department =
-        department(in)
-        |> result.unwrap("")
-      let name =
-        name(in)
-        |> result.unwrap("")
-
-      user
-      |> user.username(username)
-      |> user.email(email)
-      |> user.department(department)
-      |> user.name_full(name)
-      // TODO
-      |> user.picture("/profile.png")
-      |> user.dropdown(
-        dropdown
-        |> option.map(function.identity)
-        |> option.unwrap(dropdown.new(False)),
-      )
-    }
-  }
 }

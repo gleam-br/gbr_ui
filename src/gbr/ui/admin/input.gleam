@@ -24,6 +24,12 @@ pub const email = input.email
 
 pub const checkbox = input.checkbox
 
+pub const date = input.date
+
+pub const time = input.time
+
+pub const datetime = input.datetime
+
 pub const value = input.value
 
 pub const name = input.name
@@ -49,6 +55,8 @@ pub const inner_class = input.inner_class
 pub const inner_onclick = input.inner_onclick
 
 pub const render = input.render
+
+pub const oninput = input.oninput
 
 pub const view = input.view
 
@@ -98,7 +106,7 @@ pub fn password(in: Input, open: Bool) -> Input {
   |> input.kind(type_)
   |> input.disabled(False)
   |> class(
-    "dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 "
+    "shadow-theme-xs focus:border-brand-300 "
     <> "focus:ring-brand-500/10 dark:focus:border-brand-800 "
     <> "h-10 w-full rounded-lg border border-gray-300 bg-transparent "
     <> "py-2.5 pl-4 pr-10 text-sm text-gray-800 placeholder:text-gray-400 "
@@ -106,7 +114,7 @@ pub fn password(in: Input, open: Bool) -> Input {
     <> "dark:text-white/90 dark:placeholder:text-white/30",
   )
   |> inner_class(
-    "absolute top-9 right-4 z-30 cursor-pointer text-gray-500 dark:text-gray-400",
+    "absolute top-11 right-4 z-30 cursor-pointer text-gray-500 dark:text-gray-400",
   )
   |> label_class(
     "mt-2.5 mb-1 block text-sm font-medium text-gray-700 dark:text-gray-400",
@@ -125,6 +133,8 @@ pub fn alert(in: Input, text: String) -> Input {
 pub fn error(in: Input, text: String) -> Input {
   state_set(in, text, state_error_class, state_error_label, form.error)
 }
+
+pub const disabled_only = input.disabled
 
 pub fn disabled(in: Input, text: String) -> Input {
   in

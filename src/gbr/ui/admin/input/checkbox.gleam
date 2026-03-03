@@ -32,7 +32,7 @@ pub opaque type UICheckbox {
 /// Checkbox render type.
 ///
 pub type UICheckboxRender(a) {
-  UICheckboxRender(in: Checkbox, onclick: Option(a), checked: Bool)
+  UICheckboxRender(in: Checkbox, onclick: Option(fn(Bool) -> a), checked: Bool)
 }
 
 /// New checkbox super element.
@@ -81,7 +81,7 @@ pub fn render(in: Checkbox) -> Render(a) {
 
 /// Set checkbox render onclick event.
 ///
-pub fn onclick(at: Render(a), onclick: Option(a)) -> Render(a) {
+pub fn onclick(at: Render(a), onclick: Option(fn(Bool) -> a)) -> Render(a) {
   UICheckboxRender(..at, onclick:)
 }
 
@@ -93,7 +93,10 @@ pub fn view(at: Render(a)) -> Element(a) {
 
   let onclick =
     onclick
-    |> option.map(event.on_click)
+    |> option.map(fn(myonclick) {
+      myonclick(!checked)
+      |> event.on_click()
+    })
     |> option.unwrap(a.none())
 
   html.div([], [

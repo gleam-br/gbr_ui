@@ -39,12 +39,14 @@
 import gleam/list
 import gleam/option.{type Option, None, Some}
 
-import lustre/attribute
-import lustre/element/html
+import lustre/attribute as a
+import lustre/element/html as h
 import lustre/event
 
 import gbr/ui/core/el
-import gbr/ui/core/model.{type UIRender, type UIRenders, type UISwitches}
+import gbr/ui/core/model.{
+  type UIAttrs, type UIRender, type UIRenders, type UISwitches,
+}
 import gbr/ui/core/render
 
 // Alias
@@ -149,7 +151,7 @@ pub fn render_left(in: Button, inner: UIRenders(a)) -> Render(a) {
   let UIButton(text:, ..) = in
 
   let inner = case text {
-    Some(text) -> list.append(inner, [html.text(text)])
+    Some(text) -> list.append(inner, [h.text(text)])
     None -> inner
   }
   let render =
@@ -164,7 +166,7 @@ pub fn render_left(in: Button, inner: UIRenders(a)) -> Render(a) {
 pub fn render_right(in: Button, inner: UIRenders(a)) -> Render(a) {
   let UIButton(text:, ..) = in
   let inner = case text {
-    Some(text) -> [html.text(text), ..inner]
+    Some(text) -> [h.text(text), ..inner]
     None -> inner
   }
   let render =
@@ -179,7 +181,7 @@ pub fn render_right(in: Button, inner: UIRenders(a)) -> Render(a) {
 pub fn render(in: Button, inner: UIRenders(a)) -> Render(a) {
   let UIButton(text:, ..) = in
   let inner = case text {
-    Some(text) -> [html.text(text), ..inner]
+    Some(text) -> [h.text(text), ..inner]
     None -> inner
   }
   let render =
@@ -207,8 +209,8 @@ pub fn view(at: Render(a)) -> UIRender(a) {
   let #(attrs, inner) =
     render
     |> render.attributes([
-      attribute.disabled(disabled),
-      attribute.classes([
+      a.disabled(disabled),
+      a.classes([
         #("px-4 py-3", size == Some(Md)),
         #("px-5 py-3.5", size == Some(Lg)),
         #("px-0 py-0", size == Some(Sm)),
@@ -216,5 +218,17 @@ pub fn view(at: Render(a)) -> UIRender(a) {
     ])
     |> render.views()
 
-  html.button(attrs, inner)
+  h.button(attrs, inner)
+}
+
+pub fn grouped(
+  buttons: List(#(UIAttrs(a), Render(a))),
+  attrs: UIAttrs(a),
+) -> UIRender(a) {
+  buttons
+  |> list.map(fn(btn) {
+    let #(attrs, btn) = btn
+    h.div(attrs, [view(btn)])
+  })
+  |> h.div(attrs, _)
 }

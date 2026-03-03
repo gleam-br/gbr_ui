@@ -1,5 +1,5 @@
 ////
-////
+//// UI button super element.
 ////
 
 import gleam/option.{type Option, None, Some}
@@ -7,6 +7,8 @@ import gleam/option.{type Option, None, Some}
 import gbr/ui/button
 import gbr/ui/svg
 import gbr/ui/svg/icons as svg_icons
+
+import gbr/ui/admin/button/grouped
 
 import gbr/ui/core/model.{type UIRender, type UIRenders}
 
@@ -43,6 +45,12 @@ pub const onclick = button.onclick
 
 pub const view = button.view
 
+pub const grouped_primary = grouped.primary
+
+pub const grouped_secondary = grouped.secondary
+
+pub const grouped_terciary = grouped.terciary
+
 pub type UIButton =
   button.UIButton
 
@@ -73,6 +81,21 @@ pub fn tertiary(in: Button) -> Button {
   class(in, const_tertiary_class)
 }
 
+const const_flat_class = "text-theme-sm h-10 rounded-md px-3 py-2 font-medium hover:text-gray-900 dark:hover:text-white"
+
+/// Set button flat behavior.
+///
+pub fn flat(in: Button, selected: Bool) -> Button {
+  class(in, const_flat_class)
+  |> classes([
+    #("text-gray-500 dark:text-gray-400", !selected),
+    #(
+      "shadow-theme-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800",
+      selected,
+    ),
+  ])
+}
+
 /// View button refresh with icon and animation.
 ///
 /// - id: Id button.
@@ -87,7 +110,7 @@ pub fn refresh(id: String, loading: Bool, onclick_: a) -> UIRender(a) {
     |> svg.classes([#("animate-spin", loading)])
     |> svg.view()
   let class_ =
-    "flex h-10 w-full max-w-10 items-center justify-center rounded-lg border "
+    "flex h-10 w-10 max-w-10 items-center justify-center rounded-lg border "
     <> "border-gray-200 text-gray-500 transition-colors hover:bg-gray-100 "
     <> "hover:text-gray-700 dark:border-gray-800 dark:text-gray-400 "
     <> "dark:hover:bg-gray-800 dark:hover:text-white"
@@ -231,7 +254,6 @@ pub fn app_nav(id: String, open: Bool, onclick: Option(a)) -> UIRender(a) {
   |> view()
 }
 
-/// TODO put size here
 pub fn loading(id: String) {
   let inner = [
     svg.new(20, 20)

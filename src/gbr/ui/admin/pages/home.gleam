@@ -8,12 +8,12 @@ import lustre/effect
 import lustre/element
 
 import gbr/ui
+import gbr/ui/admin/user
 import gbr/ui/logo
 
 import gbr/ui/admin/header
 import gbr/ui/admin/sidebar
 import gbr/ui/admin/sidebar/menu
-import gbr/ui/admin/user
 
 // Alias
 //
@@ -35,9 +35,6 @@ type Update(a) =
 
 type Logo =
   logo.UILogo
-
-type User =
-  user.UIUser
 
 type Menu =
   menu.UISidebarMenu
@@ -125,7 +122,7 @@ pub fn logo(in: HomePage, logo: Logo) {
 
 /// Set user element info to home page
 ///
-pub fn user(in: Home, user: User) -> Home {
+pub fn user(in: Home, user: Option(user.UIUser)) -> Home {
   let header = header.user(in.header, user)
 
   HomePage(..in, header:)

@@ -22,7 +22,6 @@ import gbr/ui/admin/alert
 import gbr/ui/admin/pages/home
 import gbr/ui/admin/pages/login
 import gbr/ui/admin/security
-import gbr/ui/admin/user/dropdown
 
 // Alias
 //
@@ -83,7 +82,6 @@ pub type Web {
     uri: Option(uri.Uri),
     loading: Bool,
     keep_logged: Bool,
-    user_dropdown: Option(dropdown.UIDropdown),
   )
 }
 
@@ -144,7 +142,6 @@ pub fn start(web: WebStart, init, update, view) -> lustre.Runtime(a) {
       security: None,
       loading: False,
       keep_logged: False,
-      user_dropdown: None,
     )
 
   let assert Ok(runtime) =
@@ -152,33 +149,6 @@ pub fn start(web: WebStart, init, update, view) -> lustre.Runtime(a) {
     |> lustre.start(web.selector, web)
 
   runtime
-}
-
-/// Lustre init flow
-///
-/// - web: Web admin type instance.
-/// - oncontent: On change uri then call this event.
-///
-pub fn init(web: Web, oncontent: fn(uri.Uri) -> a) -> #(Web, effect.Effect(a)) {
-  let web = case security_load(web) {
-    Ok(web) -> {
-      let assert Some(security) = web.security
-      let home =
-        Some(security)
-        |> security.to_user(web.user_dropdown)
-        |> home.user(web.home, _)
-      let api =
-        security.to_string(security)
-        |> api.authorization(web.api, _)
-
-      Web(..web, api:, home:)
-    }
-    Error(_) -> {
-      web
-    }
-  }
-
-  #(web, onchange_uri(oncontent))
 }
 
 /// Lustre update flow
@@ -226,35 +196,15 @@ pub fn onchange_uri(onuri) {
   |> dispatch
 }
 
-/// Set user dropdown element, when is logged in.
-///
-/// - web: Web type instance.
-/// - dropdown: User dropdown to logged in session.
-/// TODO search alternatives to this
-///
-pub fn user_dropdown(web: Web, dropdown: dropdown.UIDropdown) -> Web {
-  Web(..web, user_dropdown: Some(dropdown))
-}
-
 /// Load security token from local storage.
 ///
+/// This function not load user information, see in `web.home.user`.
+///
 /// - web: Web type instance.
 ///
-pub fn security_load(web: Web) -> Result(Web, security.SecurityError) {
+pub fn security_load() -> Result(security.Security, security.SecurityError) {
   const_storage_jwt
   |> security.load()
-  |> result.map(fn(security) {
-    let home =
-      security
-      |> Some()
-      |> security.to_user(web.user_dropdown)
-      |> home.user(web.home, _)
-    let api =
-      security.to_string(security)
-      |> api.authorization(web.api, _)
-
-    Web(..web, api:, home:, security: Some(security))
-  })
 }
 
 /// Guard security token if expires and/or needs refresh and/or invalid one logout user.
@@ -302,6 +252,20 @@ pub fn security_guard(web: Web, on) {
   }
 }
 
+/// Show main alert
+///
+/// - duration: Option int
+///
+pub fn show_alert(on, duration: Option(Int)) {
+  let alert_open = alert_onopen(on)
+  let alert_close =
+    duration
+    |> alert_duration()
+    |> alert_onclose(on)
+
+  effect.batch([alert_open, alert_close])
+}
+
 // PRIVATE
 //
 
@@ -314,20 +278,6 @@ fn new_alert() {
       <> "dados de maneira eficiente!",
   )
   |> alert.info()
-}
-
-/// Show main alert
-///
-/// - duration: Option int
-///
-fn show_alert(duration: Option(Int), on) {
-  let alert_open = alert_onopen(on)
-  let alert_close =
-    duration
-    |> alert_duration()
-    |> alert_onclose(on)
-
-  effect.batch([alert_open, alert_close])
 }
 
 fn alert_duration(duration) {
@@ -367,29 +317,29 @@ fn alert_onclose(duration, on: fn(WebEvent) -> a) -> effect.Effect(a) {
 fn do_auth(web: Web, auth, on) {
   case auth {
     Ok(token) -> {
-      let security =
-        security.persist(token, const_storage_jwt)
-        |> option.from_result()
-      let home =
-        security
-        |> security.to_user(web.user_dropdown)
-        |> home.user(web.home, _)
+      let assert Ok(security) = security.persist(token, const_storage_jwt)
+
+      let alert = new_alert()
       let api = api.authorization(web.api, token)
       let web =
-        Web(..web, api:, home:, security:, alert: new_alert(), loading: False)
+        Web(..web, api:, alert:, security: Some(security), loading: False)
 
+      // This dispatch onchangeuri
       let assert Ok(Nil) = router.replace("/home")
 
-      #(web, show_alert(Some(10), on))
+      #(web, show_alert(on, Some(10)))
     }
     Error(err) -> {
       let alert =
         web.alert
         |> alert.error()
-        |> alert.title("Erro de Autenticação")
+        |> alert.title("Erro: Autenticação")
         |> alert.content(api.error(err))
 
-      #(Web(..web, alert:, loading: False), show_alert(None, on))
+      // This dispatch onchangeuri
+      let assert Ok(Nil) = router.replace("/login")
+
+      #(Web(..web, alert:, loading: False), show_alert(on, None))
     }
   }
 }

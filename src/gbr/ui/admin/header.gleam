@@ -83,8 +83,8 @@ pub fn logo(in: Header, logo: Logo) -> Header {
 
 /// Set header user
 ///
-pub fn user(in: Header, user: User) -> Header {
-  UIHeader(..in, user: Some(user))
+pub fn user(in: Header, user: Option(User)) -> Header {
+  UIHeader(..in, user: user)
 }
 
 /// Toggle mobile screen

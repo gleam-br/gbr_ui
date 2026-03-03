@@ -11,7 +11,7 @@ import gleam/option.{type Option, None, Some}
 import gleam/string
 
 import lustre/attribute as a
-import lustre/element
+import lustre/element as e
 import lustre/element/html
 import lustre/event
 
@@ -108,7 +108,14 @@ pub fn option(value: String, text: String) -> Item {
 
 /// Set select title
 ///
-pub fn label(in: Select, label: Text) -> Select {
+pub fn label(in: Select, label: String) -> Select {
+  let assert Some(id) = el.att_get(in.el, "id")
+  let label =
+    typo.label(id, label)
+    |> typo.class(
+      "mt-2.5 mb-1 block text-sm font-medium text-gray-700 dark:text-gray-400",
+    )
+
   UISelect(..in, label: Some(label))
 }
 
@@ -256,23 +263,23 @@ pub fn new_options(options: Options) {
   )
 }
 
-pub fn new_label(id, label) {
-  let transform = fn(label) {
-    html.label(
-      [
-        a.for(id),
-        a.class(
-          "mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400",
-        ),
-      ],
-      [typo.view(label)],
-    )
-  }
+// fn new_label(name, label) {
+//   let transform = fn(label) {
+//     html.label(
+//       [
+//         a.for(name),
+//         a.class(
+//           "mt-2.5 mb-1 block text-sm font-medium text-gray-700 dark:text-gray-400",
+//         ),
+//       ],
+//       [typo.view(label)],
+//     )
+//   }
 
-  label
-  |> option.map(transform)
-  |> option.unwrap(element.none())
-}
+//   label
+//   |> option.map(transform)
+//   |> option.unwrap(element.none())
+// }
 
 /// Filter select options, options, by selected
 ///
@@ -335,8 +342,6 @@ fn view_unique(at) {
     )
     |> el.attrs()
     |> list.append([evt_ontoggle, evt_onchange])
-  //todo 2x calls evt_oninput])
-
   let transform = fn(placeholder) {
     html.option(
       [
@@ -350,34 +355,30 @@ fn view_unique(at) {
     )
   }
 
-  let id = el.id_get(el)
-  let label = new_label(id, label)
   let options = new_options(options)
   let placeholder =
     el.att_get(el, "placeholder")
     |> option.map(transform)
-    |> option.unwrap(element.none())
+    |> option.unwrap(e.none())
 
-  html.div([], [
-    label,
-    html.div([a.class("relative z-20 bg-transparent")], [
-      html.select(attrs, [placeholder, ..options]),
-      html.span(
-        [
-          a.class(
-            "pointer-events-none absolute top-1/2 right-4 z-30 -translate-y-1/2 text-gray-700 dark:text-gray-400",
-          ),
-        ],
-        [
-          svg.new(24, 24)
-          |> svg_icons.arrow()
-          |> svg.class(
-            "h-5 w-5 shrink-0 text-gray-500 transition-transform dark:text-gray-400 stroke-current",
-          )
-          |> svg.view(),
-        ],
-      ),
-    ]),
+  html.div([a.class("relative z-20 bg-transparent")], [
+    label |> option.map(typo.view) |> option.unwrap(e.none()),
+    html.select(attrs, [placeholder, ..options]),
+    html.span(
+      [
+        a.class(
+          "pointer-events-none absolute pt-10 right-4 z-30 -translate-y-1/2 text-gray-700 dark:text-gray-400",
+        ),
+      ],
+      [
+        svg.new(24, 24)
+        |> svg_icons.arrow()
+        |> svg.class(
+          "h-5 w-5 shrink-0 text-gray-500 transition-transform dark:text-gray-400 stroke-current",
+        )
+        |> svg.view(),
+      ],
+    ),
   ])
 }
 
@@ -399,7 +400,6 @@ fn view_multi(at: Render(a)) {
   let UISelect(el:, options:, label:, open:, ..) = in
 
   let id = el.id_get(el)
-  let label = new_label(id, label)
   let options_selected_empty =
     options_filter_by_selected_is_empty(options, True)
   let placeholder =
@@ -428,7 +428,7 @@ fn view_multi(at: Render(a)) {
     |> string.join(",")
 
   html.div([], [
-    label,
+    label |> option.map(typo.view) |> option.unwrap(e.none()),
     html.div([a.class("relative"), onmouseleave], [
       // form select hidden values
       //
@@ -479,14 +479,17 @@ fn view_multi(at: Render(a)) {
       html.div(
         [
           a.class(
-            "absolute z-999 w-full overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900",
+            "absolute w-full overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900",
           ),
           a.style("max-height", "16rem"),
           a.classes([#("hidden", !open)]),
         ],
         [
           html.div(
-            [a.class("overflow-y-auto"), a.style("max-height", "16rem")],
+            [
+              a.class("overflow-y-auto"),
+              a.style("max-height", "16rem"),
+            ],
             options_not_selected(id, options, onchange),
           ),
         ],
@@ -502,7 +505,7 @@ fn options_selected(
   id,
   options: Options,
   onchange: Option(fn(String, String) -> a),
-) -> List(element.Element(a)) {
+) -> List(e.Element(a)) {
   use item <- list.map(options_filter_by_selected(options, True))
 
   let onchange =
@@ -548,7 +551,7 @@ fn options_not_selected(
   id,
   options: Options,
   onchange: Option(fn(String, String) -> a),
-) -> List(element.Element(a)) {
+) -> List(e.Element(a)) {
   use item <- list.map(options_filter_by_selected(options, False))
 
   let onchange =
@@ -580,7 +583,7 @@ fn options_not_selected(
 
 fn new_placeholder(placeholder: Option(String), options_selected_empty: Bool) {
   // x-show=selected == 0
-  use <- bool.guard(!options_selected_empty, element.none())
+  use <- bool.guard(!options_selected_empty, e.none())
 
   let transform = fn(placeholder) {
     html.span([a.class("text-sm text-gray-500 dark:text-gray-400")], [
@@ -590,5 +593,5 @@ fn new_placeholder(placeholder: Option(String), options_selected_empty: Bool) {
 
   placeholder
   |> option.map(transform)
-  |> option.unwrap(element.none())
+  |> option.unwrap(e.none())
 }

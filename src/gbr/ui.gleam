@@ -61,6 +61,10 @@ type Page(a) =
 ///
 pub const svg = svg.new
 
+pub fn box_new(title, content, footer, attrs) {
+  UIBox(title:, content:, footer:, attrs:)
+}
+
 /// UI loader layout with ui screen full blur and a center spin loader.
 ///
 /// Better choice to work with [gbr_js](https://github.com/gleam-br/gbr_js) and `gbr/js/global.{dom_content_loaded}`.
@@ -292,7 +296,7 @@ pub fn content(
   html.div(
     [
       attribute.class(
-        "pt-4 my-2 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]",
+        "w-full h-full pt-4 my-2 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]",
       ),
     ],
     [

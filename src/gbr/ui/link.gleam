@@ -90,9 +90,9 @@ pub fn view(at: Render(a)) -> UIRender(a) {
   let UILink(el:, href:) = in
 
   let attrs = el.attrs(el)
-  let onclick = map_onclick(href, onclick)
+  let #(href, onclick) = map_onclick(href, onclick)
 
-  html.a([a.href(href), onclick, ..attrs], inner)
+  html.a([href, onclick, ..attrs], inner)
 }
 
 // PRIVATE
@@ -100,8 +100,12 @@ pub fn view(at: Render(a)) -> UIRender(a) {
 
 fn map_onclick(href, onclick) {
   option.map(onclick, fn(onclick) {
-    onclick(href)
-    |> event.on_click()
+    #(
+      a.none(),
+      onclick(href)
+        |> event.on_click()
+        |> event.prevent_default(),
+    )
   })
-  |> option.unwrap(a.none())
+  |> option.unwrap(#(a.href(href), a.none()))
 }
