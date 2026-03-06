@@ -81,6 +81,10 @@ pub fn value(in: Textarea, text: String) -> Textarea {
   UITextarea(..in, el:, text:)
 }
 
+pub fn get(in: Textarea) -> Option(String) {
+  el.att_get(in.el, "value")
+}
+
 /// Set message info to user.
 ///
 /// - in: Textarea

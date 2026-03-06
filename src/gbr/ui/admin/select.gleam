@@ -479,7 +479,7 @@ fn view_multi(at: Render(a)) {
       html.div(
         [
           a.class(
-            "absolute w-full overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900",
+            "z-9 absolute w-full overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900",
           ),
           a.style("max-height", "16rem"),
           a.classes([#("hidden", !open)]),

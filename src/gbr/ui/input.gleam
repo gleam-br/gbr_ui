@@ -70,6 +70,12 @@ pub fn text(id: String) -> Input {
   new(id, "text")
 }
 
+/// New input type number super element.
+///
+pub fn number(id: String) -> Input {
+  new(id, "number")
+}
+
 /// New input type email super element.
 ///
 pub fn email(id: String) -> Input {
@@ -144,6 +150,12 @@ pub fn classes(in: Input, classes: model.UISwitches) -> Input {
 ///
 pub fn value(in: Input, value: String) -> Input {
   att_set(in, [#("value", value)])
+}
+
+/// Get attribute 'value' set in input.
+///
+pub fn get(in: Input) -> Option(String) {
+  el.att_get(in.el, "value")
 }
 
 /// Set label to input control, <label for="{id}"/>.

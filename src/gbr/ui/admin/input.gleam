@@ -20,6 +20,8 @@ pub const new = input.new
 
 pub const text = input.text
 
+pub const number = input.number
+
 pub const email = input.email
 
 pub const checkbox = input.checkbox
@@ -32,7 +34,13 @@ pub const datetime = input.datetime
 
 pub const value = input.value
 
+pub const get = input.get
+
 pub const name = input.name
+
+pub const min = input.min
+
+pub const max = input.max
 
 pub const autocomplete = input.autocomplete
 

@@ -158,6 +158,20 @@ pub fn back(id: String, text: String, onclick_: a) -> UIRender(a) {
   |> view()
 }
 
+pub fn delete(id: String, onclick_: a) {
+  let inner = [
+    svg.new(21, 21)
+    |> svg_icons.trash()
+    |> svg.view(),
+  ]
+  new(id)
+  |> class(
+    "text-gray-500 hover:text-error-500 dark:text-gray-400 dark:hover:text-error-500",
+  )
+  |> do_inner(inner, Some(onclick_))
+  |> view()
+}
+
 /// Render sidebar toggle button.
 ///
 pub fn sidebar(id: String, open: Bool, onclick: Option(a)) -> UIRender(a) {

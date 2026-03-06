@@ -2,17 +2,17 @@
 //// ✅ Gleam UI input type checkbox super element.
 ////
 
+import gbr/ui/core/el
 import gleam/option.{type Option, None}
-import lustre/event
 
 import lustre/attribute as a
 import lustre/element.{type Element}
 import lustre/element/html
-
-import gbr/ui/typo
+import lustre/event
 
 import gbr/ui/svg
 import gbr/ui/svg/form as svg_form
+import gbr/ui/typo
 
 type Checkbox =
   UICheckbox
@@ -26,7 +26,7 @@ type Text =
 /// Checkbox super element.
 ///
 pub opaque type UICheckbox {
-  UICheckbox(id: String, label: Text, checked: Bool)
+  UICheckbox(el: el.UIEl, label: Text, checked: Bool)
 }
 
 /// Checkbox render type.
@@ -38,29 +38,36 @@ pub type UICheckboxRender(a) {
 /// New checkbox super element.
 ///
 pub fn new(id: String) -> Checkbox {
+  let el = el.new(id)
   let label =
     typo.label(id, "")
     |> typo.class(
       "flex cursor-pointer items-center text-sm text-gray-700 select-none dark:text-gray-400",
     )
 
-  UICheckbox(id:, label:, checked: False)
+  UICheckbox(el:, label:, checked: False)
 }
 
 /// Set checkbox checked or not.
 ///
 pub fn checked(in: Checkbox, checked: Bool) -> Checkbox {
-  UICheckbox(..in, checked:)
+  let value = case checked {
+    True -> "true"
+    False -> "false"
+  }
+  let el = el.att(in.el, [#("value", value)])
+
+  UICheckbox(..in, el:, checked:)
 }
 
-pub fn checked_get(in: Checkbox) -> Bool {
+pub fn get(in: Checkbox) -> Bool {
   in.checked
 }
 
 /// Toggle checkbox checked or not.
 ///
 pub fn toggle(in: Checkbox) -> Checkbox {
-  UICheckbox(..in, checked: !in.checked)
+  checked(in, !in.checked)
 }
 
 /// Set checkbox label.
@@ -89,7 +96,7 @@ pub fn onclick(at: Render(a), onclick: Option(fn(Bool) -> a)) -> Render(a) {
 ///
 pub fn view(at: Render(a)) -> Element(a) {
   let UICheckboxRender(in:, onclick:, checked:) = at
-  let UICheckbox(id:, label:, ..) = in
+  let UICheckbox(el:, label:, ..) = in
 
   let onclick =
     onclick
@@ -99,6 +106,10 @@ pub fn view(at: Render(a)) -> Element(a) {
     })
     |> option.unwrap(a.none())
 
+  let id = el.id_get(el)
+  let value =
+    el.att_get(in.el, "value")
+    |> option.unwrap("false")
   html.div([], [
     typo.render_left(label, [
       html.div([a.class("relative")], [
@@ -107,6 +118,7 @@ pub fn view(at: Render(a)) -> Element(a) {
           a.name(id),
           a.class("sr-only"),
           a.type_("checkbox"),
+          a.value(value),
           a.checked(checked),
           onclick,
         ]),

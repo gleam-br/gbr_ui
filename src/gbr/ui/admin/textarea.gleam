@@ -13,6 +13,8 @@ pub const view = textarea.view
 
 pub const value = textarea.value
 
+pub const get = textarea.get
+
 pub const class = textarea.class
 
 pub const placeholder = textarea.placeholder
