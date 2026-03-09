@@ -2,10 +2,14 @@
 //// UI admin modal element.
 ////
 
+import lustre/element/html as h
+
 import gbr/ui/modal
+import gbr/ui/svg
+import gbr/ui/svg/icons
 import gbr/ui/typo
 
-import gbr/ui/core/model.{type UIRenders}
+import gbr/ui/core/model.{type UIRender, type UIRenders}
 
 type Modal =
   UIModal
@@ -100,4 +104,37 @@ pub fn simple(
     |> typo.view()
 
   main(modal, title, [content], footer, close)
+}
+
+pub fn confirm(
+  modal: Modal,
+  title: String,
+  content: String,
+  confirm: UIRender(a),
+  cancel: UIRender(a),
+) -> Render(a) {
+  modal
+  |> simple(title, content, [cancel, confirm], [])
+}
+
+pub fn close_only(
+  modal: Modal,
+  title: String,
+  content: UIRenders(a),
+) -> Render(a) {
+  modal
+  |> main(title, content, [], [
+    svg.new(24, 24)
+    |> icons.cross()
+    |> svg.view(),
+  ])
+}
+
+pub fn error(in: Modal, title: String, error: String) -> Render(a) {
+  let content =
+    typo.p(error)
+    |> typo.class("text-sm leading-6 text-gray-500 dark:text-gray-400")
+    |> typo.view()
+
+  close_only(in, title, [content])
 }

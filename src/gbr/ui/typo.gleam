@@ -103,6 +103,12 @@ pub fn class(in: UITypo, class: String) -> UITypo {
   UITypo(..in, el:)
 }
 
+pub fn class_append(in: UITypo, class: String) -> UITypo {
+  let el = el.class_append(in.el, class)
+
+  UITypo(..in, el:)
+}
+
 /// Set typo class attribute
 ///
 /// - class: Class attribute value
