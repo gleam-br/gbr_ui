@@ -97,6 +97,15 @@ pub fn new(id: String) -> Select {
   UISelect(el:, options: [], multi: False, open: False, label: None)
 }
 
+pub fn disabled(in: Select, disabled: Bool) {
+  let el = case disabled {
+    False -> el.att_del(in.el, "disabled")
+    True -> el.att(in.el, [#("disabled", "true")])
+  }
+
+  UISelect(..in, el:)
+}
+
 /// New selection option item
 ///
 /// - value: Select option value
@@ -109,7 +118,7 @@ pub fn option(value: String, text: String) -> Item {
 /// Set select title
 ///
 pub fn label(in: Select, label: String) -> Select {
-  let assert Some(id) = el.att_get(in.el, "id")
+  let id = el.id_get(in.el)
   let label =
     typo.label(id, label)
     |> typo.class(
@@ -149,8 +158,11 @@ pub fn open(in: Select, open: Bool) -> Select {
 
 /// Toggle select open multi select options
 ///
-pub fn toggle(in: Select) -> Select {
-  UISelect(..in, open: !in.open)
+pub fn toggle(in: Select, force: Bool) -> Select {
+  case force {
+    True -> UISelect(..in, open: False)
+    False -> UISelect(..in, open: !in.open)
+  }
 }
 
 /// Set selected option by value
@@ -407,20 +419,21 @@ fn view_multi(at: Render(a)) {
     |> new_placeholder(options_selected_empty)
   let view_options = new_options(options)
 
+  // TODO
+  // let attrs = el.attrs(el)
+  let disabled =
+    el.att_get(el, "disabled")
+    |> option.map(fn(disabled) { disabled == "true" })
+    |> option.unwrap(False)
   let ontoggleclick =
     ontoggle
-    |> option.map(fn(ontoggle) { event.on_click(ontoggle(False)) })
-    |> option.unwrap(a.none())
+    |> option.map(fn(ontoggle) { ontoggle(False) })
   let onmouseleave =
     ontoggle
     |> option.map(fn(ontoggle) {
       event.on_mouse_leave(ontoggle(True)) |> event.stop_propagation()
     })
     |> option.unwrap(a.none())
-
-  // TODO
-  // let attrs = el.attrs(el)
-
   let values =
     options
     |> options_filter_by_selected(True)
@@ -428,27 +441,43 @@ fn view_multi(at: Render(a)) {
     |> string.join(",")
 
   html.div([], [
-    label |> option.map(typo.view) |> option.unwrap(e.none()),
     html.div([a.class("relative"), onmouseleave], [
+      label
+        |> option.map(typo.view)
+        |> option.unwrap(e.none()),
       // form select hidden values
-      //
       html.select(
         [
           a.id(id),
           a.value(values),
           a.class("hidden"),
-          a.name("select-multi-values"),
         ],
         view_options,
       ),
       // bag with remove icon to selected options
       html.div(
         [
+          a.classes([
+            #(
+              "bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white/90",
+              !disabled,
+            ),
+            #(
+              "bg-white/60 dark:bg-gray-800 border-gray-100 dark:border-gray-600 text-gray-500, dark:text-white/40",
+              disabled,
+            ),
+          ]),
           a.class(
-            "shadow-theme-xs flex min-h-10 cursor-pointer gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 transition dark:border-gray-700 dark:bg-gray-900",
+            "flex px-4 py-2.5 h-min-10 gap-2 w-full cursor-pointer rounded-lg border transition",
           ),
           // toggle dropdown open/close
-          ontoggleclick,
+          case disabled {
+            True -> a.none()
+            False ->
+              ontoggleclick
+              |> option.map(fn(t) { event.on_click(t) })
+              |> option.unwrap(a.none())
+          },
         ],
         [
           //list of options selected
@@ -464,7 +493,7 @@ fn view_multi(at: Render(a)) {
             ],
           ),
           // arrow dropdown
-          html.div([a.class("flex items-start pt-1.5")], [
+          html.div([a.class("flex items-start")], [
             svg.new(24, 24)
             |> svg_icons.arrow()
             |> svg.classes([#("rotate-180", open)])
@@ -490,7 +519,10 @@ fn view_multi(at: Render(a)) {
               a.class("overflow-y-auto"),
               a.style("max-height", "16rem"),
             ],
-            options_not_selected(id, options, onchange),
+            case disabled {
+              True -> []
+              False -> options_not_selected(id, options, onchange)
+            },
           ),
         ],
       ),
@@ -520,8 +552,9 @@ fn options_selected(
   html.div(
     [
       a.class(
-        "group flex items-center justify-center rounded-full border-[0.7px] border-transparent bg-gray-100 "
-        <> "py-1 pr-2 pl-2.5 text-sm text-gray-800 hover:border-gray-200 dark:bg-gray-800 dark:text-white/90 dark:hover:border-gray-800",
+        "group pr-2 pl-2.5 flex items-center justify-center text-xs text-gray-800 "
+        <> "rounded-full border-[0.7px] border-transparent bg-gray-100 hover:border-gray-200 "
+        <> "dark:bg-gray-800 dark:text-white/90 dark:hover:border-gray-800",
       ),
     ],
     [

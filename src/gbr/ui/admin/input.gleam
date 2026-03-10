@@ -2,6 +2,8 @@
 //// Gleam UI admin input element
 ////
 
+import gleam/function
+import gleam/option.{type Option, None, Some}
 import gleam/string
 
 import lustre/attribute as a
@@ -86,11 +88,13 @@ pub fn primary(in: Input) -> Input {
   in
   |> input.disabled(False)
   |> class(
-    "dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 "
+    "px-4 py-2.5 text-sm bg-transparent dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 "
     <> "focus:ring-brand-500/10 dark:focus:border-brand-800 h-10 w-full "
-    <> "rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm "
-    <> "text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden "
-    <> "dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30",
+    <> "rounded-lg border border-gray-300 text-gray-800 placeholder:text-gray-400 "
+    <> "focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 "
+    <> "dark:text-white/90 dark:placeholder:text-white/30 "
+    <> "disabled:border-gray-100 dark:disabled:border-gray-600 "
+    <> "dark:disabled:bg-gray-800 disabled:text-gray-500 dark:disabled:text-white/40",
   )
   |> label_class(
     "mt-2.5 mb-1 block text-sm font-medium text-gray-700 dark:text-gray-400",
@@ -131,28 +135,49 @@ pub fn password(in: Input, open: Bool) -> Input {
 }
 
 pub fn success(in: Input, text: String) -> Input {
-  state_set(in, text, state_success_class, state_success_label, form.success)
+  state_set(
+    in,
+    Some(text),
+    Some(state_success_class),
+    state_success_label,
+    form.success,
+  )
 }
 
 pub fn alert(in: Input, text: String) -> Input {
-  state_set(in, text, state_alert_class, state_alert_label, form.success)
+  state_set(
+    in,
+    Some(text),
+    Some(state_alert_class),
+    state_alert_label,
+    form.success,
+  )
 }
 
 pub fn error(in: Input, text: String) -> Input {
-  state_set(in, text, state_error_class, state_error_label, form.error)
+  state_set(
+    in,
+    Some(text),
+    Some(state_error_class),
+    state_error_label,
+    form.error,
+  )
 }
 
 pub const disabled_only = input.disabled
 
-pub fn disabled(in: Input, text: String) -> Input {
+pub fn disabled(in: Input, disabled: Bool, text: Option(String)) -> Input {
   in
-  |> input.disabled(True)
-  |> state_set(text, state_disabled_class, state_disabled_label, form.info)
+  |> input.disabled(disabled)
+  |> case disabled, text {
+    True, text -> state_set(_, text, None, state_disabled_label, form.info)
+    _, _ -> function.identity
+  }
 }
 
 pub fn loading(in: Input, text: String) -> Input {
   //todo: dev spinner
-  disabled(in, text)
+  disabled(in, True, Some(text))
 }
 
 pub fn render_right(in: Input, inner: UIRenders(a)) -> Render(a) {
@@ -167,23 +192,32 @@ pub fn render_left(in: Input, inner: UIRenders(a)) {
 //
 
 fn state_set(in, text, class, class_note, svg_transform) -> Input {
-  let input_class = string.join([state_class, class], " ")
-  let note_class = string.join([state_label_class, class_note], " ")
-  let note =
-    typo.span(text)
-    |> typo.class(note_class)
+  let in =
+    class
+    |> option.map(input.class(in, _))
+    |> option.unwrap(in)
 
-  input.class(in, input_class)
-  |> input.note(note)
-  |> input.inner_svg(
-    svg.new(16, 16)
-    |> svg_transform(),
-  )
+  let note_class = string.join([state_label_class, class_note], " ")
+  let #(note, icon) = case text {
+    Some(text) -> #(
+      Some(
+        typo.span(text)
+        |> typo.class(note_class),
+      ),
+      Some(
+        svg.new(16, 16)
+        |> svg_transform(),
+      ),
+    )
+    None -> #(None, None)
+  }
+
+  in
+  |> input.note_opt(note)
+  |> input.inner_svg_opt(icon)
 }
 
 const state_label_class = "text-theme-xs text-error-500 mt-1.5"
-
-const state_class = "dark:bg-dark-900 shadow-theme-xs h-10 w-full rounded-lg border bg-transparent px-4 pr-10 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
 
 const state_success_class = " border-green-300 focus:border-green-300 focus:ring-green-500/10 dark:border-green-700 dark:focus:border-green-800"
 
@@ -196,10 +230,6 @@ const state_success_label = "text-xs text-green-600 mt-1.5"
 const state_alert_label = "text-xs text-yellow-600 mt-1.5"
 
 const state_error_label = "text-xs text-red-700 mt-1.5"
-
-const state_disabled_class = "disabled:border-gray-100 dark:disabled:border-gray-600 "
-  <> "dark:disabled:bg-gray-800 dark:disabled:bg-gray-500 "
-  <> "disabled:text-gray-500 dark:disabled:text-white/40"
 
 const state_disabled_label = "mb-1.5 block text-sm font-medium text-gray-300 dark:text-white/15"
 

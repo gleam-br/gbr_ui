@@ -2,8 +2,6 @@
 //// UI admin modal element.
 ////
 
-import lustre/element/html as h
-
 import gbr/ui/modal
 import gbr/ui/svg
 import gbr/ui/svg/icons

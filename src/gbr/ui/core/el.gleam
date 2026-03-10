@@ -195,7 +195,7 @@ pub fn att_del(el: El, name: String) -> El {
   })
   |> option.flatten()
   |> option.map(fn(pop) { pair.second(pop) })
-  |> option.map(fn(att_) { att(el, att_) })
+  |> option.map(fn(att_) { UIEl(..el, att: dict.insert(el.att, el.id, att_)) })
   |> option.unwrap(el)
 }
 

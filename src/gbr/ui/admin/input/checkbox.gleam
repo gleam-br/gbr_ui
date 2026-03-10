@@ -3,7 +3,7 @@
 ////
 
 import gbr/ui/core/el
-import gleam/option.{type Option, None}
+import gleam/option.{type Option, None, Some}
 
 import lustre/attribute as a
 import lustre/element.{type Element}
@@ -78,6 +78,18 @@ pub fn label(in: Checkbox, label: String) -> Checkbox {
   UICheckbox(..in, label:)
 }
 
+pub fn disabled(in: Checkbox, disabled: Bool) -> Checkbox {
+  let el = case disabled {
+    False -> el.att_del(in.el, "disabled")
+    True ->
+      el.att(in.el, [
+        #("disabled", "true"),
+      ])
+  }
+
+  UICheckbox(..in, el:)
+}
+
 /// New checkbox render.
 ///
 pub fn render(in: Checkbox) -> Render(a) {
@@ -88,7 +100,11 @@ pub fn render(in: Checkbox) -> Render(a) {
 
 /// Set checkbox render onclick event.
 ///
-pub fn onclick(at: Render(a), onclick: Option(fn(Bool) -> a)) -> Render(a) {
+pub fn onclick(at: Render(a), onclick: fn(Bool) -> a) -> Render(a) {
+  onclick_opt(at, Some(onclick))
+}
+
+pub fn onclick_opt(at: Render(a), onclick: Option(fn(Bool) -> a)) -> Render(a) {
   UICheckboxRender(..at, onclick:)
 }
 
@@ -110,7 +126,9 @@ pub fn view(at: Render(a)) -> Element(a) {
   let value =
     el.att_get(in.el, "value")
     |> option.unwrap("false")
-  html.div([], [
+
+  // TODO uses here `el.attrs(in.el)`
+  html.div([a.class("py-2")], [
     typo.render_left(label, [
       html.div([a.class("relative")], [
         html.input([

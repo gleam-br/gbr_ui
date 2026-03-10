@@ -186,13 +186,21 @@ pub fn label_class(in: Input, class: String) -> Input {
 /// - note: Input footer note, uses to info user about validations, etc.
 ///
 pub fn note(in: Input, note: Text) -> Input {
-  UIInput(..in, note: Some(note))
+  note_opt(in, Some(note))
+}
+
+pub fn note_opt(in: Input, note: Option(Text)) -> Input {
+  UIInput(..in, note:)
 }
 
 /// Set icon svg
 ///
 pub fn inner_svg(in: Input, svg: svg.Svg) -> Input {
-  UIInput(..in, inner_svg: Some(svg))
+  inner_svg_opt(in, Some(svg))
+}
+
+pub fn inner_svg_opt(in: Input, inner_svg: Option(svg.Svg)) -> Input {
+  UIInput(..in, inner_svg:)
 }
 
 /// Append input class sr-only .
@@ -234,7 +242,7 @@ pub fn required(in: Input, value: String) -> Input {
 ///
 pub fn disabled(in: Input, disabled: Bool) -> Input {
   case disabled {
-    True -> att_set(in, [#("disabled", "")])
+    True -> att_set(in, [#("disabled", "true")])
     False -> {
       let el = el.att_del(in.el, "disabled")
 
@@ -303,10 +311,10 @@ pub fn render(in: Input, attrs: UIAttrs(a), inner: UIRenders(a)) -> Render(a) {
 /// > https://github.com/lustre-labs/lustre/blob/main/pages/hints/controlled-vs-uncontrolled-inputs.md
 ///
 ///
-pub fn oninput(in: Render(a), oninput: Option(OnChange(a))) -> Render(a) {
+pub fn oninput(in: Render(a), oninput: OnChange(a)) -> Render(a) {
   let render =
     in.render
-    |> render.attributes_opt(oninput, fn(evt) { [event.on_input(evt)] })
+    |> render.attributes_opt(Some(oninput), fn(evt) { [event.on_input(evt)] })
 
   UIInputRender(..in, render:)
 }
@@ -316,10 +324,14 @@ pub fn oninput(in: Render(a), oninput: Option(OnChange(a))) -> Render(a) {
 /// > 🕹️ Controled vs 🌪️ Uncontroled inputs
 /// > https://github.com/lustre-labs/lustre/blob/main/pages/hints/controlled-vs-uncontrolled-inputs.md
 ///
-pub fn onchange(in: Render(a), onchange: Option(OnChange(a))) -> Render(a) {
+pub fn onchange(in: Render(a), onchange: OnChange(a)) -> Render(a) {
   let render =
     in.render
-    |> render.attributes_opt(onchange, fn(evt) { [event.on_change(evt)] })
+    |> render.attributes_opt(
+      onchange
+        |> Some(),
+      fn(evt) { [event.on_change(evt)] },
+    )
 
   UIInputRender(..in, render:)
 }
