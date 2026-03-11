@@ -193,7 +193,11 @@ pub fn render(in: Button, inner: UIRenders(a)) -> Render(a) {
 
 /// Set button render onclick event.
 ///
-pub fn onclick(at: Render(a), onclick: Option(a)) -> Render(a) {
+pub fn onclick(at: Render(a), onclick: a) -> Render(a) {
+  onclick_opt(at, Some(onclick))
+}
+
+pub fn onclick_opt(at: Render(a), onclick: Option(a)) -> Render(a) {
   let render =
     render.attributes_opt(at.render, onclick, fn(evt) { [event.on_click(evt)] })
 

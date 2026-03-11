@@ -43,6 +43,8 @@ pub const render_right = button.render_right
 
 pub const onclick = button.onclick
 
+pub const onclick_opt = button.onclick_opt
+
 pub const view = button.view
 
 pub const grouped_primary = grouped.primary
@@ -119,7 +121,7 @@ pub fn refresh(id: String, loading: Bool, onclick_: a) -> UIRender(a) {
   |> disabled(loading)
   |> class(class_)
   |> render([inner])
-  |> onclick(Some(onclick_))
+  |> onclick(onclick_)
   |> view()
 }
 
@@ -137,7 +139,7 @@ pub fn close(id: String, onclick_: a) -> UIRender(a) {
   new(id)
   |> class(class_)
   |> render([inner])
-  |> onclick(Some(onclick_))
+  |> onclick(onclick_)
   |> view()
 }
 
@@ -154,7 +156,7 @@ pub fn back(id: String, text: String, onclick_: a) -> UIRender(a) {
   |> class(class_back)
   |> label(text)
   |> render_left(inner)
-  |> onclick(Some(onclick_))
+  |> onclick(onclick_)
   |> view()
 }
 
@@ -304,7 +306,7 @@ pub fn loading(id: String) {
 fn do_inner(in: Button, inner: UIRenders(a), onclick: Option(a)) -> Render(a) {
   in
   |> button.render(inner)
-  |> button.onclick(onclick)
+  |> button.onclick_opt(onclick)
 }
 
 const const_primary_class = "justify-center inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600 disabled:cursor-not-allowed"

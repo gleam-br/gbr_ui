@@ -301,7 +301,7 @@ fn login_provider_render(onsubmit) {
       |> transform
       |> svg.view(),
     ])
-    |> button.onclick(
+    |> button.onclick_opt(
       onsubmit
       |> option.map(fn(onsubmit) { onsubmit([#("provider", "microsoft")]) }),
     )
