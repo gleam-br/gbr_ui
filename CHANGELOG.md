@@ -5,6 +5,84 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- More modal styles and fix typo element by @salespaulo
+- Add el.class_append and fixes by @salespaulo
+- Add more svg icons and fixes in select checkbox and more by @salespaulo
+- Add modal element and fix core.el and core.render set fields by @salespaulo
+- Add button icon refresh by @salespaulo
+- Add typo pre element and working in input states by @salespaulo
+- Add el.att_del to remove attributes like disabled by @salespaulo
+- Add new alpha vrn by @salespaulo
+- Add pages home, login and modules web and security jwt native support by @salespaulo
+- Add modules pages, api, env and security to help make admin ui by @salespaulo
+- Add textarea element and refactory when render elements by @salespaulo
+- Add GEMINI file by @salespaulo
+- Add table component and more by @salespaulo
+- Add new typos h1, h2 and h3 by @salespaulo
+- Add badge and card elements by @salespaulo
+- Add badge element wip add icons plus by @salespaulo
+- Add dropdown element by @salespaulo
+- Add input admin password with eye icon and more refact by @salespaulo
+- Add multi select element with icon to remove and more by @salespaulo
+- Add doc readme to repo demo gbr-ui-demo by @salespaulo
+
+### Changed
+- Upgrade gh action/checkout@6 by @salespaulo
+- Improve elements to disabled styles and more by @salespaulo
+- Using el.UIEl att to set value and do two-way data bind by @salespaulo
+- Refactory in elements to fix issues by @salespaulo
+- Refactory to improve layout and functions by @salespaulo
+- Format gleam.toml deps, targets and metadata by @salespaulo
+- Bump vrn by @salespaulo
+- Decrease height for input, button and selects by @salespaulo
+- Change button to uses core.render module by @salespaulo
+- Improve input admin, using stateless controls by @salespaulo
+- Change form to uses core.render module by @salespaulo
+- Change input to uses core.render module by @salespaulo
+- Update readme by @salespaulo
+- Up version by @salespaulo
+- Change select onselected to return id of select and value selected by @salespaulo
+- Refactory in multi select and select element by @salespaulo
+- Rename funcs at, at_ to render... and rename funcs render to view name by @salespaulo
+- Todo improve by @salespaulo
+- Update changelog by @github-actions[bot]
+
+### Fixed
+- Fix onclick option by @salespaulo
+- Fix select call event more than once by @salespaulo
+- Fix and ajusts in checkbox, select, table, textarea, api by @salespaulo
+- Fix input note icon margin, fix button justify-center and sidebar reticences icon hidden by @salespaulo
+- Fix input note text and svg and modal ajusts by @salespaulo
+- Fix page layout and content layout by @salespaulo
+- Fix header user dropdown z index by @salespaulo
+- Fix web security setting user and user dropdown by @salespaulo
+- Fix textarea label for id ref by @salespaulo
+- Fix alert module by @salespaulo
+- Fix set core.el attributes using fold and list.key_set by @salespaulo
+- Fix precedence set svg class by @salespaulo
+- Fix el.att_key set attributes with list.key_set also list.append by @salespaulo
+- Fix elements after testing by @salespaulo
+- Fix pages load and others by @salespaulo
+- Fix button primary and secondary styles by @salespaulo
+- Fix alert ui by @salespaulo
+- Fix checkbox ui and event onclick more refactory and improves by @salespaulo
+- Fix checkbox render function, render label and inner then input and decorator by @salespaulo
+- Fix issues in multi select element by @salespaulo
+- Fix issues in multi select element by @salespaulo
+- Fix and working on select element by @salespaulo
+- Fix user dropdown cursor and add sidebar menu helper funcs by @salespaulo
+
+### Removed
+- Remove sensitive data by @salespaulo
+- Remove echos by @salespaulo
+- Remove textarea.is_empty by @salespaulo
+- Remove web.onsecurity add button.disabled cursor-not-allowed and modal refact by @salespaulo
+- Remove echos by @salespaulo
+- Remove gbr/ui/alert only has gbr/ui/admin/alert by @salespaulo
+
 ## [1.0.1] - 2025-11-26
 
 ### Changed
@@ -98,6 +176,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## New Contributors
 * @salespaulo made their first contribution
+[unreleased]: https://github.com/gleam-br/gbr_ui/compare/v1.0.1..HEAD
 [1.0.1]: https://github.com/gleam-br/gbr_ui/compare/v1.0.0..v1.0.1
 [1.0.0]: https://github.com/gleam-br/gbr_ui/compare/v0.0.1..v1.0.0
 
