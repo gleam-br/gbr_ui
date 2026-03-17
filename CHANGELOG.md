@@ -30,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add doc readme to repo demo gbr-ui-demo by @salespaulo
 
 ### Changed
+- Merge branch 'main' of https://github.com/gleam-br/gbr_ui by @salespaulo
+- Update changelog by @github-actions[bot]
+- Ajusts and docs by @salespaulo
 - Upgrade gh action/checkout@6 by @salespaulo
 - Improve elements to disabled styles and more by @salespaulo
 - Using el.UIEl att to set value and do two-way data bind by @salespaulo
