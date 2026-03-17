@@ -1,6 +1,15 @@
 ////
+//// Gleam UI super render element el.UIEl
 ////
+//// ## Motivation
 ////
+//// The lustre elements contains the generic event type that difficult to work
+//// with element in stateless mode.
+////
+//// So, the `gbr/ui/core/el` adn this module has types and functions to work with
+//// attributes and properties without needs to trait genenric event type.
+////
+//// In this module we have the type and functions to render one element el.UIEl.
 
 import gleam/dict
 import gleam/list

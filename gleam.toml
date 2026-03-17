@@ -11,12 +11,14 @@ links = []
 gbr_ui_router = { path = "../gbr_ui_router" }
 gbr_shared = { path = "../gbr_shared" }
 gbr_js = { path = "../gbr_js" }
+
 lustre = "~> 5.5"
 rsvp = "~> 1.1"
+
 gleam_time = "~> 1.6"
 gleam_http = "~> 4.3"
 gleam_json = "~> 3.1"
-gleam_stdlib = "~> 0.69"
+gleam_stdlib = "~> 0.70"
 
 [dev-dependencies]
 gleeunit = "~> 1.9"

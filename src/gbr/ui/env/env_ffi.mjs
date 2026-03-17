@@ -5,7 +5,7 @@
 import {
   Result$Ok,
   Result$Error
-} from "../../../../prelude.mjs"
+} from "../../../gleam.mjs"
 
 /**
  * Get environment var from 'import.meta.env'
