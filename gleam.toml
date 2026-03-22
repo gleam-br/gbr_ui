@@ -1,5 +1,5 @@
 name = "gbr_ui"
-version = "1.0.2-alpha"
+version = "2.0.0-alpha"
 target = "javascript"
 
 description = "Gleam UI lustre library by @gleam-br"
@@ -8,17 +8,20 @@ licences = ["Apache-2.0"]
 links = []
 
 [dependencies]
+# TODO remover
 gbr_ui_router = { path = "../gbr_ui_router" }
+# TODO remover
 gbr_shared = { path = "../gbr_shared" }
-gbr_js = { path = "../gbr_js" }
+# TODO remover
+gbr_js = { path = "../libs/gbr_js" }
 
 lustre = "~> 5.5"
 rsvp = "~> 1.1"
 
+gleam_stdlib = "~> 0.70"
 gleam_time = "~> 1.6"
 gleam_http = "~> 4.3"
 gleam_json = "~> 3.1"
-gleam_stdlib = "~> 0.70"
 
 [dev-dependencies]
 gleeunit = "~> 1.9"
