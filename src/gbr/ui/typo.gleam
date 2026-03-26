@@ -15,6 +15,11 @@ import gbr/ui/theme.{type UISize}
 
 /// UI typograph: tipo para escrevermos na tela.
 ///
+/// - H1..H4: São os cabeçalhos e níveis.
+/// - Pre: São textos usados para representar códigos, etc.
+/// - Span: São textos comuns.
+/// - Label: São textos utilizados c/ os inputs.
+/// - Paragraph: São os textos em formato de parágrafo.
 pub type UITypography {
   H1
   H2
@@ -31,7 +36,6 @@ pub type UITypography {
 /// - tag: O tipo de tipografia que vamos mostrar na tela.
 /// - text: O conteúdo de texto que vamos mostrar na tela.
 /// - attributes: Lista de atributos do elemento de tipografia.
-///
 @internal
 pub fn to_element(
   typo: UITypography,

@@ -43,7 +43,7 @@ pub fn with_path_rule_clip_stroke() -> a.Attribute(msg) {
   a.attribute("clip-rule", "stroke")
 }
 
-pub fn path(attributes: List(a.Attribute(msg))) -> el.Element(msg) {
+pub fn with_path(attributes: List(a.Attribute(msg))) -> el.Element(msg) {
   svg.path(attributes)
 }
 
