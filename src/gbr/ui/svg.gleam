@@ -1,92 +1,61 @@
 ////
 //// 🐯 Gleam UI super lustre element svg.
 ////
+//// Olá, tudo bem? Aqui estamos no módulo que encanta os olhos de qualquer um
+//// os ícones e imagens vetorias (SVG), animadas ou não. Neste módulo temos
+//// as representações e funções DOM + a11y.
 
-import gleam/int
-import gleam/list
-import gleam/option.{None}
-import gleam/string
-
-import lustre/element/html
+import lustre/attribute as a
+import lustre/element as el
+import lustre/element/html as h
 import lustre/element/svg
 
-import gbr/ui/core/el
-import gbr/ui/core/model.{type UIRender}
-
-import gbr/ui/svg/core.{
-  Circle, Path, Svg, svg_key, to_animate, to_att, to_attrs_circle, to_attrs_rect,
-  to_path,
+///
+pub fn with_path_draw(draw: String) -> a.Attribute(msg) {
+  a.attribute("d", draw)
 }
 
-pub const class = core.class
-
-pub const class_append = core.class_append
-
-pub const classes = core.classes
-
-/// Svg super element.
-///
-pub type Svg =
-  core.Svg
-
-/// Function identity to `gbr/ui/svg.Svg`.
-///
-pub type Identity =
-  fn(Svg) -> Svg
-
-/// Constructor of super svg element `gbr/ui/svg.Svg`.
-///
-pub fn new(height h, width w) -> Svg {
-  let height = int.to_string(h)
-  let width = int.to_string(w)
-  let view_port = "0 0 " <> string.join([width, height], " ")
-
-  let el =
-    el.new(svg_key)
-    |> el.att([
-      #("height", height),
-      #("width", width),
-      #("viewBox", view_port),
-      #("xmlns", "http://www.w3.org/2000/svg"),
-    ])
-
-  Svg(el:, path: [], rect: [], circle: [], animate: [], mask: None)
+pub fn with_path_fill(fill: String) -> a.Attribute(msg) {
+  a.attribute("fill", fill)
 }
 
-/// Render super svg element in `lustre/element/html.{svg}`.
+pub fn with_path_fill_none() -> a.Attribute(msg) {
+  a.attribute("fill", "none")
+}
+
+pub fn with_path_fill_current() -> a.Attribute(msg) {
+  a.attribute("fill", "currentColor")
+}
+
+pub fn with_path_rule_fill_evenodd() -> a.Attribute(msg) {
+  a.attribute("fill-rule", "evenodd")
+}
+
+pub fn with_path_rule_clip_evenodd() -> a.Attribute(msg) {
+  a.attribute("clip-rule", "evenodd")
+}
+
+pub fn with_path_rule_fill_stroke() -> a.Attribute(msg) {
+  a.attribute("fill-rule", "stroke")
+}
+
+pub fn with_path_rule_clip_stroke() -> a.Attribute(msg) {
+  a.attribute("clip-rule", "stroke")
+}
+
+pub fn path(attributes: List(a.Attribute(msg))) -> el.Element(msg) {
+  svg.path(attributes)
+}
+
+/// UI core svg DOM + a11y
 ///
-pub fn view(in: Svg) -> UIRender(a) {
-  let Svg(el:, path:, rect:, circle:, mask:, animate:) = in
-  let path = to_path(path)
-  let rect = to_attrs_rect(rect)
-  let circle = to_attrs_circle(circle)
-  let mask =
-    map_mask(mask)
-    |> option.unwrap([])
-
-  let attrs = el.attrs(el)
-
-  html.svg(
-    attrs,
-    list.append(path, rect)
-      |> list.append(circle)
-      |> list.append(mask),
+@internal
+pub fn to_element(
+  attributes: List(a.Attribute(msg)),
+  elements elements: List(el.Element(msg)),
+) -> el.Element(msg) {
+  h.svg(
+    [a.attribute("xmlns", "http://www.w3.org/2000/svg"), ..attributes],
+    elements,
   )
-  |> to_animate(animate)
-}
-
-// PRIVATE
-//
-
-fn map_mask(mask) {
-  use mask <- option.map(mask)
-
-  case mask {
-    Path(path, att_mark) -> {
-      [svg.mask(to_att(att_mark), to_path(path))]
-    }
-    Circle(circle, att_mark) -> {
-      [svg.mask(to_att(att_mark), to_attrs_circle(circle))]
-    }
-  }
 }

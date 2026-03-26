@@ -1,238 +1,25 @@
 ////
-//// ⚉ Gleam UI button super element.
+//// UI core button module
 ////
-//// Supose button text and svg at left side:
-////
-////```gleam
-//// import gbr/ui/button
-////
-//// import gbr/ui/svg
-//// import gbr/ui/svg/icons
-////
-//// import gbr/ui/core/model.{type UIRender, uilabel}
-////
-//// fn render(id: String) -> UIRender(a) {
-////   label = uilabel("Button w/ icon back!", [])
-////   let inner = [
-////     svg.new("button-svg", 20, 20)
-////       |> icons.back()
-////       |> svg.view()
-////     ]
-////   ]
-////   button.new(id)
-////     |> button.label(label)
-////     |> button.render_left(inner)
-////     |> button.on_click(onclick)
-////     |> button.view()
-//// }
-////```
-////
-//// ### Roadmap
-////
-//// 🚧 **Work in progress**
-////
-//// - [ ] group behavior
-//// - [ ] loading behavior
-//// - [ ] contrast accessibilty 4:5:1
-////
-
-import gleam/list
-import gleam/option.{type Option, None, Some}
+//// Olá, aqui estamos diante do element botão que é representado aqui através
+//// da sua estrutura DOM + a11y, sem estilo visual.
 
 import lustre/attribute as a
+import lustre/element as el
 import lustre/element/html as h
-import lustre/event
 
-import gbr/ui/core/el
-import gbr/ui/core/model.{
-  type UIAttrs, type UIRender, type UIRenders, type UISwitches,
-}
-import gbr/ui/core/render
-
-// Alias
-//
-
-type El =
-  el.UIEl
-
-type Size {
-  Sm
-  Md
-  Lg
-}
-
-type Button =
-  UIButton
-
-type Render(a) =
-  UIButtonRender(a)
-
-/// Button super element.
+/// Recebe atributos arbitrários e elementos internos .
 ///
-pub opaque type UIButton {
-  UIButton(el: El, disabled: Bool, text: Option(String), size: Option(Size))
-}
+@internal
+pub fn to_element(
+  attributes: List(a.Attribute(msg)),
+  children elements: List(el.Element(msg)),
+) -> el.Element(msg) {
+  let attributes = [
+    a.type_("button"),
+    a.attribute("role", "button"),
+    ..attributes
+  ]
 
-/// Button render type.
-///
-pub type UIButtonRender(a) {
-  UIButtonRender(in: Button, render: render.UIElRender(a))
-}
-
-/// New button super element.
-///
-pub fn new(id: String) -> Button {
-  UIButton(el: el.new(id), size: None, disabled: False, text: None)
-}
-
-/// Set button label.
-///
-pub fn label(in: Button, text: String) -> Button {
-  UIButton(..in, text: Some(text))
-}
-
-/// Set html type attribute
-///
-pub fn kind(in: Button, kind: String) -> Button {
-  let el = el.att(in.el, [#("type", kind)])
-
-  UIButton(..in, el:)
-}
-
-/// Set button disabled.
-///
-pub fn disabled(in: Button, disabled: Bool) -> Button {
-  UIButton(..in, disabled:)
-}
-
-/// Set button class.
-///
-pub fn class(in: Button, class: String) -> Button {
-  let el = el.class(in.el, class)
-
-  UIButton(..in, el:)
-}
-
-pub fn class_append(in: Button, class: String) -> Button {
-  let el = el.class_append(in.el, class)
-
-  UIButton(..in, el:)
-}
-
-/// Set button classes.
-///
-pub fn classes(in: Button, classes: UISwitches) -> Button {
-  let el = el.classes(in.el, classes)
-
-  UIButton(..in, el:)
-}
-
-/// Set button size to medium
-///
-pub fn sm(in: Button) -> Button {
-  UIButton(..in, size: Some(Sm))
-}
-
-/// Set button size to medium
-///
-pub fn md(in: Button) -> Button {
-  UIButton(..in, size: Some(Md))
-}
-
-/// Set button size to large
-///
-pub fn lg(in: Button) -> Button {
-  UIButton(..in, size: Some(Lg))
-}
-
-/// New button render at right inner and onclick event.
-///
-pub fn render_left(in: Button, inner: UIRenders(a)) -> Render(a) {
-  let UIButton(text:, ..) = in
-
-  let inner = case text {
-    Some(text) -> list.append(inner, [h.text(text)])
-    None -> inner
-  }
-  let render =
-    render.new(in.el)
-    |> render.elements(inner)
-
-  UIButtonRender(in:, render:)
-}
-
-/// New button render at left inner and onclick event.
-///
-pub fn render_right(in: Button, inner: UIRenders(a)) -> Render(a) {
-  let UIButton(text:, ..) = in
-  let inner = case text {
-    Some(text) -> [h.text(text), ..inner]
-    None -> inner
-  }
-  let render =
-    render.new(in.el)
-    |> render.elements(inner)
-
-  UIButtonRender(in:, render:)
-}
-
-/// New button render at default.
-///
-pub fn render(in: Button, inner: UIRenders(a)) -> Render(a) {
-  let UIButton(text:, ..) = in
-  let inner = case text {
-    Some(text) -> [h.text(text), ..inner]
-    None -> inner
-  }
-  let render =
-    render.new(in.el)
-    |> render.elements(inner)
-
-  UIButtonRender(in:, render:)
-}
-
-/// Set button render onclick event.
-///
-pub fn onclick(at: Render(a), onclick: a) -> Render(a) {
-  onclick_opt(at, Some(onclick))
-}
-
-pub fn onclick_opt(at: Render(a), onclick: Option(a)) -> Render(a) {
-  let render =
-    render.attributes_opt(at.render, onclick, fn(evt) { [event.on_click(evt)] })
-
-  UIButtonRender(..at, render:)
-}
-
-/// Render button super element to `lustre/element.{type Element}`.
-///
-pub fn view(at: Render(a)) -> UIRender(a) {
-  let UIButtonRender(in:, render:) = at
-  let UIButton(disabled:, size:, ..) = in
-
-  let #(attrs, inner) =
-    render
-    |> render.attributes([
-      a.disabled(disabled),
-      a.classes([
-        #("px-4 py-3", size == Some(Md)),
-        #("px-5 py-3.5", size == Some(Lg)),
-        #("px-0 py-0", size == Some(Sm)),
-      ]),
-    ])
-    |> render.views()
-
-  h.button(attrs, inner)
-}
-
-pub fn grouped(
-  buttons: List(#(UIAttrs(a), Render(a))),
-  attrs: UIAttrs(a),
-) -> UIRender(a) {
-  buttons
-  |> list.map(fn(btn) {
-    let #(attrs, btn) = btn
-    h.div(attrs, [view(btn)])
-  })
-  |> h.div(attrs, _)
+  h.button(attributes, elements)
 }

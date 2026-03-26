@@ -25,20 +25,22 @@
 //// - Ter tipos algébricos puros (ADT) que possibilitem desenvolver componentes
 //// visuais e uma experiência rica para quem está visualizando no dispositivo.
 ////
-//// ## Arquitetura
+//// ## Arquitetura: Type-Safe Styled Systems
+////
+//// **CVA (Class Variance Authority)**
 ////
 //// - **UIVariant** (A Alma / Identidade): Responde à pergunta "Qual é o propósito
 //// dessa peça na interface?". É a ação principal? É um aviso? É uma ação destrutiva?
 //// A identidade não muda se o usuário mexer o mouse.
-//// - **UIState** (O Tempo / Interação): Responde à pergunta "O que o usuário (ou a rede)
-//// está fazendo com essa peça AGORA?". Ele está com o mouse em cima? Ele clicou?
-//// A rede está lenta e está carregando? O botão foi desativado?
 //// - **UIAppearance** (Filled, Ghost, Flat, Light) ela dita como a "tinta" da UIVariant
 //// é aplicada no componente:
 //// - **Filled**: Fundo pintado, texto branco/contraste.
 //// - **Light** (ou Soft): Fundo bem clarinho, texto escuro.
 //// - **Ghost**: Sem fundo, com borda. (Alguns chamam de Outlined).
 //// - **Flat** (ou Clear): Sem fundo, sem borda, só o texto pintado.
+//// - **UIState** (O Tempo / Interação): Responde à pergunta "O que o usuário (ou a rede)
+//// está fazendo com essa peça AGORA?". Ele está com o mouse em cima? Ele clicou?
+//// A rede está lenta e está carregando? O botão foi desativado?
 ////
 //// 🏆 O "Dream Team" da UI Matemática (theme.gleam)
 ////
@@ -83,12 +85,12 @@
 ////
 //// A "Fusão Nuclear" da pintura acontece cruzando as 3 dimensões:
 //// - UIVariant (Cor) x UIAppearance (Preenchimento) x UIState (tempo):
-//// - Matemática: 8 (Variantes) * 6 (Aparências) * 7 (Estados)
-////   - Total: 336 combinações visuais únicas!
+//// - Matemática: 9 (Variantes) * 8 (Aparências) * 7 (Estados)
+////   - Total: 504 combinações visuais únicas!
 ////
-//// ✨ A Mágica do Gleam: No Gleam, graças ao curinga (_), você não precisa escrever 336 blocos
+//// ✨ A Mágica do Gleam: No Gleam, graças ao curinga (_), você não precisa escrever 504 blocos
 //// de regras em CSS puro. Você mapeia apenas os 10 ou 15 caminhos felizes que o seu design aprova,
-//// e usa o `_, _, _ -> fallback(...)` para devorar as outras 320 combinações impossíveis/indesejadas
+//// e usa o `_, _, _ -> fallback(...)` para devorar as outras combinações impossíveis/indesejadas
 //// em uma linha só!
 ////
 //// 🌌 O Cálculo do Universo (As 8 Dimensões)
@@ -96,64 +98,31 @@
 //// Se nós pegarmos um único elemento genérico (como um div atômico) e permitirmos que o
 //// desenvolvedor configure livremente as 8 dimensões, qual será o tamanho da nossa "Ontologia de UI"?
 ////
-//// - Matemática: 8 * 6 * 7 * 7 * 5 * 6 * 7 * 6
-////   - Total Exato: 2.963.520 de estados possíveis.
+//// - Matemática: 9 * 8 * 7 * 7 * 5 * 6 * 8 * 6
+////   - Total Exato: 5.080.320 de estados possíveis.
 ////
-//// Quase **3 MILHÕES** de formas de desenhar um componente! 🤯
+//// Mais de **5 MILHÕES** de formas de desenhar um componente! 🤯
+////
+////
+//// ## Explicando o sufixo `Default` e `Ancestor`
+////
+//// Para todos tipos de tema, inclusive os (size, shape, elevation, stacking),
+//// temos dois sufixos importantes `Ancestor` e `Default`, segue um exemplo
+//// usando o `UIVariant`:
+////
+//// - O VariantAncestor (A Herança): Ele significa "Eu não tenho cor própria,
+//// olhe para o meu pai e faça o que ele mandar (ou padrão do dispositivo)"
+////  (no CSS, isso é o inherit ou o currentColor).
+//// - O VariantDefault (O Reset/Neutro): Ele significa "Eu quero a cor padrão
+//// original deste componente, não importa onde eu esteja".
 ////
 //// ---
 ////
-//// **Seja bem-vindo** ao lado luminoso (Gleam) da Força (Funcional) e comece a rir do seu próprio
-//// "Gollum" OOP ("My precioussss/objectssss!" 💍🧟‍♂️) e vai ser a melhor parte do meu dia!
-
-/// Como controlar o empilhamento dos elementos.
-///
-/// - IndexBase: 1
-/// - IndexXxs:  9
-/// - IndexXs:   99
-/// - IndexSm:   999
-/// - IndexLg:   9999
-/// - IndexXl:   99999
-/// - IndexXxl:  999999
-pub type UIStacking {
-  IndexXxs
-  IndexXs
-  IndexSm
-  IndexBase
-  IndexLg
-  IndexXl
-  IndexXxl
-}
-
-/// Como controlar a sensação de elevação dos elementos.
-///
-pub type UIElevation {
-  ElevationAncestor
-  /// Grudado no chão (Sem sombra)
-  ElevationFlat
-  /// Levemente levantado (Cards, Dropdowns sutis)
-  ElevationLow
-  /// Flutuando (Modais, Menus flutuantes)
-  ElevationMedium
-  /// Voando alto (Tooltips, Notificações Toast)
-  ElevationHigh
-  /// Afundado (Sombra interna, útil para inputs)
-  ElevationInner
-}
-
-/// Como controlar a herança:
-/// - initial: Define a propriedade para o valor padrão do CSS.
-/// - inherit: Força o elemento a herdar o valor do elemento pai.
-/// - all: inherit: Pode ser usado para forçar todas as propriedades a serem herdadas do pai
-///
-/// O padrão é recuperar o antecessor e se não encontrar recuperar as variantes padrões do
-/// dispositivo em que estamos pintando o elemento utilizando o tema específico.
-pub type UIAncestor {
-  AncestorDefault
-  AncestorInitial
-  AncestorInherit
-  AncestorAll
-}
+//// **The Ultimate Algebraic UI Theme**
+////
+//// **Seja bem-vindo** ao lado luminoso (Gleam) e da Força (Funcional) e comece
+//// a rir do seu próprio "Gollum" OOP ("My precioussss/objectssss!" 💍🧟‍♂️) e vai
+//// ser a melhor parte do meu dia! Eu garanto =)
 
 /// Variante semântica, conhecido como tema, de um elemento.
 ///
@@ -162,6 +131,7 @@ pub type UIAncestor {
 /// - VariantSecondary: A variante secundaria do tema.
 /// - VariantTertiary: A variante de fallback do tema.
 pub type UIVariant {
+  VariantDefault
   VariantAncestor
   VariantPrimary
   VariantSecondary
@@ -180,7 +150,7 @@ pub type UIVariant {
 /// Aparência de um elemento o seu estilo.
 ///
 pub type UIAppearance {
-  /// Default representa o estado intocado do elemento.
+  AppearanceDefault
   AppearanceAncestor
   /// Apresentam fundo de cor sólida, ideal para ações primárias devido à alta
   /// visibilidade.
@@ -220,17 +190,52 @@ pub type UIState {
   StateDisabled
 }
 
+/// Como controlar o empilhamento dos elementos.
+///
+/// - IndexBase: 1
+/// - IndexXxs:  9
+/// - IndexXs:   99
+/// - IndexSm:   999
+/// - IndexLg:   9999
+/// - IndexXl:   99999
+/// - IndexXxl:  999999
+pub type UIStacking {
+  StackAncestor
+  StackXxs
+  StackXs
+  StackSm
+  StackBase
+  StackLg
+  StackXl
+  StackXxl
+}
+
+/// Como controlar a sensação de elevação dos elementos.
+///
+pub type UIElevation {
+  ElevationAncestor
+  /// Grudado no chão (Sem sombra)
+  ElevationFlat
+  /// Levemente levantado (Cards, Dropdowns sutis)
+  ElevationLow
+  /// Flutuando (Modais, Menus flutuantes)
+  ElevationMedium
+  /// Voando alto (Tooltips, Notificações Toast)
+  ElevationHigh
+  /// Afundado (Sombra interna, útil para inputs)
+  ElevationInner
+}
+
 /// Escala do tamanho de um elemento.
 ///
 /// Definir Altura, Largura, Fonte e Espaçamento Interno (Padding).
 ///
 pub type UISize {
-  /// Default representa o estado intocado do elemento.
   SizeAncestor
   SizeXxl
   SizeXl
   SizeLg
-  SizeBase
+  SizeMd
   SizeSm
   SizeXs
 }
@@ -238,14 +243,14 @@ pub type UISize {
 /// o "quão redondo" é o elemento não depende do tamanho
 pub type UIShape {
   ShapeAncestor
-  ShapeSharp
   // Quadrado perfeito (0px radius)
-  ShapeRounded
+  ShapeSharp
   // Arredondamento suave (Design Web Clássico)
-  ShapePill
+  ShapeRounded(size: UISize, direction: UIDirection)
   // Bordas totalmente arredondadas (Design iOS/Mobile)
-  ShapeCircle
+  ShapePill
   // Círculo perfeito (Para avatares e icon_only)
+  ShapeCircle
 }
 
 /// Direção de um elemento esquerda, direita, cima, baixo ou centro
@@ -259,6 +264,19 @@ pub type UIDirection {
   DirectionBottom
 }
 
+/// Como controlar a herança:
+/// - initial: Define a propriedade para o valor padrão do CSS.
+/// - inherit: Força o elemento a herdar o valor do elemento pai.
+/// - all: inherit: Pode ser usado para forçar todas as propriedades a serem herdadas do pai
+///
+/// O padrão é recuperar o antecessor e se não encontrar recuperar as variantes padrões do
+/// dispositivo em que estamos pintando o elemento utilizando o tema específico.
+pub type UIAncestor {
+  AncestorInitial
+  AncestorInherit
+  AncestorAll
+}
+
 // --- Theme getters
 //
 
@@ -267,6 +285,7 @@ pub type UIDirection {
 pub fn get_variants() {
   [
     VariantAncestor,
+    VariantDefault,
     VariantPrimary,
     VariantSecondary,
     VariantTertiary,
@@ -282,6 +301,7 @@ pub fn get_variants() {
 pub fn get_aparrences() {
   [
     AppearanceAncestor,
+    AppearanceDefault,
     AppearanceLight,
     AppearanceThin,
     AppearanceFlat,
@@ -305,5 +325,5 @@ pub fn get_states() {
 /// Recupera toda a escala de tamanhos
 ///
 pub fn get_sizes() {
-  [SizeAncestor, SizeXxl, SizeXl, SizeLg, SizeBase, SizeSm, SizeXs]
+  [SizeAncestor, SizeXxl, SizeXl, SizeLg, SizeMd, SizeSm, SizeXs]
 }

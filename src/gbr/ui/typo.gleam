@@ -1,187 +1,55 @@
 ////
-//// ⌨ Gleam UI typography super element.
+//// ⌨ UI core typography elements
 ////
-
-import gleam/list
+//// Olá, aqui temos o componente visual para escrevermos textos na tela
+//// do usuário. Imagine este módulo como se fosse uma máquina de escrever
+//// com várias opções de fontes, tamanhos, etc.
+////
+//// Aqui só lidamos com DOM (HTML + a11y)
 
 import lustre/attribute as a
-import lustre/element
-import lustre/element/html
+import lustre/element as el
+import lustre/element/html as h
 
-import gbr/ui/core/el
-import gbr/ui/core/model.{type UIRender, type UIRenders}
+import gbr/ui/theme.{type UISize}
 
-/// List of typos grouped.
+/// UI typograph: tipo para escrevermos na tela.
 ///
-type Behavior {
+pub type UITypography {
   H1
   H2
   H3
   H4
-  Pre
-  Text
-  Paragraph
-  Label(String)
+  Pre(UISize)
+  Span(UISize)
+  Label(UISize)
+  Paragraph(UISize)
 }
 
-pub type UITypos =
-  List(UITypo)
+/// Aqui mostramos um texto sem estilo algum aplicado.
+///
+/// - tag: O tipo de tipografia que vamos mostrar na tela.
+/// - text: O conteúdo de texto que vamos mostrar na tela.
+/// - attributes: Lista de atributos do elemento de tipografia.
+///
+@internal
+pub fn to_element(
+  typo: UITypography,
+  text: String,
+  with attributes: List(a.Attribute(msg)),
+) -> el.Element(msg) {
+  let elements = [h.text(text)]
 
-/// Typo super element.
-///
-pub opaque type UITypo {
-  UITypo(el: el.UIEl, text: String, behavior: Behavior)
-}
-
-/// Text super element.
-///
-pub fn span(text: String) -> UITypo {
-  UITypo(el.new("span"), text:, behavior: Text)
-}
-
-/// Html <pre></pre> super element.
-///
-pub fn pre(text: String) -> UITypo {
-  UITypo(el.new("pre"), text:, behavior: Pre)
-}
-
-/// Text super element.
-///
-pub fn h1(text: String) -> UITypo {
-  UITypo(el.new("h1"), text:, behavior: H1)
-}
-
-/// Text super element.
-///
-pub fn h2(text: String) -> UITypo {
-  UITypo(el.new("h2"), text:, behavior: H2)
-}
-
-/// Text super element.
-///
-pub fn h3(text: String) -> UITypo {
-  UITypo(el.new("h3"), text:, behavior: H3)
-}
-
-/// Text super element.
-///
-pub fn h4(text: String) -> UITypo {
-  UITypo(el.new("h4"), text:, behavior: H4)
-}
-
-/// Paragraph super element.
-///
-/// - text: Text of paragraph
-///
-pub fn p(text: String) -> UITypo {
-  UITypo(el.new("text-p"), text:, behavior: Paragraph)
-}
-
-/// Paragraph super element.
-///
-pub fn label(for: String, text: String) -> UITypo {
-  UITypo(el.new("text-label"), text:, behavior: Label(for))
-}
-
-/// Replace text string in typo element
-///
-/// - text: Text to replace
-///
-/// > For construct see `span` or `p` or `h4`
-///
-pub fn text(in: UITypo, text: String) -> UITypo {
-  UITypo(..in, text:)
-}
-
-/// Set typo class attribute
-///
-/// - class: Class attribute value
-///
-pub fn class(in: UITypo, class: String) -> UITypo {
-  let el = el.class(in.el, class)
-
-  UITypo(..in, el:)
-}
-
-pub fn class_append(in: UITypo, class: String) -> UITypo {
-  let el = el.class_append(in.el, class)
-
-  UITypo(..in, el:)
-}
-
-/// Set typo class attribute
-///
-/// - class: Class attribute value
-///
-pub fn classes(in: UITypo, classes: model.UISwitches) -> UITypo {
-  let el = el.classes(in.el, classes)
-
-  UITypo(..in, el:)
-}
-
-/// Render inline typos layout.
-///
-pub fn inline(in: UITypos) -> UIRender(a) {
-  case group_reduce(in) {
-    Ok(inline) -> view(inline)
-    Error(Nil) -> element.none()
+  // Se a W3C mudar alguma regra de acessibilidade global para textos,
+  // alteramos AQUI e o sistema inteiro herda.
+  case typo {
+    H1 -> h.h1(attributes, elements)
+    H2 -> h.h2(attributes, elements)
+    H3 -> h.h3(attributes, elements)
+    H4 -> h.h4(attributes, elements)
+    Pre(_) -> h.pre(attributes, elements)
+    Span(_) -> h.span(attributes, elements)
+    Label(_) -> h.label(attributes, elements)
+    Paragraph(_) -> h.p(attributes, elements)
   }
-}
-
-/// Render horizontal typos layout.
-///
-pub fn styled(in: UITypos, class: String) -> UIRender(a) {
-  html.span([a.class(class)], grouped(in))
-}
-
-/// Render grouped typos layout.
-///
-pub fn grouped(in: UITypos) -> UIRenders(a) {
-  use typo <- list.map(in)
-
-  view(typo)
-}
-
-/// Render typo super element to `lustre/element.{type Element}`.
-///
-pub fn view(in: UITypo) -> UIRender(a) {
-  render_inner(in, [html.text(in.text)])
-}
-
-pub fn render_right(in: UITypo, inner: UIRenders(a)) -> UIRender(a) {
-  let inner = [html.text(in.text), ..inner]
-
-  render_inner(in, inner)
-}
-
-pub fn render_left(in: UITypo, inner: UIRenders(a)) -> UIRender(a) {
-  let inner = list.append(inner, [html.text(in.text)])
-
-  render_inner(in, inner)
-}
-
-// PRIVATE
-//
-
-fn render_inner(in: UITypo, inner: UIRenders(a)) -> UIRender(a) {
-  let UITypo(el:, behavior:, ..) = in
-
-  let attrs = el.attrs(el)
-
-  case behavior {
-    H1 -> html.h1(attrs, inner)
-    H2 -> html.h2(attrs, inner)
-    H3 -> html.h3(attrs, inner)
-    H4 -> html.h4(attrs, inner)
-    Pre -> html.pre(attrs, inner)
-    Text -> html.span(attrs, inner)
-    Paragraph -> html.p(attrs, inner)
-    Label(id) -> html.label([a.for(id), ..attrs], inner)
-  }
-}
-
-fn group_reduce(in: UITypos) -> Result(UITypo, Nil) {
-  use typo, acc <- list.reduce(in)
-
-  UITypo(..acc, text: typo.text <> " " <> acc.text)
 }

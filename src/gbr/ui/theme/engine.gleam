@@ -18,6 +18,12 @@
 
 import gleam/list
 
+import lustre/attribute as a
+
+/// DesingToken baseado em string e flat (on/off).
+type Tokens =
+  List(#(String, Bool))
+
 /// 🔒🎨 Nossa representação do tema utilizado.
 ///
 /// Aqui utilizamos o padrão da programação funcional chamado Padrão Interpretador
@@ -28,24 +34,69 @@ import gleam/list
 ///   - `engine.compose`: Esse é o nosso interpretador.
 ///
 /// **A Estrutura de Gavetas**: Cada componente preenche apenas o que precisa.
-pub type UITheme {
+///
+/// TODO (Fase 2): Implementar o DesignTokens em vez de string typed
+pub opaque type UITheme {
   UITheme(
-    base: List(#(String, Bool)),
-    size: List(#(String, Bool)),
-    shape: List(#(String, Bool)),
-    elevation: List(#(String, Bool)),
-    stacking: List(#(String, Bool)),
-    cosmetics: List(#(String, Bool)),
+    base: Tokens,
+    size: Tokens,
+    shape: Tokens,
+    elevation: Tokens,
+    stacking: Tokens,
+    cosmetics: Tokens,
   )
 }
 
-/// Compõem o vocabulário em estilos visuais ordenados e padronizados p/ serem
-/// utilizado e convertidos à interface desejada.
+/// Criar uma nova representação do tema.
 ///
-/// - theme: O vabulário semântico visual dos componentes da interface.
+/// Veja mais sobre em `core/theme.gleam`.
+///
+/// - base: Atributos da base do componente visual.
+/// - size: Atributos de tamanho do componente visual.
+/// - shape: Atributos do formato do componente visual.
+/// - elevation: Atributos da sensação de elevação do componente visual.
+/// - stacking: Atributes do empilhamento do componente visual.
+/// - cosmetics: Atributes do estilo visual do componente.
+pub fn new(base: Tokens) {
+  UITheme(
+    base:,
+    size: [],
+    shape: [],
+    elevation: [],
+    stacking: [],
+    cosmetics: [],
+  )
+}
+
+pub fn with_size(theme: UITheme, size: Tokens) {
+  UITheme(..theme, size:)
+}
+
+pub fn with_shape(theme: UITheme, shape: Tokens) {
+  UITheme(..theme, shape:)
+}
+
+pub fn with_elevation(theme: UITheme, elevation: Tokens) {
+  UITheme(..theme, elevation:)
+}
+
+pub fn with_stacking(theme: UITheme, stacking: Tokens) {
+  UITheme(..theme, stacking:)
+}
+
+pub fn with_cosmetics(theme: UITheme, cosmetics: Tokens) {
+  UITheme(..theme, cosmetics:)
+}
+
+/// Compõem o vocabulário em estilos visuais ordenados e padronizados p/ serem
+/// utilizado e convertidos à interface desejada. Nesta função estamos
+/// convertendo nosso DesignToken p/ um atributo lustre `classes`, que fornece
+/// exatamente a mesma estrutura que nosso DesignToken List(#(String, Bool)).
+///
+/// - theme.gleam: O vabulário semântico visual dos componentes da interface.
 ///
 /// A BLINDAGEM (O Template Method)
-pub fn compose(theme: UITheme) -> List(#(String, Bool)) {
+pub fn convert_tailwind_to_lustre(theme: UITheme) -> a.Attribute(msg) {
   list.flatten([
     theme.base,
     theme.size,
@@ -54,4 +105,5 @@ pub fn compose(theme: UITheme) -> List(#(String, Bool)) {
     theme.stacking,
     theme.cosmetics,
   ])
+  |> a.classes()
 }

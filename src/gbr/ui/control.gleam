@@ -10,7 +10,7 @@
 
 import gleam/option.{type Option}
 
-import gbr/ui/core/img
+import gbr/ui/image
 
 /// Representa um controle binário (Ligado/Desligado, Aberto/Fechado).
 /// Junta o estado atual temos a mensagem que deve ser disparada ao interagir.
@@ -23,5 +23,5 @@ pub type Toggle(msg) {
 /// texto seguindo esta imagem obrigatória.
 ///
 pub type Image(msg) {
-  Image(image: img.UIImage, label: Option(String), on_click: msg)
+  Image(image: image.UIImage, label: Option(String), on_click: Option(msg))
 }

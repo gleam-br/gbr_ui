@@ -30,6 +30,9 @@
   --text-title-md--line-height: 44px;
   --text-title-sm: 30px;
   --text-title-sm--line-height: 38px;
+
+  --text-theme-2xl: 22px;
+  --text-theme-2xl--line-height: 40px;
   --text-theme-xl: 20px;
   --text-theme-xl--line-height: 30px;
   --text-theme-sm: 14px;
@@ -187,6 +190,49 @@
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
+  }
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* General datetime styling */
+/* Sizing and spacing */
+/* or line-height, depending on your needs */
+/* Borders and backgrounds */
+input[type="datetime-local"],
+input[type="date"],
+input[type="time"],
+input[type="week"],
+input[type="month"] {
+  color: var(--color-gray-800);
+  font-size: 14px;
+  font-family: var(--default-font-family), sans-serif;
+
+  -padding: 4px;
+
+  border: 1px solid var(--color-gray-300);
+  border-radius: 8px;
+  background-color: var(--color-gray-25);
+
+  &::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    border-radius: 2px;
+    background-color: var(--color-gray-200);
+  }
+
+  &:is(.dark *) {
+    color: var(--color-gray-400);
+    border-color: var(--color-gray-700);
+    background-color: var(--color-gray-900);
+
+    &::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      border-color: var(--color-gray-700);
+      border-radius: 2px;
+      background-color: var(--color-gray-600);
+    }
   }
 }
 
