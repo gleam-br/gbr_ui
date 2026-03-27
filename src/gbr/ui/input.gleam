@@ -9,6 +9,8 @@ import lustre/attribute as a
 import lustre/element as el
 import lustre/element/html as h
 
+import gbr/ui/theme
+
 /// O tipo de componente de input queremos representar
 pub type UIInputType {
   /// Um controle para inserir um número de telefone. Exibe um teclado telefônico
@@ -34,10 +36,8 @@ pub type UIInputType {
   /// Um controle para inserir um número cujo valor exato não é importante. Exibe-se
   /// como um widget de intervalo, com o valor médio como padrão. Usado em conjunto
   /// com os controles min e max para definir o intervalo de valores aceitáveis.
+  /// TODO: Range merecesse um slider customizado no futuro!
   InputRange
-  /// Um botão de opção, que permite selecionar um único valor dentre várias opções
-  /// com o mesmo nome.
-  InputRadio
   /// Um controle para inserir um número. Exibe um indicador de seleção e adiciona
   /// validação padrão. Exibe um teclado numérico em alguns dispositivos com teclados
   /// dinâmicos.
@@ -57,28 +57,60 @@ pub type UIInputType {
   /// de data ou listas numéricas para componentes de data e hora quando ativo em
   /// navegadores compatíveis.
   InputDateTimeLocal
-  /// Um botão de pressão sem comportamento padrão, exibindo o valor do atributo
-  /// `value`, que por padrão está vazio.
-  InputButton
-  /// Um botão que submete um formulário.
-  InputSubmit
-  /// Uma caixa de seleção que permite selecionar/desmarcar valores individuais.
-  InputCheckbox
-  /// Um controle que permite ao usuário selecionar um arquivo. Use o atributo
-  /// accept para definir os tipos de arquivos que o controle pode selecionar.
-  InputFile
-  /// Um controle que não é exibido, mas cujo valor é enviado ao servidor.
-  /// Há um exemplo na próxima coluna, mas está oculto!
-  InputHidden
-  /// Um botão gráfico de envio. Exibe uma imagem definida pelo atributo src.
-  /// O atributo alt é exibido caso o atributo src da imagem esteja ausente.
-  InputImage
   /// Um campo de texto de linha única para inserir termos de pesquisa. As
   /// quebras de linha são removidas automaticamente do valor de entrada.
   /// Pode incluir um ícone de exclusão em navegadores compatíveis, que pode ser
   /// usado para limpar o campo. Exibe um ícone de pesquisa em vez da tecla Enter
   /// em alguns dispositivos com teclados dinâmicos.
   InputSearch
+  // ❌ InputButton (Use button.gleam)
+  // ❌ InputSubmit (Use button.gleam com button.ButtonSubmit)
+  // ❌ InputImage (Obsoleto, use button com imagem dentro)
+  // ❌ InputCheckbox (Use checkbox.gleam que já tem o estado Booleano)
+  // ❌ InputRadio (Use radio.gleam focado em Booleanos/Enums)
+  // ❌ InputHidden (No Lustre, se você precisa de um dado oculto, você apenas
+  // guarda no Model.
+}
+
+/// O tipo que representa a nota de rodapé p/ o input.
+///
+/// - NoteInfo: Texto no estilo informativo.
+/// - NoteSuccess: Texto no estilo de sucesso.
+/// - NoteError: Texto no estilo de error.
+/// - NoteWarn: Texto no estilo de alerta.
+pub type UIInputNote {
+  NoteInfo(text: String)
+  NoteSuccess(text: String)
+  NoteError(text: String)
+  NoteWarn(text: String)
+}
+
+/// O tipo para representar um input administrativo.
+///
+/// - id: Identificador html, necessário.
+/// - value: Valor do input opicional, quando `None` o input não foi tocado.
+/// - label: Valor do label opicional, segue o atribute `a.for(input.id)`.
+/// - note: Nota de rodapé opicional p/ o input.
+pub type UIInput {
+  UIInput(
+    id: String,
+    // `None` p/ um input intocado ainda, Some("") já foi digitado e apagado.
+    // Evitamos mostrar erros de validação de input vazio ao carregar a página.
+    value: Option(String),
+    label: Option(String),
+    note: Option(UIInputNote),
+    placeholder: Option(String),
+  )
+}
+
+/// Converte a nota do input p/ a variant correta do tema
+pub fn note_to_variant(note) {
+  case note {
+    NoteInfo(_) -> theme.VariantInfo
+    NoteSuccess(_) -> theme.VariantSuccess
+    NoteError(_) -> theme.VariantError
+    NoteWarn(_) -> theme.VariantWarning
+  }
 }
 
 /// Converte a representação de um input em um elemento lustre.
@@ -103,8 +135,6 @@ pub fn to_element(
 
 fn get_type_(type_) {
   case type_ {
-    InputButton -> "button"
-    InputCheckbox -> "checkbox"
     InputTel -> "tel"
     InputEmail -> "email"
     InputText -> "text"
@@ -112,17 +142,12 @@ fn get_type_(type_) {
     InputUrl -> "url"
     InputColor -> "color"
     InputRange -> "range"
-    InputRadio -> "radio"
     InputNumber -> "number"
     InputDate -> "date"
     InputTime -> "time"
     InputWeek -> "week"
     InputMonth -> "month"
     InputDateTimeLocal -> "datetime-local"
-    InputFile -> "file"
-    InputHidden -> "hidden"
-    InputImage -> "image"
-    InputSubmit -> "submit"
     InputSearch -> "search"
   }
   |> a.type_()
