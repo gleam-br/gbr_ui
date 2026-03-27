@@ -28,6 +28,9 @@ pub fn to_element(
   h.button(attributes, elements)
 }
 
+// PRIVATE
+//
+
 fn button_to_type(button: UIButton) {
   case button {
     ButtonSubmit -> "submit"
