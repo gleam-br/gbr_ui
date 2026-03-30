@@ -2,7 +2,7 @@
 //// ️🌄 UI core image module
 ////
 
-import gleam/option.{type Option, None}
+import gleam/option.{type Option, None, Some}
 
 import lustre/attribute as a
 import lustre/element as el
@@ -13,7 +13,7 @@ import lustre/event as e
 ///
 /// - src: Localização da imagem.
 /// - alt: Texto alternativo da imagem p/ a11y.
-pub opaque type UIImage {
+pub type UIImage {
   UIImage(src: String, alt: Option(String))
 }
 
@@ -26,8 +26,8 @@ pub fn new(src: String) -> UIImage {
 
 /// Inclui o texto alternativo p/ a imagem
 ///
-pub fn with_alt(image: UIImage, alt: Option(String)) -> UIImage {
-  UIImage(..image, alt:)
+pub fn with_alt(image: UIImage, alt: String) -> UIImage {
+  UIImage(..image, alt: Some(alt))
 }
 
 /// UI image view: Mostra um elemento de imagem na tela de forma administrativa.
