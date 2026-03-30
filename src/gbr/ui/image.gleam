@@ -30,15 +30,24 @@ pub fn with_alt(image: UIImage, alt: Option(String)) -> UIImage {
   UIImage(..image, alt:)
 }
 
+/// UI image view: Mostra um elemento de imagem na tela de forma administrativa.
+///
+/// - image: Imagem que vamos mostrar na tela.
+/// - with: Lista de atributos da imagem.
+@internal
+pub fn to_element(image: UIImage, with attributes: List(a.Attribute(msg))) {
+  to_element_with_click(image, None, attributes)
+}
+
 /// UI image view: Mostra um elemento de imagem na tela.
 ///
 /// - src: Imagem que vamos mostrar na tela.
 /// - alt: Option alternativa de texto.
 /// - with: Lista de atributos da imagem.
 @internal
-pub fn to_element(
+pub fn to_element_with_click(
   image: UIImage,
-  on_click: Option(msg),
+  click on_click: Option(msg),
   with attributes: List(a.Attribute(msg)),
 ) -> el.Element(msg) {
   let UIImage(src:, alt:) = image
