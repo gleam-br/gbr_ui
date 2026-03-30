@@ -1,5 +1,5 @@
 ////
-//// UI core theme engine module
+//// 🔩 UI core theme engine module
 ////
 //// engine.theme - Interpretador obrigatório do nosso vocabulário.
 //// > Princípio do Menor Privilégio (PoLP)
@@ -18,10 +18,8 @@
 
 import gleam/list
 
-import lustre/attribute as a
-
 /// DesingToken baseado em string e flat (on/off).
-type Tokens =
+pub type Tokens =
   List(#(String, Bool))
 
 /// 🔒🎨 Nossa representação do tema utilizado.
@@ -89,14 +87,15 @@ pub fn with_cosmetics(theme: UITheme, cosmetics: Tokens) {
 }
 
 /// Compõem o vocabulário em estilos visuais ordenados e padronizados p/ serem
-/// utilizado e convertidos à interface desejada. Nesta função estamos
-/// convertendo nosso DesignToken p/ um atributo lustre `classes`, que fornece
-/// exatamente a mesma estrutura que nosso DesignToken List(#(String, Bool)).
+/// utilizado e convertidos à interface desejada. Nesta função estamos convertendo
+/// nosso DesignToken p/ a estrutura que nosso atual DesignToken baseado em
+/// String Typed -> List(#(String, Bool)).
+/// > Mesma assinatura dos argumentos em `lustre/attribute.classes(args)`
 ///
 /// - theme.gleam: O vabulário semântico visual dos componentes da interface.
 ///
 /// A BLINDAGEM (O Template Method)
-pub fn convert_tailwind_to_lustre(theme: UITheme) -> a.Attribute(msg) {
+pub fn resolve(theme: UITheme) -> Tokens {
   list.flatten([
     theme.base,
     theme.size,
@@ -105,5 +104,4 @@ pub fn convert_tailwind_to_lustre(theme: UITheme) -> a.Attribute(msg) {
     theme.stacking,
     theme.cosmetics,
   ])
-  |> a.classes()
 }

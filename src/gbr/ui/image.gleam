@@ -1,5 +1,5 @@
 ////
-//// UI core image module
+//// ️🌄 UI core image module
 ////
 
 import gleam/option.{type Option, None}

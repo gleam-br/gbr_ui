@@ -1,5 +1,5 @@
 ////
-//// ⌨ UI core typography elements
+//// ✍🏻 UI core typography elements
 ////
 //// Olá, aqui temos o componente visual para escrevermos textos na tela
 //// do usuário. Imagine este módulo como se fosse uma máquina de escrever

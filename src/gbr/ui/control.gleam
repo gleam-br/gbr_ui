@@ -1,5 +1,5 @@
 ////
-//// UI core control module
+//// 🕹️ UI core control module
 ////
 //// Olá, aqui estamos no módulo usado para distribuir estruturas e funcionalidades
 //// de controle para nossos elementos de UI.

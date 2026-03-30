@@ -1,7 +1,7 @@
 ////
-//// UI core button module
+//// 🎛️ UI core button module
 ////
-//// Olá, aqui estamos diante do element botão que é representado aqui através
+//// Olá, aqui estamos diante do elemento botão que é representado aqui através
 //// da sua estrutura DOM + a11y, sem estilo visual.
 
 import lustre/attribute as a
