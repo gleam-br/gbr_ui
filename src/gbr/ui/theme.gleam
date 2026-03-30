@@ -1,8 +1,8 @@
 ////
-//// 🤺✨ UI core theme module
+//// 💎✨ UI core theme module
 ////
 //// theme.gleam = Vocabulário de Componentes Visuais.
-//// > Princípio da Responsabilidade Única (SRP)
+//// > 🤺 Princípio da Responsabilidade Única (SRP)
 ////
 //// Olá, como vai? Preparado para uma jornada ao mundo dos "Design System Algébricos"?
 ////

@@ -7,43 +7,44 @@
 
 Library based on [TailAdmin](https://tailadmin.com/)
 
-🌝 Nothing stateful only stateless uses only lustre render functions.
+🌝 https://atomicdesign.bradfrost.com/
+
 
 ## 🌄 Roadmap
 
 - [ ] Unit tests
 - [ ] More docs
-- [ ] UI notify
 - [x] UI login page
-  - [ ] basic(user,passwd) WIP
-    - [ ] remove hardcode input title, labels, etc
-  - [ ] provider WIP
-- [x] UI home page
-  - [x] Header
-  - [x] Sidebar
-- [x] UI box
-- [x] UI header
-- [x] UI sidebar
-- [x] UI search
-- [x] UI profile
-- [x] UI layout
-- [x] UI core
-- [x] UI input
-- [x] UI typo
-- [x] UI alert
-- [x] UI svg
-- [x] UI form
-- [x] UI button
-- [x] UI select
-- [x] UI checkbox
-- [x] UI logotype
-- [x] UI breadcrumb
-- [x] UI separator
-- [x] GH workflow
-  - [x] test & build
-  - [x] changelog & issue to doc
-  - [x] ~~auto publish~~ manual publish
-    - [x] `gleam publish`
+  - [x] basic(user,passwd)
+  - [x] providers
+- [ ] UI home page
+  - [ ] Header
+  - [ ] Sidebar
+- [ ] UI notify
+- [ ] UI box
+- [ ] UI header
+- [ ] UI sidebar
+- [ ] UI search
+- [ ] UI profile
+- [ ] UI layout
+- [ ] UI core
+- [ ] UI input
+- [ ] UI typo
+- [ ] UI alert
+- [ ] UI svg
+- [ ] UI form
+- [ ] UI button
+- [ ] UI select
+- [ ] UI checkbox
+- [ ] UI logotype
+- [ ] UI breadcrumb
+- [ ] UI separator
+- [ ] GH workflow
+  - [ ] test & build
+  - [ ] changelog & issue to doc
+  - [ ] ~~auto publish~~ manual publish
+    - [ ] `gleam publish`
+
 ## Demo
 
 - [gbr-ui-demo](https://github.com/gleam-br/gbr-ui-demo): Project using this library and [vite](https://vite.dev/) with [vite-plugin-gleam](https://github.com/gleam-br/vite-plugin-gleam).
