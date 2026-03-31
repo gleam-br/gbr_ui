@@ -3,12 +3,7 @@
 
 @import "./gbr_ui_base.css";
 
-/* O Admin "Azul" corporativo */
 @theme {
-  /* =========================================
-     PALETAS LITERAIS (A identidade visual)
-     ========================================= */
-
   --color-brand-25: #f2f7ff;
   --color-brand-50: #ecf3ff;
   --color-brand-100: #dde9ff;
@@ -50,18 +45,7 @@
   --color-warning-500: #f79009;
   --color-warning-600: #dc6803;
 
-  --color-blue-light-50: #f0f9ff;
-  --color-blue-light-100: #e0f2fe;
-  --color-blue-light-500: #0ba5ec;
-  --color-blue-light-600: #0086c9;
-
-
-  /* =========================================
-     O CONTRATO SEMÂNTICO (A Mágica da Arquitetura)
-     Aqui nós ligamos a paleta literal ao motor GBR UI
-     ========================================= */
-
-  /* Dimensão 1: Ação e Intenção */
+  /* Cores de Ação */
   --color-primary-50: var(--color-brand-50);
   --color-primary-100: var(--color-brand-100);
   --color-primary-400: var(--color-brand-400);
@@ -86,17 +70,52 @@
   --color-warning-500: var(--color-warning-500);
   --color-warning-content: var(--color-white);
 
-  --color-info-50: var(--color-blue-light-50);
-  --color-info-100: var(--color-blue-light-100);
-  --color-info-500: var(--color-blue-light-500);
-  --color-info-content: var(--color-white);
-
-  /* Dimensão 2: Superfícies e Textos (Light Mode Base) */
+  /* Superfícies e Textos (Luz Ligada) */
   --color-base: var(--color-gray-50);
   --color-surface: var(--color-white);
   --color-surface-muted: var(--color-gray-100);
 
   --color-content: var(--color-gray-900);
-  --color-content-muted: var(--color-gray-500);
+  --color-content-muted: var(--color-gray-600);
   --color-border: var(--color-gray-200);
+}
+
+@layer theme {
+
+  /* ESTADO: LIGHT MODE (Padrão) */
+  :root,
+  :host {
+    --sys-base: var(--color-gray-50);
+    --sys-surface: var(--color-white);
+    --sys-surface-muted: var(--color-gray-100);
+
+    --sys-content: var(--color-gray-900);
+    --sys-content-muted: var(--color-gray-600);
+    --sys-border: var(--color-gray-200);
+  }
+
+  /* ESTADO: DARK MODE 
+     Atende a classe .dark no <html> */
+  :root.dark,
+  .dark {
+    --sys-base: var(--color-gray-950);
+    --sys-surface: var(--color-gray-900);
+    --sys-surface-muted: var(--color-gray-800);
+
+    --sys-content: rgba(255, 255, 255, 0.9);
+    --sys-content-muted: var(--color-gray-400);
+    --sys-border: var(--color-gray-700);
+  }
+
+  /* Quando a classe .dark entra no <body> ou outro elemento! */
+  .dark {
+    --color-base: var(--color-gray-950);
+    --color-surface: var(--color-gray-900);
+    --color-surface-muted: var(--color-gray-800);
+
+    --color-content: rgba(255, 255, 255, 0.9);
+    /* Branco 90% p/ leitura suave */
+    --color-content-muted: var(--color-gray-400);
+    --color-border: var(--color-gray-700);
+  }
 }
