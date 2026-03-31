@@ -142,8 +142,31 @@ pub fn p(
   p_with_size(text, get_size_default(), attributes:)
 }
 
+pub fn p_with_size(
+  text: String,
+  size: UISize,
+  attributes attributes: List(a.Attribute(msg)),
+) {
+  view_default(typo.Paragraph(size), text, attributes:)
+}
+
 pub fn p_ghost(text: String, attributes attributes: List(a.Attribute(msg))) {
   p_with_appearance(text, theme.AppearanceGhost, attributes)
+}
+
+pub fn p_with_variant(
+  text: String,
+  variant: UIVariant,
+  attributes attributes: List(a.Attribute(msg)),
+) -> el.Element(msg) {
+  view(
+    typo.Paragraph(get_size_default()),
+    text,
+    variant:,
+    attributes:,
+    appearance: theme.AppearanceDefault,
+    state: theme.StateIdle,
+  )
 }
 
 pub fn p_with_appearance(
@@ -159,14 +182,6 @@ pub fn p_with_appearance(
     variant: theme.VariantDefault,
     state: theme.StateIdle,
   )
-}
-
-pub fn p_with_size(
-  text: String,
-  size: UISize,
-  attributes attributes: List(a.Attribute(msg)),
-) {
-  view_default(typo.Paragraph(size), text, attributes:)
 }
 
 /// Label
@@ -187,7 +202,7 @@ pub fn label_with_size(
     typo.Label(size),
     text,
     state: theme.StateIdle,
-    variant: theme.VariantInfo,
+    variant: theme.VariantDefault,
     appearance: theme.AppearanceDefault,
     attributes:,
   )
@@ -319,7 +334,9 @@ fn paint_theme(
 }
 
 fn base_classes() {
-  [#("text-pretty md:text-balance text-ellipsis md:text-clip", True)]
+  [
+    #("text-pretty md:text-balance text-ellipsis md:text-clip", True),
+  ]
 }
 
 fn stack_classes(stacking) {
@@ -388,7 +405,7 @@ fn size_classes(typo) {
 // A PINTURA DO TEXTO (Cor, Densidade e Estado)
 fn cosmetic_classes(variant variant, appearance appearance, state state) {
   let variant = case variant {
-    theme.VariantDefault -> [#("text-content", True)]
+    theme.VariantInfo | theme.VariantDefault -> [#("text-content", True)]
     theme.VariantPrimary -> [#("text-primary-900", True)]
     theme.VariantSecondary -> [
       #("text-secondary-800", True),
@@ -400,7 +417,6 @@ fn cosmetic_classes(variant variant, appearance appearance, state state) {
     theme.VariantSuccess -> [#("text-success-900", True)]
     theme.VariantWarning -> [#("text-warning-800", True)]
     theme.VariantError -> [#("text-danger-800", True)]
-    theme.VariantInfo -> [#("text-info-900", True)]
 
     theme.VariantAncestor -> [#("text-inherit", True)]
   }
