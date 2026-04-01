@@ -1,5 +1,5 @@
 ////
-//// UI button group tailwindcss module
+//// UI tailwindcss button group module
 ////
 
 import lustre/attribute as a

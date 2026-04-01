@@ -1,9 +1,9 @@
 ////
-//// 📥 UI input module
+//// 📥 UI core input module
 ////
 //// Olá, neste módulo podemos encontrar a representação de um input.
 
-import gleam/option.{type Option}
+import gleam/option.{type Option, None, Some}
 
 import lustre/attribute as a
 import lustre/element as el
@@ -151,4 +151,63 @@ fn get_type_(type_) {
     InputSearch -> "search"
   }
   |> a.type_()
+}
+
+/// Criar um novo tipo que representa um input pelo identificador
+///
+/// - id: Identificador html.
+pub fn new(id: String) {
+  UIInput(id:, value: None, label: None, note: None, placeholder: None)
+}
+
+/// Incluir o valor ao input
+///
+/// - value: Valor do input.
+pub fn with_value(input: UIInput, value: String) -> UIInput {
+  UIInput(..input, value: Some(value))
+}
+
+/// Incluir um label ao input
+///
+/// - label: Label p/ este input.
+pub fn with_label(input: UIInput, label: String) -> UIInput {
+  UIInput(..input, label: Some(label))
+}
+
+/// Incluir um placeholder ao input
+///
+/// - label: Placeholder p/ este input.
+pub fn with_placeholder(input: UIInput, placeholder: String) -> UIInput {
+  UIInput(..input, placeholder: Some(placeholder))
+}
+
+/// Incluir uma nota de rodapé ao input.
+///
+/// - note: A nota de rodapé, ver funções: `note`,`note_info`, etc.
+pub fn with_note(input: UIInput, note: UIInputNote) -> UIInput {
+  UIInput(..input, note: Some(note))
+}
+
+pub fn without_note(input: UIInput) -> UIInput {
+  UIInput(..input, note: None)
+}
+
+/// Criar uma nota de rodapé informativo.
+pub fn note(text: String) -> UIInputNote {
+  NoteInfo(text:)
+}
+
+/// Criar uma nota de rodapé de sucesso.
+pub fn note_success(text: String) -> UIInputNote {
+  NoteSuccess(text:)
+}
+
+/// Criar uma nota de rodapé de alerta.
+pub fn note_warn(text: String) -> UIInputNote {
+  NoteWarn(text:)
+}
+
+/// Criar uma nota de rodapé de erro.
+pub fn note_error(text: String) -> UIInputNote {
+  NoteError(text:)
 }

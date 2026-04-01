@@ -9,8 +9,50 @@ import lustre/element/html as h
 
 import gbr/ui/theme
 
+// ==========================================
+// 🏗️ MACRO LAYOUTS (Os "App Shells")
+// Focados EXCLUSIVAMENTE em distribuir espaço na tela inteira.
+// SEM CORES. SEM BORDAS. (A View injeta as cores via `attributes`)
+// ==========================================
+
+/// O `Application` somente fullscreen, perfeito p/ o organismo de login, onde
+/// temos o lado esquerdo contendo o formulário de login e na direita temos o
+/// hero do login, podendo ser um imagem de boas-vindas.
+///
+/// Possibilita um layout fullscreen com tratamentos de scroll entre outros.
+///
+/// - attributes: Lista de attributos lustre p/ este layout.
+/// - inner: Lista de elements lustre internos deste layout.
+pub fn application_fullscreen(
+  elements: List(el.Element(msg)),
+  with attributes: List(a.Attribute(msg)),
+) -> el.Element(msg) {
+  h.div(
+    [
+      a.class(
+        "relative sm:p-0 flex h-screen w-full flex-col lg:flex-row justify-center",
+      ),
+      ..attributes
+    ],
+    elements,
+  )
+}
+
+/// Um container split screen (Tela Dividida).
+/// Lado esquerdo, lado direito e atributos da idetidade visual.
+pub fn container_split_screen(
+  left left: el.Element(msg),
+  right right: el.Element(msg),
+  with attributes: List(a.Attribute(msg)),
+) -> el.Element(msg) {
+  h.div([a.class("flex h-screen w-full flex-wrap"), ..attributes], [
+    h.div([a.class("flex flex-1 flex-col w-full lg:w-1/2")], [left]),
+    h.div([a.class("hidden w-full lg:flex lg:w-1/2")], [right]),
+  ])
+}
+
 /// O Layout Centralizado Absoluto.
-/// Útil para Loading Screens, Modais e 404 Simples.
+/// Útil para Loading (spinner) Screens, Modais e 404 Simples.
 pub fn center_screen(
   attributes: List(a.Attribute(msg)),
   inner elements: List(el.Element(msg)),

@@ -1,5 +1,5 @@
 ////
-//// 🐯 Gleam UI super lustre element svg.
+//// 🐯 UI core svg module
 ////
 //// Olá, tudo bem? Aqui estamos no módulo que encanta os olhos de qualquer um
 //// os ícones e imagens vetorias (SVG), animadas ou não. Neste módulo temos

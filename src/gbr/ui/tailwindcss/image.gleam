@@ -1,5 +1,5 @@
 ////
-//// UI tailwind image module
+//// UI tailwindcss image module
 ////
 
 import gleam/function
