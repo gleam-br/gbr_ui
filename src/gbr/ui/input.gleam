@@ -100,6 +100,7 @@ pub type UIInput {
     label: Option(String),
     note: Option(UIInputNote),
     placeholder: Option(String),
+    is_valid: Bool,
   )
 }
 
@@ -130,7 +131,7 @@ pub fn to_element(
   h.input([a.id(id), type_, value, ..attributes])
 }
 
-// PRIVATE
+// ----- Private
 //
 
 fn get_type_(type_) {
@@ -157,7 +158,14 @@ fn get_type_(type_) {
 ///
 /// - id: Identificador html.
 pub fn new(id: String) {
-  UIInput(id:, value: None, label: None, note: None, placeholder: None)
+  UIInput(
+    id:,
+    value: None,
+    label: None,
+    note: None,
+    placeholder: None,
+    is_valid: False,
+  )
 }
 
 /// Incluir o valor ao input
@@ -179,6 +187,14 @@ pub fn with_label(input: UIInput, label: String) -> UIInput {
 /// - label: Placeholder p/ este input.
 pub fn with_placeholder(input: UIInput, placeholder: String) -> UIInput {
   UIInput(..input, placeholder: Some(placeholder))
+}
+
+/// Incluir se input é válido ou não.
+///
+/// - is_valid: True, se válido, False se inválido.
+///
+pub fn is_valid(input: UIInput, is_valid: Bool) -> UIInput {
+  UIInput(..input, is_valid:)
 }
 
 /// Incluir uma nota de rodapé ao input.

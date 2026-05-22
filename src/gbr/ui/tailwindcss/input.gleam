@@ -31,6 +31,8 @@ pub const with_placeholder = input.with_placeholder
 
 pub const with_note = input.with_note
 
+pub const is_valid = input.is_valid
+
 pub const without_note = input.without_note
 
 pub const note = input.note
@@ -49,7 +51,7 @@ pub fn text(
   input: input.UIInput,
   attributes attributes: List(a.Attribute(msg)),
 ) -> el.Element(msg) {
-  let input.UIInput(id:, value:, label:, note:, placeholder:) = input
+  let input.UIInput(id:, value:, label:, note:, placeholder:, ..) = input
   let placeholder = placeholder_to_attribute(placeholder)
 
   view_default(

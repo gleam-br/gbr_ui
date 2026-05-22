@@ -56,26 +56,39 @@ import gbr/ui/theme
 ///   }
 /// }
 /// ```
-pub fn view(children: List(el.Element(msg))) -> el.Element(msg) {
+pub fn view_fullscreen(
+  children: List(el.Element(msg)),
+  attributes: List(a.Attribute(msg)),
+) -> el.Element(msg) {
+  let loader = view_default(children, attributes)
+
   layout.center_screen([layout.with_z_index(theme.StackXxl)], [
-    h.div(paint_theme_default([]), children),
+    loader,
   ])
 }
 
-// PRIVATE
+pub fn view_default(
+  children: List(el.Element(msg)),
+  attributes: List(a.Attribute(msg)),
+) {
+  let classes = paint_theme_default()
+  h.div([classes, ..attributes], children)
+}
+
+//
+// Private
 //
 
 /// **PAINT THEME DEFAULT**
 ///
 /// - attributes: Mais atributos lustre p/ este loader
-fn paint_theme_default(attributes attributes: List(a.Attribute(msg))) {
+fn paint_theme_default() {
   paint_theme(
     size: theme.SizeAncestor,
     state: theme.StateAncestor,
     variant: theme.VariantAncestor,
     direction: theme.DirectionAncestor,
     appearance: theme.AppearanceAncestor,
-    attributes:,
   )
 }
 
@@ -96,13 +109,9 @@ fn paint_theme(
   variant _variant: theme.UIVariant,
   direction _direction: theme.UIDirection,
   appearance _appearance: theme.UIAppearance,
-  attributes attributes: List(a.Attribute(msg)),
-) -> List(a.Attribute(msg)) {
-  let classes =
-    engine.new([#(const_class_spinner, True)])
-    |> engine.resolve()
-
-  [classes, ..attributes]
+) -> a.Attribute(msg) {
+  engine.new([#(const_class_spinner, True)])
+  |> engine.resolve()
 }
 
 /// Classes de estilo padrão do loader spinner
