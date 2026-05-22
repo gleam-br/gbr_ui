@@ -30,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add doc readme to repo demo gbr-ui-demo by @salespaulo
 
 ### Changed
+- Update stdlib by @salespaulo
+- Update changelog by @github-actions[bot]
 - Merge branch 'main' of https://github.com/gleam-br/gbr_ui by @salespaulo
 - Update changelog by @github-actions[bot]
 - Ajusts and docs by @salespaulo
