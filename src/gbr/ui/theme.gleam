@@ -167,7 +167,7 @@ import gbr/ui/internal/engine
 /// - `tokens`: Representar os tokens finais, possibilita ser qualquer estrutura
 /// de dados, é um tipo genérico.
 ///
-pub type UIThemeBuilder(tokens) {
+pub opaque type UIThemeBuilder(tokens) {
   UIThemeBuilder(theme: UITheme, builder: UIBuilder(tokens))
 }
 
@@ -181,7 +181,7 @@ pub type UIThemeBuilder(tokens) {
 /// - stacking: Como controlar o empilhamento dos elementos.
 /// - elevation: Como controlar a sensação de elevação dos elementos.
 ///
-pub type UITheme {
+type UITheme {
   UITheme(
     variant: UIVariant,
     appearance: UIAppearance,
@@ -196,7 +196,7 @@ pub type UITheme {
 
 ///
 ///
-pub opaque type UIBuilder(token) {
+type UIBuilder(token) {
   UIBuilder(
     base_to_tokens: BaseToTokens(token),
     design_to_tokens: DesignToTokens(token),
@@ -484,58 +484,6 @@ pub fn view(
 ///
 pub fn new() -> UIThemeBuilder(tokens) {
   UIThemeBuilder(theme: theme(), builder: builder())
-}
-
-/// **NOVO TEMA PADRÃO**
-///
-/// Contrutor de um tema UI.
-///
-pub fn theme() -> UITheme {
-  UITheme(
-    variant: VariantDefault,
-    appearance: AppearanceDefault,
-    state: StateIdle,
-    stacking: None,
-    elevation: None,
-    size: None,
-    shape: None,
-    direction: None,
-  )
-}
-
-/// **NOVO BUILDER**
-///
-/// Contrato para o construtor de tokens a partir dos nossos tipos algébricos.
-///
-/// > O tipo UITheme depende, exclusivamente do UIBuilder para converter os tipos
-/// semânticos do tema em tokens para a interface UI final.
-///
-pub fn builder() -> UIBuilder(token) {
-  UIBuilder(
-    base_to_tokens: fn() { [] },
-    design_to_tokens: engine.builder_design_tokens([]),
-    stacking_to_tokens: engine.builder_theme_tokens([]),
-    elevation_to_tokens: engine.builder_theme_tokens([]),
-    size_to_tokens: engine.builder_theme_tokens([]),
-    shape_to_tokens: engine.builder_theme_tokens([]),
-    direction_to_tokens: engine.builder_theme_tokens([]),
-  )
-}
-
-///
-pub fn with_theme(
-  theme_builder: UIThemeBuilder(tokens),
-  theme theme: UITheme,
-) -> UIThemeBuilder(tokens) {
-  UIThemeBuilder(..theme_builder, theme:)
-}
-
-///
-pub fn with_builder(
-  theme_builder: UIThemeBuilder(tokens),
-  builder builder: UIBuilder(tokens),
-) -> UIThemeBuilder(tokens) {
-  UIThemeBuilder(..theme_builder, builder:)
 }
 
 ///
@@ -1318,7 +1266,48 @@ pub fn label(
 }
 
 //
-// -- Motores de Tokens (Aliases)
+// --- CRIAR TEMA E BUILDER PADRÃO (Interno)
+//
+
+/// **NOVO TEMA PADRÃO**
+///
+/// Contrutor de um tema UI.
+///
+fn theme() -> UITheme {
+  UITheme(
+    variant: VariantDefault,
+    appearance: AppearanceDefault,
+    state: StateIdle,
+    stacking: None,
+    elevation: None,
+    size: None,
+    shape: None,
+    direction: None,
+  )
+}
+
+/// **NOVO BUILDER**
+///
+/// Contrato para o construtor de tokens a partir dos nossos tipos algébricos.
+///
+/// > O tipo UITheme depende, exclusivamente do UIBuilder para converter os tipos
+/// semânticos do tema em tokens para a interface UI final.
+///
+fn builder() -> UIBuilder(token) {
+  UIBuilder(
+    base_to_tokens: fn() { [] },
+    design_to_tokens: engine.builder_design_tokens([]),
+    stacking_to_tokens: engine.builder_theme_tokens([]),
+    elevation_to_tokens: engine.builder_theme_tokens([]),
+    size_to_tokens: engine.builder_theme_tokens([]),
+    shape_to_tokens: engine.builder_theme_tokens([]),
+    direction_to_tokens: engine.builder_theme_tokens([]),
+  )
+}
+
+// **TEMA + BUILDER (DEFAULT)**
+//
+// -- Alias p/ os motores dos Tokens (Interno)
 //
 
 /// Para converter os tokens, iniciais, padrão de estilo.
