@@ -4,6 +4,8 @@
 //// Olá, aqui temos o módulo que permite mostrarmos botões na tela utilizando
 //// `lustre/element/html.button`.
 
+import gleam/option.{Some}
+
 import lustre/attribute as a
 import lustre/element as el
 import lustre/element/html as h
@@ -321,47 +323,26 @@ pub fn view(
   attributes attributes: List(a.Attribute(msg)),
   elements elements: List(el.Element(msg)),
 ) -> el.Element(msg) {
-  let classes = paint_theme(size, shape, state:, variant:, appearance:)
-  let attributes = [classes, ..attributes]
-
-  button.to_element(button, attributes, elements)
+  new_theme()
+  |> theme.with_design(variant:, appearance:, state:)
+  |> theme.with_size(Some(size))
+  |> theme.with_shape(Some(shape))
+  |> button.to_element(button, _, attributes, elements)
 }
 
 // PRIVATE
 //
 
-/// **PAINT_THEME**
-///
-/// - size: O tamanho do elemento.
-/// - shape: O formato do elemento.
-/// - state: O estado do elemento.
-/// - variant: A variante do tema do elemento.
-/// - appearance: A aparência do estilo do elemento.
-/// - attributes: Mais atributos para este texto.
-fn paint_theme(
-  size size: theme.UISize,
-  shape shape: theme.UIShape,
-  state state: theme.UIState,
-  variant variant: theme.UIVariant,
-  appearance appearance: theme.UIAppearance,
-) -> a.Attribute(msg) {
+fn new_theme() {
+  theme.new()
   // 1. BASE (Transições suaves que o Tailadmin usa em todos os botões)
-  let base_classes = base_classes()
+  |> theme.with_base_to_tokens(base_classes)
   // 2. GEOMETRIA (Tamanho - paddings do Tailadmin)
-  let size_classes = size_classes(size)
+  |> theme.with_size_to_tokens(size_classes)
   // 3. FORMA (Bordas)
-  let shape_classes = shape_classes(shape)
-  // 4. A FUSÃO NUCLEAR (Cor x Material x Tempo)
-  let cosmetics_classes = cosmetics_classes(variant, appearance, state)
-
-  // 5. O MOEDOR DE CARNE (DesignTokens* -> Lustre + Tailwindcss `a.classes`)
-  // * Ainda não temos o design token, temos um string typed token que atende
-  // em conversar a lingua de regras do tailwind.
-  engine.new(base_classes)
-  |> engine.with_size(size_classes)
-  |> engine.with_shape(shape_classes)
-  |> engine.with_cosmetics(cosmetics_classes)
-  |> engine.resolve()
+  |> theme.with_shape_to_tokens(shape_classes)
+  // 4. A FUSÃO (Cor x Preenchimento x Estado)
+  |> theme.with_design_to_tokens(cosmetics_classes)
 }
 
 fn base_classes() {
