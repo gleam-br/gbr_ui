@@ -119,6 +119,7 @@ pub fn note_to_variant(note) {
 pub fn to_element(
   id: String,
   type_: UIInputType,
+  theme theme,
   value value: Option(String),
   attributes attributes: List(a.Attribute(msg)),
 ) -> el.Element(msg) {
@@ -128,7 +129,7 @@ pub fn to_element(
     |> option.map(a.value)
     |> option.unwrap(a.none())
 
-  h.input([a.id(id), type_, value, ..attributes])
+  theme.input(theme, [a.id(id), type_, value, ..attributes])
 }
 
 // ----- Private

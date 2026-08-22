@@ -9,7 +9,6 @@ import lustre/element as el
 import lustre/element/html as h
 
 import gbr/ui/button
-import gbr/ui/tailwindcss/engine
 import gbr/ui/theme.{type UIAppearance, type UIShape}
 
 /// O tipo que representa um botão com ícone administrativo, podemos ter:
@@ -30,14 +29,17 @@ pub opaque type UIButtonWithIcon(msg) {
 /// - text: Texto do botão.
 /// - ícone: Ícone do botão.
 pub fn with_icon(text: String, icon: el.Element(msg)) {
-  UIButtonIcon(text:, icon:, direction: theme.DirectionLeft)
+  UIButtonIcon(text:, icon:, direction: theme.DirectionX(theme.Left))
 }
 
 /// Visualizar um botão de submit de texto utilizando o tema primário.
 ///
 /// - text: Texto do botão.
 /// - attributes: Mais atributos deste botão.
-pub fn text_submit(text: String, attributes attributes: List(a.Attribute(msg))) {
+pub fn text_submit(
+  text: String,
+  attributes attributes: List(a.Attribute(msg)),
+) {
   primary(button.ButtonSubmit, attributes, inner: [h.text(text)])
 }
 
@@ -100,7 +102,7 @@ pub fn text_icon(
   attributes attributes: List(a.Attribute(msg)),
 ) {
   let inner = case button.direction {
-    theme.DirectionRight -> [
+    theme.DirectionX(theme.Right) -> [
       h.text(button.text),
       button.icon,
     ]
@@ -227,7 +229,7 @@ pub fn primary_with_appearance(
     appearance:,
     shape: theme.ShapeRounded(
       size: theme.SizeLg,
-      direction: theme.DirectionCentral,
+      direction: theme.DirectionDefault,
     ),
   )
 }
@@ -389,42 +391,42 @@ fn shape_classes(shape) {
     theme.ShapeRounded(size:, direction:) -> [
       #(
         "rounded-lg",
-        size == theme.SizeLg && direction == theme.DirectionCentral,
+        size == theme.SizeLg && direction == theme.DirectionDefault,
       ),
       #(
         "rounded-r-lg",
-        size == theme.SizeLg && direction == theme.DirectionRight,
+        size == theme.SizeLg && direction == theme.DirectionX(theme.Right),
       ),
       #(
         "rounded-l-lg",
-        size == theme.SizeLg && direction == theme.DirectionLeft,
+        size == theme.SizeLg && direction == theme.DirectionX(theme.Left),
       ),
       #(
         "rounded-md",
-        size == theme.SizeMd && direction == theme.DirectionCentral,
+        size == theme.SizeMd && direction == theme.DirectionDefault,
       ),
       #(
         "rounded-r-md",
-        size == theme.SizeMd && direction == theme.DirectionRight,
+        size == theme.SizeMd && direction == theme.DirectionX(theme.Right),
       ),
       #(
         "rounded-l-md",
-        size == theme.SizeMd && direction == theme.DirectionLeft,
+        size == theme.SizeMd && direction == theme.DirectionX(theme.Left),
       ),
       #(
         "rounded-sm",
-        size == theme.SizeSm && direction == theme.DirectionCentral,
+        size == theme.SizeSm && direction == theme.DirectionDefault,
       ),
       #(
         "rounded-r-sm",
-        size == theme.SizeSm && direction == theme.DirectionRight,
+        size == theme.SizeSm && direction == theme.DirectionX(theme.Right),
       ),
       #(
         "rounded-l-sm",
-        size == theme.SizeSm && direction == theme.DirectionLeft,
+        size == theme.SizeSm && direction == theme.DirectionX(theme.Left),
       ),
     ]
-    theme.ShapeAncestor -> [#("rounded-[inherit]", True)]
+    theme.ShapeAncestor(_) -> [#("rounded-[inherit]", True)]
   }
 }
 

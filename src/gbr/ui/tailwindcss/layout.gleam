@@ -127,7 +127,7 @@ pub fn with_z_index(stacking: theme.UIStacking) -> a.Attribute(msg) {
     theme.StackLg -> "z-40"
     theme.StackXl -> "z-50"
     theme.StackXxl -> "z-9999"
-    theme.StackAncestor -> "z-inherit"
+    theme.StackAncestor(_) -> "z-inherit"
   }
   |> a.class()
 }

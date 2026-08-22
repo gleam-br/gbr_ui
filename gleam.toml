@@ -8,11 +8,11 @@ licences = ["Apache-2.0"]
 links = []
 
 [dependencies]
-lustre = "~> 5.6"
+lustre = "~> 5.7"
 gleam_stdlib = "~> 1.0"
 
 [dev-dependencies]
-gleeunit = "~> 1.9"
+gleeunit = "~> 1.10"
 
 [javascript]
 typescript_declarations = true

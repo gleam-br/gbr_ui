@@ -2,12 +2,12 @@
 //// UI tailwindcss checkbox module
 ////
 
+import gbr/ui/internal/engine
 import lustre/attribute as a
 import lustre/element as el
 import lustre/element/html as h
 import lustre/element/svg as s
 
-import gbr/ui/tailwindcss/engine
 import gbr/ui/tailwindcss/typo
 import gbr/ui/theme.{type UIVariant}
 
@@ -141,9 +141,11 @@ fn paint_box(
     _, _ -> [#("border-gray-300 bg-transparent", True)]
   }
 
-  engine.new(base)
-  |> engine.with_size(size)
-  |> engine.with_shape(shape)
-  |> engine.with_cosmetics(cosmetics)
-  |> engine.resolve()
+  theme.new()
+  |> theme.with_base_to_tokens(engine.builder_base_tokens(base))
+  |> theme.with_design_to_tokens(engine.builder_design_tokens(cosmetics))
+  |> theme.with_shape_to_tokens(engine.builder_theme_tokens(shape))
+  |> theme.with_size_to_tokens(engine.builder_theme_tokens(size))
+  |> theme.paint()
+  |> a.classes()
 }

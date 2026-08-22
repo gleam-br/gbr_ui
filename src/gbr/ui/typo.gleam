@@ -39,21 +39,20 @@ pub type UITypography {
 @internal
 pub fn to_element(
   typo: UITypography,
-  text: String,
+  theme theme,
   with attributes: List(a.Attribute(msg)),
+  inner elements: List(el.Element(msg)),
 ) -> el.Element(msg) {
-  let elements = [h.text(text)]
-
   // Se a W3C mudar alguma regra de acessibilidade global para textos,
   // alteramos AQUI e o sistema inteiro herda.
   case typo {
-    H1 -> h.h1(attributes, elements)
-    H2 -> h.h2(attributes, elements)
-    H3 -> h.h3(attributes, elements)
-    H4 -> h.h4(attributes, elements)
-    Pre(_) -> h.pre(attributes, elements)
-    Span(_) -> h.span(attributes, elements)
-    Label(_) -> h.label(attributes, elements)
-    Paragraph(_) -> h.p(attributes, elements)
+    H1 -> theme.h1(theme, attributes, elements)
+    H2 -> theme.h2(theme, attributes, elements)
+    H3 -> theme.h3(theme, attributes, elements)
+    H4 -> theme.h4(theme, attributes, elements)
+    Pre(_) -> theme.pre(theme, attributes, elements)
+    Span(_) -> theme.span(theme, attributes, elements)
+    Label(_) -> theme.label(theme, attributes, elements)
+    Paragraph(_) -> theme.p(theme, attributes, elements)
   }
 }

@@ -14,10 +14,10 @@ import gleam/option.{type Option, None, Some}
 
 import lustre/attribute as a
 import lustre/element as el
+import lustre/element/html as h
 
 import gbr/ui/typo.{type UITypography as UITypo}
 
-import gbr/ui/tailwindcss/engine
 import gbr/ui/theme.{
   type UIAppearance, type UIElevation, type UISize, type UIStacking,
   type UIState, type UIVariant,
@@ -249,37 +249,9 @@ pub fn view(
   appearance appearance: UIAppearance,
   attributes attributes: List(a.Attribute(msg)),
 ) -> el.Element(msg) {
-  let classes =
-    paint_theme(
-      typo,
-      state:,
-      variant:,
-      appearance:,
-      stacking: None,
-      elevation: None,
-    )
-  let with = [classes, ..attributes]
-
-  typo.to_element(typo, text, with:)
-}
-
-/// Recupera a lista de tipografias disponíveis.
-///
-pub fn get_typos() {
-  let spans =
-    theme.get_sizes()
-    |> list.map(typo.Span)
-  let pres =
-    theme.get_sizes()
-    |> list.map(typo.Pre)
-  let paragraphs =
-    theme.get_sizes()
-    |> list.map(typo.Paragraph)
-  let headers = [typo.H1, typo.H2, typo.H3, typo.H4]
-
-  list.append(headers, spans)
-  |> list.append(paragraphs)
-  |> list.append(pres)
+  new_theme(typo)
+  |> theme.with_design(variant:, appearance:, state:)
+  |> typo.to_element(typo, _, with: attributes, inner: [h.text(text)])
 }
 
 /// Get size from typograph, if exists.
@@ -290,47 +262,23 @@ pub fn get_size(typo: UITypo) -> UISize {
     typo.H2 -> theme.SizeXl
     typo.H3 -> theme.SizeLg
     typo.H4 -> theme.SizeMd
-    typo.Pre(size) | typo.Label(size) | typo.Span(size) | typo.Paragraph(size) ->
-      size
+    typo.Pre(size)
+    | typo.Label(size)
+    | typo.Span(size)
+    | typo.Paragraph(size) -> size
   }
 }
 
 // PRIVATE
 //
 
-/// **PAINT_THEME**
-///
-/// - size: O tamanho do elemento.
-/// - state: O estado do elemento.
-/// - variant: A variante do tema do elemento.
-/// - appearance: A aparência do estilo do elemento.
-/// - attributes: Mais atributos para este texto.
-fn paint_theme(
-  typo: UITypo,
-  state state: theme.UIState,
-  variant variant: theme.UIVariant,
-  appearance appearance: theme.UIAppearance,
-  stacking stacking: Option(UIStacking),
-  elevation elevation: Option(UIElevation),
-) -> a.Attribute(msg) {
-  let base = base_classes()
-  let size = size_classes(typo)
-  let stacking = case stacking {
-    Some(stacking) -> stack_classes(stacking)
-    None -> []
-  }
-  let elevation = case elevation {
-    Some(elevation) -> elevation_classes(elevation)
-    None -> []
-  }
-  let cosmetics = cosmetic_classes(variant:, appearance:, state:)
-
-  engine.new(base)
-  |> engine.with_size(size)
-  |> engine.with_stacking(stacking)
-  |> engine.with_elevation(elevation)
-  |> engine.with_cosmetics(cosmetics)
-  |> engine.resolve()
+fn new_theme(typo) {
+  theme.new()
+  |> theme.with_base_to_tokens(base_classes)
+  |> theme.with_size_to_tokens(size_classes(_, is_header(typo)))
+  |> theme.with_stacking_to_tokens(stack_classes)
+  |> theme.with_elevation_to_tokens(elevation_classes)
+  |> theme.with_design_to_tokens(cosmetic_classes)
 }
 
 fn base_classes() {
@@ -348,7 +296,7 @@ fn stack_classes(stacking) {
     theme.StackLg -> "z-9999"
     theme.StackXl -> "z-99999"
     theme.StackXxl -> "z-999999"
-    theme.StackAncestor -> "z-inherit"
+    theme.StackAncestor(_) -> "z-inherit"
   }
 
   [#(class, True)]
@@ -361,20 +309,21 @@ fn elevation_classes(elevation) {
     theme.ElevationLow -> "text-shadow-xs"
     theme.ElevationMedium -> "text-shadow-md"
     theme.ElevationHigh -> "text-shadow-lg"
-    theme.ElevationAncestor -> "text-shadow-inherit"
+    theme.ElevationAncestor(_) -> "text-shadow-inherit"
   }
 
   [#(class, True)]
 }
 
-// A GEOMETRIA DO TEXTO (Tamanho, Peso e Altura da Linha)
-fn size_classes(typo) {
-  let size = get_size(typo)
-  // if header uses theme title sizes
-  let is_header = case typo {
+fn is_header(typo) {
+  case typo {
     typo.H1 | typo.H2 | typo.H3 | typo.H4 -> True
     _ -> False
   }
+}
+
+// A GEOMETRIA DO TEXTO (Tamanho, Peso e Altura da Linha)
+fn size_classes(size, is_header) {
   case size {
     theme.SizeXxl -> [
       #("text-title-xl sm:text-title-2xl", is_header),
@@ -418,7 +367,7 @@ fn cosmetic_classes(variant variant, appearance appearance, state state) {
     theme.VariantWarning -> [#("text-warning-800", True)]
     theme.VariantError -> [#("text-danger-800", True)]
 
-    theme.VariantAncestor -> [#("text-inherit", True)]
+    theme.VariantAncestor(_) -> [#("text-inherit", True)]
   }
 
   let appearance = case appearance {
@@ -429,7 +378,7 @@ fn cosmetic_classes(variant variant, appearance appearance, state state) {
     theme.AppearanceFlat -> [#("font-medium", True)]
     theme.AppearanceThin -> [#("font-thin", True)]
     theme.AppearanceFilled -> [#("font-semibold", True)]
-    theme.AppearanceAncestor -> []
+    theme.AppearanceAncestor(_) -> []
   }
 
   let state = case state {
@@ -440,7 +389,7 @@ fn cosmetic_classes(variant variant, appearance appearance, state state) {
     theme.StateHover -> []
     theme.StateFocus -> []
     theme.StatePressed -> []
-    theme.StateIdle | theme.StateAncestor -> []
+    theme.StateIdle | theme.StateAncestor(_) -> []
   }
 
   [variant, appearance, state]

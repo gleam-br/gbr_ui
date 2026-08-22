@@ -11,7 +11,6 @@ import lustre/element as el
 import lustre/element/html as h
 
 import gbr/ui/input
-import gbr/ui/tailwindcss/engine
 import gbr/ui/tailwindcss/typo
 
 import gbr/ui/theme.{
@@ -94,7 +93,7 @@ pub fn view_default(
     size: theme.SizeSm,
     shape: theme.ShapeRounded(
       size: theme.SizeMd,
-      direction: theme.DirectionCentral,
+      direction: theme.DirectionDefault,
     ),
     state: theme.StateIdle,
     appearance: theme.AppearanceGhost,
@@ -129,15 +128,19 @@ pub fn view(
   appearance appearance: UIAppearance,
   attributes attributes: List(a.Attribute(msg)),
 ) {
-  let classes = paint_theme(size:, shape:, state:, variant:, appearance:)
   let label = view_label(id, label)
   let note = view_note(note)
   let icon = option.unwrap(icon, el.none())
+  let theme =
+    new_theme()
+    |> theme.with_design(variant:, appearance:, state:)
+    |> theme.with_size(Some(size))
+    |> theme.with_shape(Some(shape))
 
   h.div([a.class("flex flex-col w-full relative")], [
     label,
     h.div([a.class("relative w-full")], [
-      input.to_element(id, type_, value:, attributes: [classes, ..attributes]),
+      input.to_element(id, type_, theme, value:, attributes:),
       icon,
     ]),
 
@@ -174,31 +177,12 @@ fn view_note(note) {
 // ⚙️ ENGINE UX V8 Inputs
 // ==========================================
 
-fn paint_theme(
-  size size: UISize,
-  shape shape: UIShape,
-  state state: UIState,
-  variant variant: UIVariant,
-  appearance appearance: UIAppearance,
-) -> a.Attribute(msg) {
-  // 1. BASE (A base transparente e responsiva do Tailadmin)
-  let base = base_classes()
-
-  // 2. GEOMETRIA (Tamanho)
-  // Nota: Inputs de texto usam Md. Checkboxes usarão tamanhos fixos menores.
-  let size = size_classes(size)
-
-  // 3. FORMA (Bordas)
-  let shape = shape_classes(shape)
-
-  // 4. A PINTURA DO INPUT (A Mágica do Focus e Validação)
-  let cosmetics = cosmetics_classes(variant:, state:, appearance:)
-
-  engine.new(base)
-  |> engine.with_size(size)
-  |> engine.with_shape(shape)
-  |> engine.with_cosmetics(cosmetics)
-  |> engine.resolve()
+fn new_theme() {
+  theme.new()
+  |> theme.with_base_to_tokens(base_classes)
+  |> theme.with_size_to_tokens(size_classes)
+  |> theme.with_shape_to_tokens(shape_classes)
+  |> theme.with_design_to_tokens(cosmetics_classes)
 }
 
 fn base_classes() {
@@ -227,11 +211,11 @@ fn shape_classes(shape) {
     theme.ShapeSharp -> [#("rounded-xs", True)]
     theme.ShapePill -> [#("rounded-xl", True)]
     theme.ShapeCircle -> [#("rounded-full", True)]
-    theme.ShapeAncestor -> [#("rounded-[inherit]", True)]
+    theme.ShapeAncestor(_) -> [#("rounded-[inherit]", True)]
   }
 }
 
-fn cosmetics_classes(variant variant, state state, appearance appearance) {
+fn cosmetics_classes(variant variant, appearance appearance, state state) {
   case variant, appearance, state {
     // --- ESTADO GLOBAL DESATIVADO ---
     // Removemos os grays e centralizamos a opacidade
