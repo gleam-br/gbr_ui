@@ -113,6 +113,7 @@
 //// original deste componente, não importa onde eu esteja".
 ////
 
+import gleam/list
 import gleam/option.{type Option, None, Some}
 
 import lustre/attribute as a
@@ -930,24 +931,24 @@ pub fn rounded(size: UISize, direction: UIDirection) -> Option(UIShape) {
 // import lustre/element/html as h
 //
 // pub fn alert(text) {
-//   let builder = theme.builder()
-//     |> theme.with_design_to_tokens(design_classes)
-//     |> theme.with_size_to_tokens(size_classes)
-//     |> theme.with_shape_to_tokens(rounded_classes)
-//     |> theme.with_elevation_to_tokens(border_classes)
-//     |> theme.with_stacking_to_tokens(stack_classes)
-//
 //   // Estilos externos
 //   let attributes = [ a.class("mb-2") ]
 //
 //   // O texto do alerta (inner)
 //   let elements = [h.text(text)]
 //
-//   // Motor de design tokens para um elemento lustre
-//   let to_alert = to_lustre(theme,attributes, elements, h.div)
+//   let to_alert = fn(theme) {
+//     // Motor de design tokens para um elemento lustre
+//     to_lustre(theme, attributes, elements, h.div)
+//     |> theme.view(theme, _)
+//   }
 //
 //   theme.new()
-//   |> theme.with_builder(builder)
+//   |> theme.with_design_to_tokens(design_classes)
+//   |> theme.with_size_to_tokens(size_classes)
+//   |> theme.with_shape_to_tokens(rounded_classes)
+//   |> theme.with_elevation_to_tokens(border_classes)
+//   |> theme.with_stacking_to_tokens(stack_classes)
 //   |> theme.with_variant(theme.VariantPrimary)
 //   |> theme.with_appearance(theme.AppearanceFill)
 //   |> theme.with_state(theme.StateFocus)
@@ -955,7 +956,7 @@ pub fn rounded(size: UISize, direction: UIDirection) -> Option(UIShape) {
 //   |> theme.with_shape(theme.ShapePill)
 //   |> theme.with_elevation(theme.ElevationFlat)
 //   |> theme.with_stacking(theme.StackXxl)
-//   |> theme.view(to_element)
+//   |> to_alert()
 // }
 // ```
 //
@@ -963,9 +964,23 @@ pub fn rounded(size: UISize, direction: UIDirection) -> Option(UIShape) {
 
 // -----------------------------------------------------------------------------
 //
-// -- 🛠️ Componentes base
+// -- 🛠️ ENGINE LUSTRE (DESIGN TOKEN)
 //
 // -----------------------------------------------------------------------------
+
+/// Tipos que representam os design tokens convertidos para atributos lustre.
+///
+/// - Classes: Convertido para a.classes
+/// - Styles: Convertido para a.styles
+/// - Style: Convertido para a.style
+/// - Class: Convertido para a.class
+///
+pub type UILustre {
+  Classes(List(#(String, Bool)))
+  Styles(List(#(String, String)))
+  Style(String, String)
+  Class(String)
+}
 
 /// Conversor dos design tokens para um elementos lustre.
 ///
@@ -975,18 +990,34 @@ pub fn rounded(size: UISize, direction: UIDirection) -> Option(UIShape) {
 /// - to_lustre: Construtor do elemento lustre.
 ///
 pub fn to_lustre(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
   to_lustre: fn(List(a.Attribute(a)), List(element.Element(a))) ->
     element.Element(a),
 ) -> element.Element(a) {
-  view(theme, fn(tokens) {
-    let attributes = [a.classes(tokens), ..attributes]
+  let engine_lustre = fn(token) {
+    case token {
+      Class(token) -> a.class(token)
+      Classes(token) -> a.classes(token)
+      Styles(token) -> a.styles(token)
+      Style(key, value) -> a.style(key, value)
+    }
+  }
+  view(theme, fn(tokens: List(UILustre)) {
+    let attributes =
+      list.map(tokens, engine_lustre)
+      |> list.append(attributes)
 
     to_lustre(attributes, elements)
   })
 }
+
+// -----------------------------------------------------------------------------
+//
+// -- 🛠️ Componentes base
+//
+// -----------------------------------------------------------------------------
 
 // -----------------------------------------------------------------------------
 //
@@ -995,7 +1026,7 @@ pub fn to_lustre(
 // -----------------------------------------------------------------------------
 
 pub fn div(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1003,7 +1034,7 @@ pub fn div(
 }
 
 pub fn header(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1011,7 +1042,7 @@ pub fn header(
 }
 
 pub fn main(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1019,7 +1050,7 @@ pub fn main(
 }
 
 pub fn section(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1027,7 +1058,7 @@ pub fn section(
 }
 
 pub fn footer(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1035,7 +1066,7 @@ pub fn footer(
 }
 
 pub fn aside(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1043,7 +1074,7 @@ pub fn aside(
 }
 
 pub fn nav(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1051,7 +1082,7 @@ pub fn nav(
 }
 
 pub fn ul(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1059,7 +1090,7 @@ pub fn ul(
 }
 
 pub fn li(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1067,7 +1098,7 @@ pub fn li(
 }
 
 pub fn details(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   summary: element.Element(a),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
@@ -1082,14 +1113,14 @@ pub fn details(
 //
 
 pub fn img(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
 ) -> element.Element(a) {
   to_lustre(theme, attributes, [], fn(a, _) { h.img(a) })
 }
 
 pub fn svg(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   with attributes: List(a.Attribute(a)),
   inner elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1101,7 +1132,7 @@ pub fn svg(
 //
 
 pub fn table(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1109,7 +1140,7 @@ pub fn table(
 }
 
 pub fn th(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1117,7 +1148,7 @@ pub fn th(
 }
 
 pub fn tr(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1125,7 +1156,7 @@ pub fn tr(
 }
 
 pub fn td(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1137,14 +1168,14 @@ pub fn td(
 //
 
 pub fn input(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
 ) -> element.Element(a) {
   to_lustre(theme, attributes, [], fn(a, _) { h.input(a) })
 }
 
 pub fn select(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1153,7 +1184,7 @@ pub fn select(
 
 /// <select...><option .../></select>
 pub fn option(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   label: String,
   attributes: List(a.Attribute(a)),
 ) -> element.Element(a) {
@@ -1162,7 +1193,7 @@ pub fn option(
 
 /// <textarea>...</textarea>
 pub fn textarea(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   text: String,
   a: List(a.Attribute(a)),
 ) -> element.Element(a) {
@@ -1170,7 +1201,7 @@ pub fn textarea(
 }
 
 pub fn button(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1178,7 +1209,7 @@ pub fn button(
 }
 
 pub fn a(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1186,7 +1217,7 @@ pub fn a(
 }
 
 pub fn h1(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1194,7 +1225,7 @@ pub fn h1(
 }
 
 pub fn h2(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1202,7 +1233,7 @@ pub fn h2(
 }
 
 pub fn h3(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1210,7 +1241,7 @@ pub fn h3(
 }
 
 pub fn h4(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1218,7 +1249,7 @@ pub fn h4(
 }
 
 pub fn h5(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1226,7 +1257,7 @@ pub fn h5(
 }
 
 pub fn h6(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1234,7 +1265,7 @@ pub fn h6(
 }
 
 pub fn p(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1242,7 +1273,7 @@ pub fn p(
 }
 
 pub fn span(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1250,7 +1281,7 @@ pub fn span(
 }
 
 pub fn pre(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
@@ -1258,11 +1289,19 @@ pub fn pre(
 }
 
 pub fn label(
-  theme: UIThemeBuilder(#(String, Bool)),
+  theme: UIThemeBuilder(UILustre),
   attributes: List(a.Attribute(a)),
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
   to_lustre(theme, attributes, elements, h.label)
+}
+
+//
+// --- HELPER
+//
+
+pub fn token_to_list(token) {
+  [token]
 }
 
 //

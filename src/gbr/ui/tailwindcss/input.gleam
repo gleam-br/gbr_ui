@@ -187,6 +187,8 @@ fn new_theme() {
 
 fn base_classes() {
   [#("w-full h-10 bg-transparent outline-none ", True)]
+  |> theme.Classes
+  |> theme.token_to_list
 }
 
 fn size_classes(size) {
@@ -199,6 +201,8 @@ fn size_classes(size) {
     theme.SizeXs -> [#("w-5 h-5", True)]
     _ -> []
   }
+  |> theme.Classes
+  |> theme.token_to_list
 }
 
 fn shape_classes(shape) {
@@ -213,6 +217,8 @@ fn shape_classes(shape) {
     theme.ShapeCircle -> [#("rounded-full", True)]
     theme.ShapeAncestor(_) -> [#("rounded-[inherit]", True)]
   }
+  |> theme.Classes
+  |> theme.token_to_list
 }
 
 fn cosmetics_classes(variant variant, appearance appearance, state state) {
@@ -270,6 +276,8 @@ fn cosmetics_classes(variant variant, appearance appearance, state state) {
     // Fallback
     _, _, _ -> [#("border border-transparent bg-transparent", True)]
   }
+  |> theme.Classes
+  |> theme.token_to_list
 }
 
 fn placeholder_to_attribute(placeholder) {

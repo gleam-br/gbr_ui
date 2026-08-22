@@ -353,6 +353,8 @@ fn base_classes() {
       True,
     ),
   ]
+  |> theme.Classes
+  |> theme.token_to_list
 }
 
 fn size_classes(size) {
@@ -362,6 +364,8 @@ fn size_classes(size) {
     theme.SizeSm -> [#("py-2 px-3", True)]
     _ -> []
   }
+  |> theme.Classes
+  |> theme.token_to_list
 }
 
 // 3. FORMA (Bordas)
@@ -409,6 +413,8 @@ fn shape_classes(shape) {
     ]
     theme.ShapeAncestor(_) -> [#("rounded-[inherit]", True)]
   }
+  |> theme.Classes
+  |> theme.token_to_list
 }
 
 // Substituímos os "white" e "gray" pelos tokens de conteúdo
@@ -488,4 +494,6 @@ fn cosmetics_classes(variant variant, appearance appearance, state state) {
     // Fallback Curinga
     _, _, _ -> [#("bg-transparent text-content", True)]
   }
+  |> theme.Classes
+  |> theme.token_to_list
 }

@@ -10,7 +10,6 @@
 //// Temos **8100** tipografias
 
 import gleam/list
-import gleam/option.{type Option, None, Some}
 
 import lustre/attribute as a
 import lustre/element as el
@@ -19,8 +18,7 @@ import lustre/element/html as h
 import gbr/ui/typo.{type UITypography as UITypo}
 
 import gbr/ui/theme.{
-  type UIAppearance, type UIElevation, type UISize, type UIStacking,
-  type UIState, type UIVariant,
+  type UIAppearance, type UISize, type UIState, type UIVariant,
 }
 
 /// Header 1
@@ -285,6 +283,8 @@ fn base_classes() {
   [
     #("text-pretty md:text-balance text-ellipsis md:text-clip", True),
   ]
+  |> theme.Classes
+  |> theme.token_to_list
 }
 
 fn stack_classes(stacking) {
@@ -300,6 +300,8 @@ fn stack_classes(stacking) {
   }
 
   [#(class, True)]
+  |> theme.Classes
+  |> theme.token_to_list
 }
 
 fn elevation_classes(elevation) {
@@ -313,6 +315,8 @@ fn elevation_classes(elevation) {
   }
 
   [#(class, True)]
+  |> theme.Classes
+  |> theme.token_to_list
 }
 
 fn is_header(typo) {
@@ -349,6 +353,8 @@ fn size_classes(size, is_header) {
     ]
     _ -> []
   }
+  |> theme.Classes
+  |> theme.token_to_list
 }
 
 // A PINTURA DO TEXTO (Cor, Densidade e Estado)
@@ -394,4 +400,6 @@ fn cosmetic_classes(variant variant, appearance appearance, state state) {
 
   [variant, appearance, state]
   |> list.flatten()
+  |> theme.Classes
+  |> theme.token_to_list
 }

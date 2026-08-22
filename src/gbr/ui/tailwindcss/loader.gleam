@@ -87,6 +87,8 @@ fn new_theme() {
 
 fn base_classes() {
   [#(const_class_spinner, True)]
+  |> theme.Classes
+  |> theme.token_to_list
 }
 
 /// Classes de estilo padrão do loader spinner

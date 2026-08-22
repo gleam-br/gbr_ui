@@ -9,7 +9,6 @@
 
 import lustre/attribute as a
 import lustre/element as el
-import lustre/element/html as h
 
 import gbr/ui/theme.{type UISize}
 
