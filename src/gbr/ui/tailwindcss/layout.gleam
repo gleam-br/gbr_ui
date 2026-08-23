@@ -15,14 +15,8 @@ import gbr/ui/theme
 // SEM CORES. SEM BORDAS. (A View injeta as cores via `attributes`)
 // ==========================================
 
-/// O `Application` somente fullscreen, perfeito p/ o organismo de login, onde
-/// temos o lado esquerdo contendo o formulário de login e na direita temos o
-/// hero do login, podendo ser um imagem de boas-vindas.
+/// Layout fullscreen
 ///
-/// Possibilita um layout fullscreen com tratamentos de scroll entre outros.
-///
-/// - attributes: Lista de attributos lustre p/ este layout.
-/// - inner: Lista de elements lustre internos deste layout.
 pub fn application_fullscreen(
   elements: List(el.Element(msg)),
   with attributes: List(a.Attribute(msg)),
@@ -85,7 +79,6 @@ pub fn col(
 }
 
 /// O Grid Layout.
-/// O desenvolvedor passa as regras do grid via `attributes` (ex: grid-cols-2).
 pub fn grid(
   attributes: List(a.Attribute(msg)),
   inner elements: List(el.Element(msg)),

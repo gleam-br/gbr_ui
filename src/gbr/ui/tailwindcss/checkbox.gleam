@@ -2,7 +2,6 @@
 //// UI tailwindcss checkbox module
 ////
 
-import gbr/ui/internal/engine
 import lustre/attribute as a
 import lustre/element as el
 import lustre/element/html as h
@@ -36,39 +35,33 @@ pub fn view(
   variant variant: UIVariant,
   attributes attributes: List(a.Attribute(msg)),
 ) -> el.Element(msg) {
-  // 1. A PONTE LÓGICA -> VISUAL
-  // Se está marcado, pintamos o fundo (Filled). Se não, fica vazado (Ghost).
   let appearance = case is_checked {
     True -> theme.AppearanceFilled
     False -> theme.AppearanceGhost
   }
 
-  // 2. O MOTOR V8 DO QUADRADINHO
-  let box_classes = paint_box(variant, appearance)
+  let box_classes =
+    new_theme()
+    |> theme.with_variant(variant:)
+    |> theme.with_appearance(appearance:)
+    |> theme.paint()
+    |> a.classes()
 
-  // 3. O TRUQUE DO SVG (Animação suave)
-  // Ao invés de remover o SVG do DOM quando for False, nós apenas
-  // zeramos a opacidade. Isso permite que o Tailwind faça um fade-in lindo!
   let svg_opacity = case is_checked {
     True -> a.class("opacity-100")
     False -> a.class("opacity-0")
   }
 
-  // 4. A ESTRUTURA DO DOM (Acessibilidade + Design)
   h.div([a.class("flex cursor-pointer select-none items-center")], [
     h.div([a.class("relative"), ..attributes], [
-      // O INPUT REAL (Invisível, mas controlável pelo teclado e formulários)
       h.input([
         a.id(id),
         a.type_("checkbox"),
-        // Esconde da tela, mas mantém acessível!
         a.class("sr-only"),
         a.checked(is_checked),
       ]),
 
-      // O QUADRADO FALSO (Pintado pelo nosso Motor)
       h.div([box_classes], [
-        // O ÍCONE SVG DE CHECKMARK (Herdando a cor do texto com `currentColor`)
         s.svg(
           [
             a.class("fill-current transition-opacity duration-200 ease-in-out"),
@@ -97,26 +90,33 @@ pub fn view(
 // ⚙️ O V8 PRIVADO DO QUADRADINHO
 // ==========================================
 
-fn paint_box(
-  variant: UIVariant,
-  appearance: theme.UIAppearance,
-) -> a.Attribute(msg) {
-  // Base: Flexbox para centralizar o SVG, borda e transição
-  let base = [
+fn new_theme() {
+  theme.new()
+  |> theme.with_base_to_tokens(base_classes)
+  |> theme.with_design_to_tokens(cosmetics)
+  |> theme.with_shape_to_tokens(shape_classes)
+  |> theme.with_size_to_tokens(size_classes)
+}
+
+fn base_classes() {
+  [
     #(
       "flex items-center justify-center border-[1.25px] border-border transition-all duration-200",
       True,
     ),
   ]
+}
 
-  // Geometria: Tamanho exato do Checkbox do Tailadmin
-  let size = [#("h-5 w-5", True)]
+fn size_classes(_size) {
+  [#("h-5 w-5", True)]
+}
 
-  // Forma: Levemente arredondado
-  let shape = [#("rounded", True)]
+fn shape_classes(_shape) {
+  [#("rounded", True)]
+}
 
-  // A Pintura:
-  let cosmetics = case variant, appearance {
+fn cosmetics(variant, appearance, _state) {
+  case variant, appearance {
     // ☑️ MARCADO (AppearanceFilled)
     theme.VariantPrimary, theme.AppearanceFilled -> [
       #("border-brand-500 bg-brand-500 text-white", True),
@@ -140,12 +140,4 @@ fn paint_box(
     // Fallback
     _, _ -> [#("border-gray-300 bg-transparent", True)]
   }
-
-  theme.new()
-  |> theme.with_base_to_tokens(engine.builder_base_tokens(base))
-  |> theme.with_design_to_tokens(engine.builder_design_tokens(cosmetics))
-  |> theme.with_shape_to_tokens(engine.builder_theme_tokens(shape))
-  |> theme.with_size_to_tokens(engine.builder_theme_tokens(size))
-  |> theme.paint()
-  |> a.classes()
 }

@@ -102,42 +102,6 @@ pub fn with_direction(engine: UIEngine(token), direction: Tokens(token)) {
   UIEngine(..engine, direction:)
 }
 
-/// Retorna função construtora padrão, retornando um valor padrão.
-///
-/// - tokens: Valor padrão retornado.
-///
-/// > Função para ajudar a construir os tokens para os componentes visuais.
-///
-pub fn builder_base_tokens(tokens: Tokens(token)) -> fn() -> Tokens(token) {
-  fn() { tokens }
-}
-
-/// Retorna função construtora de uma entrada de thema qualquer, retornando um
-/// valor padrão.
-///
-/// - tokens: Valor padrão retornado.
-///
-/// > Função para ajudar a construir os tokens para os componentes visuais.
-///
-pub fn builder_theme_tokens(
-  tokens: Tokens(token),
-) -> fn(theme) -> Tokens(token) {
-  fn(_) { tokens }
-}
-
-/// Retorna uma função conversora de um design (variante x aparência x estado)
-/// em tokens `engine.Tokens`, retornando um valor padrão.
-///
-/// - tokens: Valor padrão retornado.
-///
-/// > Função para ajudar a construir os tokens para os componentes visuais.
-///
-pub fn builder_design_tokens(
-  tokens: Tokens(token),
-) -> fn(variant, appearance, state) -> Tokens(token) {
-  fn(_, _, _) { tokens }
-}
-
 /// Compõem o vocabulário em estilos visuais ordenados e padronizados p/ serem
 /// utilizado e convertidos à interface desejada. Nesta função estamos convertendo
 /// nosso DesignToken p/ a estrutura que nosso atual DesignToken baseado em

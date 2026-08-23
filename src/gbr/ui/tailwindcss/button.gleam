@@ -335,7 +335,6 @@ pub fn view(
 
 fn new_theme() {
   theme.new()
-  // 1. BASE (Transições suaves que o Tailadmin usa em todos os botões)
   |> theme.with_base_to_tokens(base_classes)
   // 2. GEOMETRIA (Tamanho - paddings do Tailadmin)
   |> theme.with_size_to_tokens(size_classes)
@@ -417,15 +416,12 @@ fn shape_classes(shape) {
   |> theme.token_to_list
 }
 
-// Substituímos os "white" e "gray" pelos tokens de conteúdo
 const const_class_button_text_primary = "text-pretty md:text-balance text-ellipsis md:text-clip text-theme-sm font-medium text-primary-content"
 
 const const_class_button_text_ghost = "text-pretty md:text-balance text-ellipsis md:text-clip text-theme-sm font-medium text-content"
 
-// 4. A FUSÃO NUCLEAR SEMÂNTICA (Cor x Material x Tempo)
 fn cosmetics_classes(variant variant, appearance appearance, state state) {
   case variant, appearance, state {
-    // --- ESTADO GLOBAL DESATIVADO ---
     _, _, theme.StateDisabled -> [
       #(const_class_button_text_ghost, True),
       #(
