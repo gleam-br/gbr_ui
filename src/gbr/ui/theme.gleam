@@ -881,7 +881,7 @@ pub fn rounded(size: UISize, direction: UIDirection) -> Option(UIShape) {
 //
 // -- **IMPLEMENTAÇÂO DO TEMA USANDO O LUSTRE**
 //
-// **Lustre + UIThemeBuilder**
+// **Lustre + UITheme**
 //
 // Utilizamos os design tokens do tema como uma estrutura de uma tupla
 // `#(String, Bool)`, compatível com a assinatura da função `attribute.classes`
@@ -1201,91 +1201,11 @@ pub fn a(
   to_lustre(theme, attributes, elements, h.a)
 }
 
-pub fn h1(
-  theme: UITheme(UILustre),
-  attributes: List(a.Attribute(a)),
-  elements: List(element.Element(a)),
-) -> element.Element(a) {
-  to_lustre(theme, attributes, elements, h.h1)
-}
-
-pub fn h2(
-  theme: UITheme(UILustre),
-  attributes: List(a.Attribute(a)),
-  elements: List(element.Element(a)),
-) -> element.Element(a) {
-  to_lustre(theme, attributes, elements, h.h2)
-}
-
-pub fn h3(
-  theme: UITheme(UILustre),
-  attributes: List(a.Attribute(a)),
-  elements: List(element.Element(a)),
-) -> element.Element(a) {
-  to_lustre(theme, attributes, elements, h.h3)
-}
-
-pub fn h4(
-  theme: UITheme(UILustre),
-  attributes: List(a.Attribute(a)),
-  elements: List(element.Element(a)),
-) -> element.Element(a) {
-  to_lustre(theme, attributes, elements, h.h4)
-}
-
-pub fn h5(
-  theme: UITheme(UILustre),
-  attributes: List(a.Attribute(a)),
-  elements: List(element.Element(a)),
-) -> element.Element(a) {
-  to_lustre(theme, attributes, elements, h.h5)
-}
-
-pub fn h6(
-  theme: UITheme(UILustre),
-  attributes: List(a.Attribute(a)),
-  elements: List(element.Element(a)),
-) -> element.Element(a) {
-  to_lustre(theme, attributes, elements, h.h6)
-}
-
-pub fn p(
-  theme: UITheme(UILustre),
-  attributes: List(a.Attribute(a)),
-  elements: List(element.Element(a)),
-) -> element.Element(a) {
-  to_lustre(theme, attributes, elements, h.p)
-}
-
-pub fn span(
-  theme: UITheme(UILustre),
-  attributes: List(a.Attribute(a)),
-  elements: List(element.Element(a)),
-) -> element.Element(a) {
-  to_lustre(theme, attributes, elements, h.span)
-}
-
-pub fn pre(
-  theme: UITheme(UILustre),
-  attributes: List(a.Attribute(a)),
-  elements: List(element.Element(a)),
-) -> element.Element(a) {
-  to_lustre(theme, attributes, elements, h.pre)
-}
-
-pub fn label(
-  theme: UITheme(UILustre),
-  attributes: List(a.Attribute(a)),
-  elements: List(element.Element(a)),
-) -> element.Element(a) {
-  to_lustre(theme, attributes, elements, h.label)
-}
-
 //
 // --- HELPER
 //
 
-pub fn token_to_list(token) {
+pub fn token_to_list(token: token) -> List(token) {
   [token]
 }
 
