@@ -51,7 +51,7 @@ pub opaque type UIEngine(token) {
     shape: Tokens(token),
     elevation: Tokens(token),
     stacking: Tokens(token),
-    direction: Tokens(token),
+    positioning: Tokens(token),
   )
 }
 
@@ -73,7 +73,7 @@ pub fn new(base: Tokens(token)) {
     shape: [],
     elevation: [],
     stacking: [],
-    direction: [],
+    positioning: [],
   )
 }
 
@@ -98,8 +98,8 @@ pub fn with_design(engine: UIEngine(token), design: Tokens(token)) {
   UIEngine(..engine, design:)
 }
 
-pub fn with_direction(engine: UIEngine(token), direction: Tokens(token)) {
-  UIEngine(..engine, direction:)
+pub fn with_positioning(engine: UIEngine(token), positioning: Tokens(token)) {
+  UIEngine(..engine, positioning: positioning)
 }
 
 /// Compõem o vocabulário em estilos visuais ordenados e padronizados p/ serem
@@ -110,16 +110,23 @@ pub fn with_direction(engine: UIEngine(token), direction: Tokens(token)) {
 ///
 /// A BLINDAGEM (O Template Method)
 pub fn resolve(engine: UIEngine(token)) -> Tokens(token) {
-  let UIEngine(base:, design:, size:, shape:, elevation:, stacking:, direction:) =
-    engine
+  let UIEngine(
+    base:,
+    design:,
+    size:,
+    shape:,
+    elevation:,
+    stacking:,
+    positioning:,
+  ) = engine
 
   list.flatten([
     base,
+    positioning,
     size,
     shape,
     elevation,
     stacking,
     design,
-    direction,
   ])
 }

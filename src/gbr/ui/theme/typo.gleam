@@ -137,7 +137,11 @@ pub fn h2(
 
 /// Header 3
 ///
-pub fn h3(theme, attributes attributes: List(a.Attribute(msg)), with elements) {
+pub fn h3_with(
+  theme,
+  attributes attributes: List(a.Attribute(msg)),
+  with elements,
+) {
   view(H3, theme, attributes, elements)
 }
 

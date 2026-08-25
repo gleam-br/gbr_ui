@@ -120,7 +120,7 @@ import lustre/attribute as a
 import lustre/element
 import lustre/element/html as h
 
-import gbr/ui/internal/engine
+import gbr/ui/theme/internal/engine
 
 // -----------------------------------------------------------------------------
 //
@@ -131,7 +131,7 @@ import gbr/ui/internal/engine
 ///
 /// Dados para construir um tema a partir dos tipos de tema, os design tokens.
 ///
-/// - painter: Dados do pintor do tema, os design tokens.
+/// - painter: Dados do pintor do tema, os design tokens em ADTs.
 /// - builder: Dados do motor para converter os tipos Gleam em design tokens
 /// específicos para a interface visual utilizada.
 ///
@@ -191,7 +191,7 @@ type UIPainter {
     shape: Option(UIShape),
     stacking: Option(UIStacking),
     elevation: Option(UIElevation),
-    direction: Option(UIDirection),
+    layout: Option(UILayout),
   )
 }
 
@@ -205,7 +205,7 @@ type UIBuilder(token) {
     shape_to_tokens: ShapeToTokens(token),
     stacking_to_tokens: StackingToTokens(token),
     elevation_to_tokens: ElevationToTokens(token),
-    direction_to_tokens: DirectionToTokens(token),
+    layout_to_tokens: LayoutToTokens(token),
   )
 }
 
@@ -283,7 +283,7 @@ pub type UIShape {
   /// Quadrado perfeito (0px radius)
   ShapeSharp
   /// Arredondamento suave (Design Web Clássico)
-  ShapeRounded(size: UISize, direction: UIDirection)
+  ShapeRounded(size: UISize, layout: UILayout)
   /// Bordas totalmente arredondadas (Design iOS/Mobile)
   ShapePill
   /// Círculo perfeito (Para avatares e icon_only)
@@ -314,19 +314,12 @@ pub type UISize {
 ///
 pub type UIStacking {
   StackAncestor(UIAncestor)
-  /// - IndexXxs:  9
   StackXxs
-  /// - IndexXs:   99
   StackXs
-  /// - IndexSm:   999
   StackSm
-  /// - IndexBase: 1
   StackBase
-  /// - IndexLg:   9999
   StackLg
-  /// - IndexXl:   99999
   StackXl
-  /// - IndexXxl:  999999
   StackXxl
 }
 
@@ -346,41 +339,59 @@ pub type UIElevation {
   ElevationInner
 }
 
-/// Direção de um elemento esquerda, direita, cima, baixo ou centro
+/// Define a estratégia de posicionamento no layout.
 ///
-pub type UIDirection {
-  DirectionDefault
-  DirectionAncestor(UIAncestor)
-  DirectionX(UIHorizontal)
-  DirectionY(UIVertical)
-  DirectionXY(x: UIVertical, y: UIHorizontal)
+pub type UILayout {
+  LayoutDefault
+  LayoutFlow(UIFlow)
+  LayoutAbsolute(UIAbsolute)
+  LayoutAncestor(UIAncestor)
 }
 
+/// Direção de um elemento esquerda, direita, etc.
 ///
-///
-pub type UIHorizontal {
-  Left
-  Right
-  Central
+pub type UIAbsolute {
+  Axis(horizontal: UIAlignment, vertical: UIAlignment)
+  AxisX(UIAlignment)
+  AxisY(UIAlignment)
 }
 
+/// Representa a união de justify-content (main) e align-content (cross).
 ///
-///
-pub type UIVertical {
-  Top
-  Bottom
-  Middle
+pub type UIFlow {
+  Main(justify: UIAlignment)
+  Cross(align: UIAlignment)
+  Flow(main: UIAlignment, cross: UIAlignment)
+}
+
+/// Representa as opções de alinhamento em um eixo genérico
+pub type UIAlignment {
+  /// e.g. flex-start
+  Start
+  /// e.g. flex-end
+  End
+  /// e.g. center
+  Center
+  /// e.g. space-between
+  SpaceBetween
+  /// e.g. space-around
+  SpaceAround
+  /// e.g. space-evenly
+  SpaceEvenly
+  /// e.g. stretch
+  Stretch
 }
 
 /// Como controlar a herança:
 /// - initial: Define a propriedade para o valor padrão do CSS.
 /// - inherit: Força o elemento a herdar o valor do elemento pai.
-/// - all: inherit: Pode ser usado para forçar todas as propriedades a serem herdadas do pai
+/// - all: Usado para forçar todas as propriedades a serem herdadas do pai.
 ///
-/// O padrão é recuperar o antecessor e se não encontrar recuperar as variantes padrões do
-/// dispositivo em que estamos pintando o elemento utilizando o tema específico.
+/// O padrão é recuperar o antecessor e se não encontrar recuperar as variantes
+/// padrões do dispositivo em que estamos pintando o elemento utilizando o tema
+/// específico.
+///
 pub type UIAncestor {
-  ///
   AncestorInitial
   AncestorInherit
   AncestorAll
@@ -397,10 +408,11 @@ pub type UIAncestor {
 /// Converte o tema em tokens de design, utilizando o construtor de tokens.
 ///
 /// - theme: O tema que será convertido.
+/// - builder: O construtor de tokens que será utilizado.
 /// - with: O tema base que será utilizado.
 ///
-pub fn paint(theme_builder: UITheme(token)) -> List(token) {
-  let UITheme(painter: theme, builder:) = theme_builder
+pub fn paint(theme: UITheme(token)) -> List(token) {
+  let UITheme(painter: theme, builder:) = theme
   let UIPainter(
     variant:,
     appearance:,
@@ -409,7 +421,7 @@ pub fn paint(theme_builder: UITheme(token)) -> List(token) {
     elevation:,
     size:,
     shape:,
-    direction:,
+    layout:,
   ) = theme
   let UIBuilder(
     base_to_tokens:,
@@ -418,7 +430,7 @@ pub fn paint(theme_builder: UITheme(token)) -> List(token) {
     elevation_to_tokens:,
     size_to_tokens:,
     shape_to_tokens:,
-    direction_to_tokens:,
+    layout_to_tokens:,
   ) = builder
 
   let base = base_to_tokens()
@@ -434,8 +446,8 @@ pub fn paint(theme_builder: UITheme(token)) -> List(token) {
   let shapes =
     option.map(shape, shape_to_tokens)
     |> option.unwrap([])
-  let direction =
-    option.map(direction, direction_to_tokens)
+  let layout =
+    option.map(layout, layout_to_tokens)
     |> option.unwrap([])
 
   // O design é a parte mais importante do tema, pois é ele que define a aparência
@@ -443,11 +455,11 @@ pub fn paint(theme_builder: UITheme(token)) -> List(token) {
 
   engine.new(base)
   |> engine.with_size(sizes)
+  |> engine.with_shape(shapes)
   |> engine.with_design(designs)
   |> engine.with_stacking(stackings)
   |> engine.with_elevation(elevations)
-  |> engine.with_shape(shapes)
-  |> engine.with_direction(direction)
+  |> engine.with_positioning(layout)
   |> engine.resolve()
 }
 
@@ -455,6 +467,7 @@ pub fn paint(theme_builder: UITheme(token)) -> List(token) {
 /// passado como argumento da função e a base dos tokens do estilo do elemento.
 ///
 /// - theme: Os dados do tema a ser aplicado ao elemento injetado.
+/// - build: Os dados de como construir os design tokens a partir do tema.
 /// - with: Base de estilos, design tokens, para ser aplicado ao elemento.
 /// - to: Função para injetar o construtor de um elemento visual genérico.
 ///
@@ -476,264 +489,227 @@ pub fn view(
 
 /// **NOVO THEME BUILDER**
 ///
+/// Criar novo tema e motor de elementos visuais estilizados.
+///
+/// - theme: Cria um tema padrão.
+/// - builder: Cria um construtor de temas padrão, uma lista do tipo genérico.
+///
 pub fn new() -> UITheme(tokens) {
   UITheme(painter: painter(), builder: builder())
 }
 
 ///
 pub fn with_variant(
-  theme_builder: UITheme(tokens),
+  theme: UITheme(tokens),
   variant variant: UIVariant,
 ) -> UITheme(tokens) {
-  UITheme(
-    ..theme_builder,
-    painter: UIPainter(..theme_builder.painter, variant:),
-  )
+  UITheme(..theme, painter: UIPainter(..theme.painter, variant:))
 }
 
 ///
 pub fn with_appearance(
-  theme_builder: UITheme(tokens),
+  theme: UITheme(tokens),
   appearance appearance: UIAppearance,
 ) -> UITheme(tokens) {
-  UITheme(
-    ..theme_builder,
-    painter: UIPainter(..theme_builder.painter, appearance:),
-  )
+  UITheme(..theme, painter: UIPainter(..theme.painter, appearance:))
 }
 
 ///
 pub fn with_state(
-  theme_builder: UITheme(tokens),
+  theme: UITheme(tokens),
   state state: UIState,
 ) -> UITheme(tokens) {
-  UITheme(..theme_builder, painter: UIPainter(..theme_builder.painter, state:))
+  UITheme(..theme, painter: UIPainter(..theme.painter, state:))
 }
 
 ///
 pub fn with_design(
-  theme_builder: UITheme(tokens),
+  theme: UITheme(tokens),
   variant variant: UIVariant,
   appearance appearance: UIAppearance,
   state state: UIState,
 ) -> UITheme(tokens) {
   UITheme(
-    ..theme_builder,
-    painter: UIPainter(..theme_builder.painter, variant:, appearance:, state:),
+    ..theme,
+    painter: UIPainter(..theme.painter, variant:, appearance:, state:),
   )
 }
 
 ///
 pub fn with_size(
-  theme_builder: UITheme(tokens),
+  theme: UITheme(tokens),
   size size: Option(UISize),
 ) -> UITheme(tokens) {
-  UITheme(..theme_builder, painter: UIPainter(..theme_builder.painter, size:))
+  UITheme(..theme, painter: UIPainter(..theme.painter, size:))
 }
 
 ///
 pub fn with_shape(
-  theme_builder: UITheme(tokens),
+  theme: UITheme(tokens),
   shape shape: Option(UIShape),
 ) -> UITheme(tokens) {
-  UITheme(..theme_builder, painter: UIPainter(..theme_builder.painter, shape:))
+  UITheme(..theme, painter: UIPainter(..theme.painter, shape:))
 }
 
 ///
 pub fn with_elevation(
-  theme_builder: UITheme(tokens),
+  theme: UITheme(tokens),
   elevation: Option(UIElevation),
 ) -> UITheme(tokens) {
-  UITheme(
-    ..theme_builder,
-    painter: UIPainter(..theme_builder.painter, elevation:),
-  )
+  UITheme(..theme, painter: UIPainter(..theme.painter, elevation:))
 }
 
 ///
 pub fn with_stacking(
-  theme_builder: UITheme(tokens),
+  theme: UITheme(tokens),
   stacking stacking: Option(UIStacking),
 ) -> UITheme(tokens) {
-  UITheme(
-    ..theme_builder,
-    painter: UIPainter(..theme_builder.painter, stacking:),
-  )
+  UITheme(..theme, painter: UIPainter(..theme.painter, stacking:))
 }
 
 ///
-pub fn with_direction(
-  theme_builder: UITheme(tokens),
-  direction direction: Option(UIDirection),
+pub fn with_layout(
+  theme: UITheme(tokens),
+  layout layout: Option(UILayout),
 ) -> UITheme(tokens) {
-  UITheme(
-    ..theme_builder,
-    painter: UIPainter(..theme_builder.painter, direction:),
-  )
+  UITheme(..theme, painter: UIPainter(..theme.painter, layout:))
 }
 
 /// Remove o empilhamento do elemento.
 ///
-pub fn without_stacking(theme_builder: UITheme(tokens)) -> UITheme(tokens) {
-  UITheme(
-    ..theme_builder,
-    painter: UIPainter(..theme_builder.painter, stacking: None),
-  )
+pub fn without_stacking(theme: UITheme(tokens)) -> UITheme(tokens) {
+  UITheme(..theme, painter: UIPainter(..theme.painter, stacking: None))
 }
 
 /// Remove a elevação do elemento
 ///
-pub fn without_elevation(theme_builder: UITheme(tokens)) -> UITheme(tokens) {
-  UITheme(
-    ..theme_builder,
-    painter: UIPainter(..theme_builder.painter, elevation: None),
-  )
+pub fn without_elevation(theme: UITheme(tokens)) -> UITheme(tokens) {
+  UITheme(..theme, painter: UIPainter(..theme.painter, elevation: None))
 }
 
 /// Remove o tamanho de um elemento.
 ///
-pub fn without_size(theme_builder: UITheme(tokens)) -> UITheme(tokens) {
-  UITheme(
-    ..theme_builder,
-    painter: UIPainter(..theme_builder.painter, size: None),
-  )
+pub fn without_size(theme: UITheme(tokens)) -> UITheme(tokens) {
+  UITheme(..theme, painter: UIPainter(..theme.painter, size: None))
 }
 
 /// Remove a superfície de um elemento
 ///
-pub fn without_shape(theme_builder: UITheme(tokens)) -> UITheme(tokens) {
-  UITheme(
-    ..theme_builder,
-    painter: UIPainter(..theme_builder.painter, shape: None),
-  )
+pub fn without_shape(theme: UITheme(tokens)) -> UITheme(tokens) {
+  UITheme(..theme, painter: UIPainter(..theme.painter, shape: None))
 }
 
 /// Tamanho padrão, caso o tema não contenha um tamanho determinado.
 ///
 pub fn with_size_default(
-  theme_builder: UITheme(token),
+  theme: UITheme(token),
   size: UISize,
 ) -> UITheme(token) {
-  let size = option.unwrap(theme_builder.painter.size, size)
+  let size = option.unwrap(theme.painter.size, size)
 
-  UITheme(
-    ..theme_builder,
-    painter: UIPainter(..theme_builder.painter, size: Some(size)),
-  )
+  UITheme(..theme, painter: UIPainter(..theme.painter, size: Some(size)))
 }
 
 /// Empilhamento padrão, caso o tema não contenha um determinado.
 ///
 pub fn with_stacking_default(
-  theme_builder: UITheme(token),
+  theme: UITheme(token),
   stacking: UIStacking,
 ) -> UITheme(token) {
-  let stacking = option.unwrap(theme_builder.painter.stacking, stacking)
+  let stacking = option.unwrap(theme.painter.stacking, stacking)
 
   UITheme(
-    ..theme_builder,
-    painter: UIPainter(..theme_builder.painter, stacking: Some(stacking)),
+    ..theme,
+    painter: UIPainter(..theme.painter, stacking: Some(stacking)),
   )
 }
 
 /// Elevação padrão, caso o tema não contenha um determinado.
 ///
 pub fn with_elevation_default(
-  theme_builder: UITheme(token),
+  theme: UITheme(token),
   elevation: UIElevation,
 ) -> UITheme(token) {
-  let elevation = option.unwrap(theme_builder.painter.elevation, elevation)
+  let elevation = option.unwrap(theme.painter.elevation, elevation)
 
   UITheme(
-    ..theme_builder,
-    painter: UIPainter(..theme_builder.painter, elevation: Some(elevation)),
+    ..theme,
+    painter: UIPainter(..theme.painter, elevation: Some(elevation)),
   )
 }
 
 /// Superfície padrão, caso o tema não contenha um determinado.
 ///
 pub fn with_shape_default(
-  theme_builder: UITheme(token),
+  theme: UITheme(token),
   shape: UIShape,
 ) -> UITheme(token) {
-  let shape = option.unwrap(theme_builder.painter.shape, shape)
+  let shape = option.unwrap(theme.painter.shape, shape)
 
-  UITheme(
-    ..theme_builder,
-    painter: UIPainter(..theme_builder.painter, shape: Some(shape)),
-  )
+  UITheme(..theme, painter: UIPainter(..theme.painter, shape: Some(shape)))
 }
 
 /// Converte para tokens iniciais, padrão, de estilização.
 ///
 pub fn with_base_to_tokens(
-  theme_builder: UITheme(token),
-  base_to_tokens: fn() -> List(token),
+  theme: UITheme(token),
+  base_to_tokens: BaseToTokens(token),
 ) -> UITheme(token) {
-  UITheme(
-    ..theme_builder,
-    builder: UIBuilder(..theme_builder.builder, base_to_tokens:),
-  )
+  UITheme(..theme, builder: UIBuilder(..theme.builder, base_to_tokens:))
 }
 
 /// Converte uma variante do tema em tokens.
 ///
 pub fn with_design_to_tokens(
-  theme_builder: UITheme(token),
-  design_to_tokens: fn(UIVariant, UIAppearance, UIState) -> List(token),
+  theme: UITheme(token),
+  design_to_tokens: DesignToTokens(token),
 ) -> UITheme(token) {
-  UITheme(
-    ..theme_builder,
-    builder: UIBuilder(..theme_builder.builder, design_to_tokens:),
-  )
+  UITheme(..theme, builder: UIBuilder(..theme.builder, design_to_tokens:))
 }
 
 /// Converte uma pilha visual do tema em tokens.
 ///
 pub fn with_stacking_to_tokens(
-  theme_builder: UITheme(token),
-  stacking_to_tokens: fn(UIStacking) -> List(token),
+  theme: UITheme(token),
+  stacking_to_tokens: StackingToTokens(token),
 ) -> UITheme(token) {
-  UITheme(
-    ..theme_builder,
-    builder: UIBuilder(..theme_builder.builder, stacking_to_tokens:),
-  )
+  UITheme(..theme, builder: UIBuilder(..theme.builder, stacking_to_tokens:))
 }
 
 /// Converte uma elevação do tema em tokens.
 ///
 pub fn with_elevation_to_tokens(
-  theme_builder: UITheme(token),
-  elevation_to_tokens: fn(UIElevation) -> List(token),
+  theme: UITheme(token),
+  elevation_to_tokens: ElevationToTokens(token),
 ) -> UITheme(token) {
-  UITheme(
-    ..theme_builder,
-    builder: UIBuilder(..theme_builder.builder, elevation_to_tokens:),
-  )
+  UITheme(..theme, builder: UIBuilder(..theme.builder, elevation_to_tokens:))
 }
 
 /// Converte um tamanho do tema em tokens.
 ///
 pub fn with_size_to_tokens(
-  theme_builder: UITheme(token),
-  size_to_tokens: fn(UISize) -> List(token),
+  theme: UITheme(token),
+  size_to_tokens: SizeToTokens(token),
 ) -> UITheme(token) {
-  UITheme(
-    ..theme_builder,
-    builder: UIBuilder(..theme_builder.builder, size_to_tokens:),
-  )
+  UITheme(..theme, builder: UIBuilder(..theme.builder, size_to_tokens:))
 }
 
 /// Converte uma superfície visual do tema em tokens.
 ///
 pub fn with_shape_to_tokens(
-  theme_builder: UITheme(token),
-  shape_to_tokens: fn(UIShape) -> List(token),
+  theme: UITheme(token),
+  shape_to_tokens: ShapeToTokens(token),
 ) -> UITheme(token) {
-  UITheme(
-    ..theme_builder,
-    builder: UIBuilder(..theme_builder.builder, shape_to_tokens:),
-  )
+  UITheme(..theme, builder: UIBuilder(..theme.builder, shape_to_tokens:))
+}
+
+/// Converte um tamanho do tema em tokens.
+///
+pub fn with_layout_to_tokens(
+  theme: UITheme(token),
+  layout_to_tokens: LayoutToTokens(token),
+) -> UITheme(token) {
+  UITheme(..theme, builder: UIBuilder(..theme.builder, layout_to_tokens:))
 }
 
 // -----------------------------------------------------------------------------
@@ -867,13 +843,12 @@ pub fn circle() -> Option(UIShape) {
 
 ///
 pub fn rounded_all(size: UISize) -> Option(UIShape) {
-  ShapeRounded(size:, direction: DirectionDefault)
-  |> Some()
+  rounded_absolute(size, AxisX(Center))
 }
 
 ///
-pub fn rounded(size: UISize, direction: UIDirection) -> Option(UIShape) {
-  ShapeRounded(size, direction)
+pub fn rounded_absolute(size: UISize, absolute: UIAbsolute) -> Option(UIShape) {
+  ShapeRounded(size, layout: LayoutAbsolute(absolute))
   |> Some()
 }
 
@@ -881,7 +856,7 @@ pub fn rounded(size: UISize, direction: UIDirection) -> Option(UIShape) {
 //
 // -- **IMPLEMENTAÇÂO DO TEMA USANDO O LUSTRE**
 //
-// **Lustre + UITheme**
+// **Lustre + UIThemeBuilder**
 //
 // Utilizamos os design tokens do tema como uma estrutura de uma tupla
 // `#(String, Bool)`, compatível com a assinatura da função `attribute.classes`
@@ -965,6 +940,7 @@ pub type UILustre {
   Styles(List(#(String, String)))
   Style(String, String)
   Class(String)
+  Empty
 }
 
 /// Conversor dos design tokens para um elementos lustre.
@@ -987,6 +963,7 @@ pub fn to_lustre(
       Classes(token) -> a.classes(token)
       Styles(token) -> a.styles(token)
       Style(key, value) -> a.style(key, value)
+      Empty -> a.none()
     }
   }
   view(theme, fn(tokens: List(UILustre)) {
@@ -1018,14 +995,6 @@ pub fn div(
   to_lustre(theme, attributes, elements, h.div)
 }
 
-pub fn header(
-  theme: UITheme(UILustre),
-  attributes: List(a.Attribute(a)),
-  elements: List(element.Element(a)),
-) -> element.Element(a) {
-  to_lustre(theme, attributes, elements, h.header)
-}
-
 pub fn main(
   theme: UITheme(UILustre),
   attributes: List(a.Attribute(a)),
@@ -1034,6 +1003,22 @@ pub fn main(
   to_lustre(theme, attributes, elements, h.main)
 }
 
+//
+// -- Layout
+//
+
+/// Define um cabeçalho para o documento ou seção.
+///
+pub fn header(
+  theme: UITheme(UILustre),
+  attributes: List(a.Attribute(a)),
+  elements: List(element.Element(a)),
+) -> element.Element(a) {
+  to_lustre(theme, attributes, elements, h.header)
+}
+
+/// Define uma seção no documento.
+///
 pub fn section(
   theme: UITheme(UILustre),
   attributes: List(a.Attribute(a)),
@@ -1042,6 +1027,8 @@ pub fn section(
   to_lustre(theme, attributes, elements, h.section)
 }
 
+/// Define um rodapé para o documento ou seção.
+///
 pub fn footer(
   theme: UITheme(UILustre),
   attributes: List(a.Attribute(a)),
@@ -1050,6 +1037,18 @@ pub fn footer(
   to_lustre(theme, attributes, elements, h.footer)
 }
 
+/// Define um conteúdo independente, auto-contindo.
+///
+pub fn article(
+  theme: UITheme(UILustre),
+  attributes: List(a.Attribute(a)),
+  elements: List(element.Element(a)),
+) -> element.Element(a) {
+  to_lustre(theme, attributes, elements, h.article)
+}
+
+/// Define um conteúdo a parte do conteúdo principal.
+///
 pub fn aside(
   theme: UITheme(UILustre),
   attributes: List(a.Attribute(a)),
@@ -1058,6 +1057,8 @@ pub fn aside(
   to_lustre(theme, attributes, elements, h.aside)
 }
 
+/// Define um conjunto de links de navegação.
+///
 pub fn nav(
   theme: UITheme(UILustre),
   attributes: List(a.Attribute(a)),
@@ -1065,6 +1066,33 @@ pub fn nav(
 ) -> element.Element(a) {
   to_lustre(theme, attributes, elements, h.nav)
 }
+
+/// Define detalhes adicionais que pode ser aberto para visualização.
+///
+/// - Usado em conjunto com o `summary()`. Algumas interfaces oferecem uma
+/// descrição de resumo, `summary`, padrão.
+///
+pub fn details(
+  theme: UITheme(UILustre),
+  attributes: List(a.Attribute(a)),
+  elements: List(element.Element(a)),
+) -> element.Element(a) {
+  to_lustre(theme, attributes, elements, h.details)
+}
+
+/// Define o cabeçalho para o elemento `details()`, caso necessário.
+///
+pub fn summary(
+  theme: UITheme(UILustre),
+  attributes: List(a.Attribute(a)),
+  elements: List(element.Element(a)),
+) -> element.Element(a) {
+  to_lustre(theme, attributes, elements, h.summary)
+}
+
+//
+// -- Lista
+//
 
 pub fn ul(
   theme: UITheme(UILustre),
@@ -1080,17 +1108,6 @@ pub fn li(
   elements: List(element.Element(a)),
 ) -> element.Element(a) {
   to_lustre(theme, attributes, elements, h.li)
-}
-
-pub fn details(
-  theme: UITheme(UILustre),
-  summary: element.Element(a),
-  attributes: List(a.Attribute(a)),
-  elements: List(element.Element(a)),
-) -> element.Element(a) {
-  let elements = [summary, ..elements]
-
-  to_lustre(theme, attributes, elements, h.details)
 }
 
 //
@@ -1205,7 +1222,7 @@ pub fn a(
 // --- HELPER
 //
 
-pub fn token_to_list(token: token) -> List(token) {
+pub fn token_to_list(token) {
   [token]
 }
 
@@ -1219,14 +1236,14 @@ pub fn token_to_list(token: token) -> List(token) {
 ///
 fn painter() -> UIPainter {
   UIPainter(
+    size: None,
+    shape: None,
+    stacking: None,
+    elevation: None,
     variant: VariantDefault,
     appearance: AppearanceDefault,
     state: StateIdle,
-    stacking: None,
-    elevation: None,
-    size: None,
-    shape: None,
-    direction: None,
+    layout: None,
   )
 }
 
@@ -1240,12 +1257,12 @@ fn painter() -> UIPainter {
 fn builder() -> UIBuilder(token) {
   UIBuilder(
     base_to_tokens: fn() { [] },
-    design_to_tokens: fn(_, _, _) { [] },
-    stacking_to_tokens: fn(_) { [] },
-    elevation_to_tokens: fn(_) { [] },
-    size_to_tokens: fn(_) { [] },
-    shape_to_tokens: fn(_) { [] },
-    direction_to_tokens: fn(_) { [] },
+    design_to_tokens: fn(_variant, _appearance, _state) { [] },
+    stacking_to_tokens: fn(_stacking) { [] },
+    elevation_to_tokens: fn(_elevation) { [] },
+    size_to_tokens: fn(_size) { [] },
+    shape_to_tokens: fn(_shape) { [] },
+    layout_to_tokens: fn(_direction) { [] },
   )
 }
 
@@ -1281,8 +1298,8 @@ type ElevationToTokens(token) =
 
 /// Para converter a sensação de elevação em tokens
 ///
-type DirectionToTokens(token) =
-  fn(UIDirection) -> List(token)
+type LayoutToTokens(token) =
+  fn(UILayout) -> List(token)
 
 /// Para converter o de design (variante x aparência x estado) em tokens.
 ///
