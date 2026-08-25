@@ -1,27 +1,19 @@
 name = "gbr_ui"
-version = "1.0.2"
-target = "javascript"
+version = "2.0.0"
+gleam = ">= 1.17.0"
 
-description = "Gleam UI lustre library by @gleam-br"
+description = "Gleam-BR: UI design system library"
 repository = { type = "github", user = "gleam-br", repo = "gbr_ui" }
 licences = ["Apache-2.0"]
 links = []
 
 [dependencies]
-gbr_ui_router = { path = "../gbr_ui_router" }
-gbr_shared = { path = "../gbr_shared" }
-gbr_js = { path = "../gbr_js" }
-
-lustre = "~> 5.5"
-rsvp = "~> 1.1"
-
-gleam_time = "~> 1.6"
-gleam_http = "~> 4.3"
-gleam_json = "~> 3.1"
 gleam_stdlib = "~> 1.0"
 
+lustre = "~> 5.7"
+
 [dev-dependencies]
-gleeunit = "~> 1.10"
+gleeunit = "~> 1.11"
 
 [javascript]
 typescript_declarations = true

@@ -1,0 +1,125 @@
+/* Gleam UI tailwindcss styles by @gleam-br */
+/* gbr_ui_admin.css - Estilos de Admin corporativo do Design System */
+
+@import "./gbr_ui_base.css";
+
+@theme {
+  --color-brand-25: #f2f7ff;
+  --color-brand-50: #ecf3ff;
+  --color-brand-100: #dde9ff;
+  --color-brand-200: #c2d6ff;
+  --color-brand-300: #9cb9ff;
+  --color-brand-400: #7592ff;
+  --color-brand-500: #465fff;
+  --color-brand-600: #3641f5;
+  --color-brand-700: #2a31d8;
+  --color-brand-800: #252dae;
+  --color-brand-900: #262e89;
+  --color-brand-950: #161950;
+
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f2f4f7;
+  --color-gray-200: #e4e7ec;
+  --color-gray-300: #d0d5dd;
+  --color-gray-400: #98a2b3;
+  --color-gray-500: #667085;
+  --color-gray-600: #475467;
+  --color-gray-700: #344054;
+  --color-gray-800: #1d2939;
+  --color-gray-900: #101828;
+  --color-gray-950: #0c111d;
+
+  --color-success-50: #ecfdf3;
+  --color-success-100: #d1fadf;
+  --color-success-500: #12b76a;
+  --color-success-600: #039855;
+
+  --color-error-50: #fef3f2;
+  --color-error-100: #fee4e2;
+  --color-error-200: #fecdca;
+  --color-error-500: #f04438;
+  --color-error-600: #d92d20;
+  --color-error-800: #912018;
+
+  --color-warning-50: #fffaeb;
+  --color-warning-100: #fef0c7;
+  --color-warning-500: #f79009;
+  --color-warning-600: #dc6803;
+
+  /* Cores de Ação */
+  --color-primary-50: var(--color-brand-50);
+  --color-primary-100: var(--color-brand-100);
+  --color-primary-400: var(--color-brand-400);
+  --color-primary-500: var(--color-brand-500);
+  --color-primary-600: var(--color-brand-600);
+  --color-primary-900: var(--color-brand-900);
+  --color-primary-950: var(--color-brand-950);
+  --color-primary-content: var(--color-white);
+
+  --color-danger-50: var(--color-error-50);
+  --color-danger-100: var(--color-error-100);
+  --color-danger-200: var(--color-error-200);
+  --color-danger-500: var(--color-error-500);
+  --color-danger-600: var(--color-error-600);
+  --color-danger-800: var(--color-error-800);
+  --color-danger-content: var(--color-white);
+
+  --color-success-50: var(--color-success-50);
+  --color-success-100: var(--color-success-100);
+  --color-success-500: var(--color-success-500);
+  --color-success-content: var(--color-white);
+
+  --color-warning-50: var(--color-warning-50);
+  --color-warning-100: var(--color-warning-100);
+  --color-warning-500: var(--color-warning-500);
+  --color-warning-content: var(--color-white);
+
+  /* Superfícies e Textos (Luz Ligada) */
+  --color-base: var(--color-gray-50);
+  --color-surface: var(--color-white/5);
+  --color-surface-muted: var(--color-gray-100);
+
+  --color-content: var(--color-gray-900);
+  --color-content-muted: var(--color-gray-600);
+  --color-border: var(--color-gray-300);
+}
+
+@layer theme {
+
+  /* ESTADO: LIGHT MODE (Padrão) */
+  :root,
+  :host {
+    --sys-base: var(--color-gray-50);
+    --sys-surface: var(--color-white/5);
+    --sys-surface-muted: var(--color-gray-100);
+
+    --sys-content: var(--color-gray-900);
+    --sys-content-muted: var(--color-gray-600);
+    --sys-border: var(--color-gray-300);
+  }
+
+  /* ESTADO: DARK MODE 
+     Atende a classe .dark no <html> */
+  :root.dark,
+  .dark {
+    --sys-base: var(--color-gray-900);
+    --sys-surface: var(--color-gray-900);
+    --sys-surface-muted: var(--color-gray-800);
+
+    --sys-content: rgba(255, 255, 255, 0.9);
+    --sys-content-muted: var(--color-gray-400);
+    --sys-border: var(--color-gray-700);
+  }
+
+  /* Quando a classe .dark entra no <body> ou outro elemento! */
+  .dark {
+    --color-base: var(--color-gray-900);
+    --color-surface: var(--color-gray-900);
+    --color-surface-muted: var(--color-gray-800);
+
+    --color-content: rgba(255, 255, 255, 0.9);
+    /* Branco 90% p/ leitura suave */
+    --color-content-muted: var(--color-gray-400);
+    --color-border: var(--color-gray-700);
+  }
+}

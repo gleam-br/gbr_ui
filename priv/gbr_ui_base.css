@@ -1,0 +1,214 @@
+/* Gleam UI tailwindcss styles by @gleam-br */
+/* gbr_ui_base.css - Estrutura Base e Utilitários do Design System */
+
+/* Configuração oficial de Dark Mode manual (via classe) para o Lustre */
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  /* --- TIPOGRAFIA --- */
+  --font-*: initial;
+  --default-font-family: Outfit, sans-serif;
+
+  /* --- BREAKPOINTS --- */
+  --breakpoint-*: initial;
+  --breakpoint-2xsm: 375px;
+  --breakpoint-xsm: 425px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+  --breakpoint-3xl: 2000px;
+
+  /* --- TEXT SIZES (Semântica de Tamanho) --- */
+  --text-title-2xl: 72px;
+  --text-title-2xl--line-height: 90px;
+  --text-title-xl: 60px;
+  --text-title-xl--line-height: 72px;
+  --text-title-lg: 48px;
+  --text-title-lg--line-height: 60px;
+  --text-title-md: 36px;
+  --text-title-md--line-height: 44px;
+  --text-title-sm: 30px;
+  --text-title-sm--line-height: 38px;
+
+  --text-theme-2xl: 22px;
+  --text-theme-2xl--line-height: 40px;
+  --text-theme-xl: 20px;
+  --text-theme-xl--line-height: 30px;
+  --text-theme-sm: 14px;
+  --text-theme-sm--line-height: 20px;
+  --text-theme-xs: 12px;
+  --text-theme-xs--line-height: 18px;
+
+  /* --- SHADOWS --- */
+  --shadow-theme-md: 0px 4px 8px -2px rgba(16, 24, 40, 0.1), 0px 2px 4px -2px rgba(16, 24, 40, 0.06);
+  --shadow-theme-lg: 0px 12px 16px -4px rgba(16, 24, 40, 0.08), 0px 4px 6px -2px rgba(16, 24, 40, 0.03);
+  --shadow-theme-sm: 0px 1px 3px 0px rgba(16, 24, 40, 0.1), 0px 1px 2px 0px rgba(16, 24, 40, 0.06);
+  --shadow-theme-xs: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+  --shadow-theme-xl: 0px 20px 24px -4px rgba(16, 24, 40, 0.08), 0px 8px 8px -4px rgba(16, 24, 40, 0.03);
+
+  --shadow-datepicker: -5px 0 0 var(--color-surface), 5px 0 0 var(--color-surface);
+  --shadow-focus-ring: 0px 0px 0px 4px var(--color-primary-500);
+
+  --shadow-slider-navigation: 0px 1px 2px 0px rgba(16, 24, 40, 0.1), 0px 1px 3px 0px rgba(16, 24, 40, 0.1);
+  --shadow-tooltip: 0px 4px 6px -2px rgba(16, 24, 40, 0.05), -8px 0px 20px 8px rgba(16, 24, 40, 0.05);
+  --drop-shadow-4xl: 0 35px 35px rgba(0, 0, 0, 0.25), 0 45px 65px rgba(0, 0, 0, 0.15);
+
+  /* --- Z-INDEX --- */
+  --z-index-1: 1;
+  --z-index-9: 9;
+  --z-index-99: 99;
+  --z-index-999: 999;
+  --z-index-9999: 9999;
+  --z-index-99999: 99999;
+  --z-index-999999: 999999;
+}
+
+/* --- BASE RESETS --- */
+@layer base {
+
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-border, currentColor);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  body {
+    background-color: var(--color-base);
+    color: var(--color-content);
+    @apply relative text-base font-normal z-1;
+  }
+}
+
+/* --- UTILITIES ESTRUTURAIS --- */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+@utility no-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@utility custom-scrollbar {
+  &::-webkit-scrollbar {
+    @apply size-1.5;
+  }
+
+  &::-webkit-scrollbar-track {
+    @apply rounded-full;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    /* Cor de borda semântica para o scroll */
+    background-color: var(--color-border);
+    @apply rounded-full;
+  }
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--color-surface-muted);
+}
+
+/* --- COMPONENTES NATIVOS REESTILIZADOS --- */
+input[type="datetime-local"],
+input[type="date"],
+input[type="time"],
+input[type="week"],
+input[type="month"] {
+  color: var(--color-content);
+  font-size: 14px;
+  font-family: var(--default-font-family), sans-serif;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background-color: var(--color-surface);
+
+  &::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    border-radius: 2px;
+    background-color: var(--color-surface-muted);
+  }
+
+  &:is(.dark *) {
+    color: var(--color-content-muted);
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
+
+    &::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      border-color: var(--color-border);
+      border-radius: 2px;
+      background-color: var(--color-surface-muted);
+    }
+  }
+}
+
+/* --- MENU UTILITIES --- */
+@utility menu-item {
+  @apply relative flex items-center gap-3 px-3 py-2 font-medium rounded-lg text-theme-sm;
+}
+
+@utility menu-item-active {
+  /* Saiu bg-brand, entrou bg-primary */
+  @apply bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400;
+}
+
+@utility menu-item-inactive {
+  @apply text-content-muted hover:bg-surface-muted hover:text-content dark:text-content-muted dark:hover:bg-white/5 dark:hover:text-content;
+}
+
+@utility menu-item-icon-active {
+  @apply fill-primary-600 dark:fill-primary-400;
+}
+
+@utility menu-item-icon-inactive {
+  @apply fill-content-muted group-hover:fill-content dark:fill-content-muted dark:group-hover:fill-content;
+}
+
+@utility menu-item-arrow {
+  @apply absolute top-1/2 right-2.5 -translate-y-1/2;
+}
+
+@utility menu-item-arrow-active {
+  @apply rotate-180 stroke-primary-600 dark:stroke-primary-400;
+}
+
+@utility menu-item-arrow-inactive {
+  @apply stroke-content-muted group-hover:stroke-content dark:stroke-content-muted dark:group-hover:stroke-content;
+}
+
+@utility menu-dropdown-item {
+  @apply text-theme-sm relative flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium;
+}
+
+@utility menu-dropdown-item-active {
+  @apply bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400;
+}
+
+@utility menu-dropdown-item-inactive {
+  @apply text-content-muted hover:bg-surface-muted dark:text-content-muted dark:hover:bg-white/5;
+}
+
+@utility menu-dropdown-badge {
+  @apply text-primary-600 dark:text-primary-400 block rounded-full px-2.5 py-0.5 text-xs font-medium uppercase;
+}
+
+@utility menu-dropdown-badge-active {
+  @apply bg-primary-100 dark:bg-primary-900/30;
+}
+
+@utility menu-dropdown-badge-inactive {
+  @apply bg-primary-50 group-hover:bg-primary-100 dark:bg-primary-900/20 dark:group-hover:bg-primary-900/30;
+}
