@@ -1,6 +1,6 @@
 name = "gbr_ui"
-version = "2.0.0-alpha"
-target = "javascript"
+version = "2.0.0"
+gleam = ">= 1.17.0"
 
 description = "Gleam-BR: UI design system library"
 repository = { type = "github", user = "gleam-br", repo = "gbr_ui" }
@@ -8,11 +8,12 @@ licences = ["Apache-2.0"]
 links = []
 
 [dependencies]
-lustre = "~> 5.7"
 gleam_stdlib = "~> 1.0"
 
+lustre = "~> 5.7"
+
 [dev-dependencies]
-gleeunit = "~> 1.10"
+gleeunit = "~> 1.11"
 
 [javascript]
 typescript_declarations = true
