@@ -1,6 +1,6 @@
 name = "gbr_ui_storybook"
 description = "GBR: UI Storybook Library"
-version = "0.0.1"
+version = "1.0.0"
 target = "javascript"
 gleam = ">=1.17.0"
 
