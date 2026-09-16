@@ -280,10 +280,10 @@ pub type UIState {
 /// O "quão redondo" é o elemento não depende do tamanho
 pub type UIShape {
   ShapeAncestor(UIAncestor)
+  /// Arredondamento
+  Shape(size: UISize, layout: UILayout)
   /// Quadrado perfeito (0px radius)
   ShapeSharp
-  /// Arredondamento suave (Design Web Clássico)
-  ShapeRounded(size: UISize, layout: UILayout)
   /// Bordas totalmente arredondadas (Design iOS/Mobile)
   ShapePill
   /// Círculo perfeito (Para avatares e icon_only)
@@ -337,6 +337,8 @@ pub type UIElevation {
   ElevationHigh
   /// Afundado (Sombra interna, útil para inputs)
   ElevationInner
+  /// Bordas por tamanho e layout
+  Elevation(size: UISize, layout: UILayout)
 }
 
 /// Define a estratégia de posicionamento no layout.
@@ -359,9 +361,18 @@ pub type UIAbsolute {
 /// Representa a união de justify-content (main) e align-content (cross).
 ///
 pub type UIFlow {
+  /// Layout de fluxo principal referencia ao justify-*.
   Main(justify: UIAlignment)
-  Cross(align: UIAlignment)
-  Flow(main: UIAlignment, cross: UIAlignment)
+  /// Layout de fluxo principal referencia ao items-*.
+  CrossItems(align: UIAlignment)
+  /// Layout de fluxo principal referencia ao content-*.
+  CrossContent(align: UIAlignment)
+  /// Layout de fluxo referenciando o eixo main, cross content e cross items.
+  Flow(main: UIAlignment, cross_content: UIAlignment, cross_items: UIAlignment)
+  /// Layout de fluxo referenciando o eixo main e cross items.
+  FlowItems(main: UIAlignment, cross_items: UIAlignment)
+  /// Layout de fluxo referenciando o eixo main e cross content.
+  FlowContent(main: UIAlignment, cross_content: UIAlignment)
 }
 
 /// Representa as opções de alinhamento em um eixo genérico
@@ -848,7 +859,7 @@ pub fn rounded_all(size: UISize) -> Option(UIShape) {
 
 ///
 pub fn rounded_absolute(size: UISize, absolute: UIAbsolute) -> Option(UIShape) {
-  ShapeRounded(size, layout: LayoutAbsolute(absolute))
+  Shape(size, layout: LayoutAbsolute(absolute))
   |> Some()
 }
 

@@ -13,13 +13,27 @@ pub fn layout_to_token_value(layout: theme.UIFlow) {
     theme.Main(justify:) ->
       alignment_to_css_value(justify)
       |> theme.Style("justify-content", _)
-    theme.Cross(align:) ->
+    theme.CrossItems(align:) ->
+      alignment_to_css_value(align)
+      |> theme.Style("align-self", _)
+    theme.CrossContent(align:) ->
       alignment_to_css_value(align)
       |> theme.Style("align-content", _)
-    theme.Flow(main:, cross:) ->
+    theme.Flow(main:, cross_content:, cross_items:) ->
       theme.Styles([
         #("justify-content", alignment_to_css_value(main)),
-        #("align-content", alignment_to_css_value(cross)),
+        #("align-content", alignment_to_css_value(cross_content)),
+        #("align-self", alignment_to_css_value(cross_items)),
+      ])
+    theme.FlowItems(main:, cross_items:) ->
+      theme.Styles([
+        #("justify-content", alignment_to_css_value(main)),
+        #("align-self", alignment_to_css_value(cross_items)),
+      ])
+    theme.FlowContent(main:, cross_content:) ->
+      theme.Styles([
+        #("justify-content", alignment_to_css_value(main)),
+        #("align-content", alignment_to_css_value(cross_content)),
       ])
   }
 }
