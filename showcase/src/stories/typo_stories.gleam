@@ -4,33 +4,31 @@
 
 import gleam/dynamic/decode
 
+import lustre/element/html as h
+
+import gbr/ui/showcase/components/typo
 import gbr/ui/storybook
 import gbr/ui/theme
-import gbr/ui/theme/lustre
-import gbr/ui/theme/lustre/typo
 
 pub fn view() {
   use args <- storybook.render()
 
-  let #(kind, label) = decode_args(args)
+  let #(kind, size, label) = decode_args(args)
+  let view = fn(view) { view([], [h.text(label)]) }
 
-  theme.new()
-  |> theme.with_size_to_tokens(fn(size) {
-    [
-      case size {
-        theme.SizeAncestor(_) -> ""
-        theme.SizeXxl -> "text-2xl "
-        theme.SizeXl -> "text-xl"
-        theme.SizeLg -> "text-lg"
-        theme.SizeMd -> "text-md"
-        theme.SizeSm -> "text-sm"
-        theme.SizeXs -> "text-xs"
-        theme.SizeXxs -> "text-xs"
-      }
-      |> lustre.Class,
-    ]
-  })
-  |> typo.text(kind, _, label, [], [])
+  case kind {
+    "h1" -> view(typo.h1)
+    "h2" -> view(typo.h2)
+    "h3" -> view(typo.h3)
+    "h4" -> view(typo.h4)
+    "h5" -> view(typo.h5)
+    "h6" -> view(typo.h6)
+    "p" -> view(fn(a, e) { typo.p(size, a, e) })
+    "pre" -> view(fn(a, e) { typo.pre(size, a, e) })
+    "span" -> view(fn(a, e) { typo.span(size, a, e) })
+    "label" -> view(fn(a, e) { typo.label(size, a, e) })
+    _ -> view(typo.h1)
+  }
 }
 
 fn decode_args(args) {
@@ -49,19 +47,5 @@ fn decode_args(args) {
     _ -> theme.SizeMd
   }
 
-  let kind = case kind {
-    "h1" -> typo.H1
-    "h2" -> typo.H2
-    "h3" -> typo.H3
-    "h4" -> typo.H4
-    "h5" -> typo.H5
-    "h6" -> typo.H6
-    "p" -> typo.Paragraph(size)
-    "pre" -> typo.Pre(size)
-    "span" -> typo.Span(size)
-    "label" -> typo.Label(size)
-    _ -> typo.H1
-  }
-
-  #(kind, label)
+  #(kind, size, label)
 }
