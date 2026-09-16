@@ -1,5 +1,4 @@
 
-
 /** @type { import('@storybook/html-vite').StorybookConfig } */
 export default {
   "stories": [
@@ -14,12 +13,6 @@ export default {
   ],
   "framework": "@storybook/html-vite",
   "core": {
-    "builder": {
-      "name": "@storybook/builder-vite",
-      "options": {
-        "viteConfigPath": new URL("../vite.config.js", import.meta.url).pathname.slice(1)
-      },
-    },
     "disableTelemetry": true,
     "disableWhatsNewNotifications": true,
   }

@@ -20,21 +20,6 @@ gleam add gbr_ui_showcase
 
 Os comandos acima irão criar o projeto `test_gleam_storybook`, instalar o plugin Gleam para o Vitejs, inicializar as configurações e dependências do storybook e instalar o pacote Gleam `gbr_ui_showcase`.
 
-Depois temos que configurar nosso storybook para recuperar as configurações do vite.config.js no projeto, em `.storybook/main.js`:
-
-```
-  "core": {
-    "builder": {
-      "name": "@storybook/builder-vite",
-      "options": {
-        "viteConfigPath": new URL("../vite.config.js", import.meta.url).pathname.slice(1)
-      },
-    },
-    "disableTelemetry": true,
-    "disableWhatsNewNotifications": true,
-  }
-```
-
 Agora vamos criar uma história para nosso storybook, aqui iremos criar dois arquivos de código fonte um em Gleam e outro em java script:
 
 > Este exemplo utiliza a biblioteca `gbr_ui`.
@@ -50,10 +35,8 @@ import gbr/ui/theme/lustre
 import gbr/ui/theme/lustre/typo
 
 pub fn view() {
-  storybook.render(do_view)
-}
+  use args <- storybook.render()
 
-fn do_view(args) {
   let #(kind, label) = decode_args(args)
 
   theme.new()
