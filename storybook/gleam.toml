@@ -1,11 +1,12 @@
 name = "gbr_ui_storybook"
-version = "1.0.0"
-description = "GBR: UI Storybook library"
+description = "GBR: UI Storybook Library"
+version = "0.0.1"
 target = "javascript"
 gleam = ">=1.17.0"
 
 repository = { type = "github", user = "gleam-br", repo = "gbr_ui", path = "storybook" }
 licences = ["Apache-2.0"]
+links = []
 
 [dependencies]
 gleam_stdlib = "~> 1.0"
