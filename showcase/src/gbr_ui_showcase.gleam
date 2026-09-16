@@ -13,5 +13,5 @@ pub fn main() {
   let context = showcase.context(api:, log:, mode:)
 
   lustre.application(showcase.init, showcase.update, showcase.view)
-  |> lustre.start("#app", context)
+  |> lustre.start("body", context)
 }

@@ -401,7 +401,7 @@ pub fn size_text_to_classes(is_header) {
         #("text-title-sm sm:text-title-md", is_header),
         #("text-sm sm:text-md", !is_header),
       ]
-      theme.SizeXs -> [
+      theme.SizeXxs | theme.SizeXs -> [
         #("text-title-xs sm:text-title-sm", is_header),
         #("text-xs sm:text-xs", !is_header),
       ]

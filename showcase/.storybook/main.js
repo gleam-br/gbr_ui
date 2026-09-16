@@ -9,7 +9,8 @@ export default {
     "@chromatic-com/storybook",
     "@storybook/addon-vitest",
     "@storybook/addon-a11y",
-    "@storybook/addon-docs"
+    "@storybook/addon-docs",
+    '@storybook/addon-themes',
   ],
   "framework": "@storybook/html-vite",
   "core": {

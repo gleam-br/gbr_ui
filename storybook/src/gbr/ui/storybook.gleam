@@ -19,8 +19,8 @@ pub fn render(view) {
 
 /// Função auxiliar para decodificar os argumentos vindos do storybook
 ///
-pub fn decode(args, field, to_decode, fallback) {
-  do_decode(field, to_decode, fallback)
+pub fn decode(args, field, fallback, to_decode) {
+  do_decode(field, fallback, to_decode)
   |> decode.run(args, _)
   |> result.unwrap(fallback)
 }
@@ -66,7 +66,7 @@ fn mount(
   Nil
 }
 
-fn do_decode(field, to_decode, fallback) {
+fn do_decode(field, fallback, to_decode) {
   use value <- decode.optional_field(field, fallback, to_decode)
 
   value

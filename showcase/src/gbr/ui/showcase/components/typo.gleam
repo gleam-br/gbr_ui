@@ -2,7 +2,7 @@
 ////
 ////
 
-import gleam/option
+import gleam/option.{type Option}
 
 import lustre/attribute as a
 import lustre/element as el
@@ -14,64 +14,101 @@ import gbr/ui/theme/lustre/typo
 
 import gbr/ui/showcase/components/theme
 
-pub type Model {
+pub opaque type Model {
   Model(typo: typo.UITypography, theme: ui.UITheme(lustre.UILustre))
 }
 
+pub fn new(typo) {
+  let is_header = typo.is_header(typo)
+
+  Model(typo:, theme: theme.new_typo_theme(is_header))
+}
+
+pub fn view(model, a, e) {
+  let Model(typo:, theme:) = model
+
+  case typo {
+    typo.H1 -> typo.h1(theme, a, e)
+    typo.H2 -> typo.h2(theme, a, e)
+    typo.H3 -> typo.h3(theme, a, e)
+    typo.H4 -> typo.h4(theme, a, e)
+    typo.H5 -> typo.h5(theme, a, e)
+    typo.H6 -> typo.h6(theme, a, e)
+    typo.Pre(size:) -> typo.pre(theme, size, a, e)
+    typo.Span(size:) -> typo.span(theme, size, a, e)
+    typo.Label(size:) -> typo.label(theme, size, a, e)
+    typo.Paragraph(size:) -> typo.p(theme, size, a, e)
+  }
+}
+
 pub fn h1(a, e) {
-  theme.new_typo_theme(True)
-  |> typo.h1(a, e)
+  new(typo.H1)
+  |> view(a, e)
 }
 
 pub fn h2(a, e) {
-  typo.h2(theme.new_typo_theme(True), a, e)
+  new(typo.H2)
+  |> view(a, e)
 }
 
 pub fn h3(a, e) {
-  typo.h3(theme.new_typo_theme(True), a, e)
+  new(typo.H3)
+  |> view(a, e)
 }
 
 pub fn h4(a, e) {
-  typo.h4(theme.new_typo_theme(True), a, e)
+  new(typo.H4)
+  |> view(a, e)
 }
 
 pub fn h5(a, e) {
-  typo.h5(theme.new_typo_theme(True), a, e)
+  new(typo.H5)
+  |> view(a, e)
 }
 
 pub fn h6(a, e) {
-  typo.h6(theme.new_typo_theme(True), a, e)
+  new(typo.H6)
+  |> view(a, e)
 }
 
 pub fn p(size, a, e) {
-  typo.p(theme.new_typo_theme(False), size, a, e)
+  new(typo.Paragraph(size))
+  |> view(a, e)
 }
 
 pub fn pre(size, a, e) {
-  typo.pre(theme.new_typo_theme(False), size, a, e)
+  new(typo.Pre(size))
+  |> view(a, e)
 }
 
 pub fn span(size, a, e) {
-  typo.span(theme.new_typo_theme(False), size, a, e)
+  new(typo.Span(size))
+  |> view(a, e)
 }
 
 pub fn label(size, a, e) {
-  typo.label(theme.new_typo_theme(False), size, a, e)
+  new(typo.Label(size))
+  |> view(a, e)
 }
 
-pub fn title(title, subtitle, a, e) {
-  let title = h1([a.class("mb-1")], [h.text(title)])
+pub type Title(msg) {
+  Title(
+    title: String,
+    subtitle: Option(String),
+    title_attributes: List(a.Attribute(msg)),
+    subtitle_attributes: List(a.Attribute(msg)),
+  )
+}
+
+pub fn title(title, a, e) {
+  let Title(title:, subtitle:, title_attributes:, subtitle_attributes:) = title
+  let title = h1(title_attributes, [h.text(title)])
   let subtitle =
     subtitle
-    |> option.map(fn(subtitle) { p(ui.SizeSm, [], [h.text(subtitle)]) })
+    |> option.map(h.text)
+    |> option.map(fn(e) { [e] })
+    |> option.map(p(ui.SizeMd, subtitle_attributes, _))
     |> option.unwrap(el.none())
 
-  theme.new_layout_flow_items(ui.SpaceBetween, ui.Start)
-  |> lustre.div(a, [
-    h.div([a.class("mb-5 sm:mb-8")], [
-      title,
-      subtitle,
-    ]),
-    ..e
-  ])
+  h.div(a, [title, subtitle, ..e])
 }

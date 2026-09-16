@@ -94,8 +94,8 @@ fn on_timeout(delay, callback) {
 @external(javascript, "../../showcase_ffi.mjs", "getEnv")
 fn ffi_env(key: String) -> Result(String, Nil)
 
-@external(javascript, "./admin/dom/util_ffi.mjs", "setTimeout")
+@external(javascript, "../../showcase_ffi.mjs", "setTimeout")
 fn set_timeout(delay: Int, callback: msg) -> TimerID
 
-@external(javascript, "./showcase_ffi.mjs", "do_initial_uri")
+@external(javascript, "../../showcase_ffi.mjs", "do_initial_uri")
 fn ffi_do_initial_uri() -> Result(uri.Uri, Nil)

@@ -32,9 +32,9 @@ pub fn view() {
 }
 
 fn decode_args(args) {
-  let label = storybook.decode(args, "label", decode.string, "Olá mundo!")
-  let kind = storybook.decode(args, "kind", decode.string, "span")
-  let size = storybook.decode(args, "size", decode.string, "md")
+  let label = storybook.decode(args, "label", "Olá mundo!", decode.string)
+  let kind = storybook.decode(args, "kind", "span", decode.string)
+  let size = storybook.decode(args, "size", "md", decode.string)
 
   let size = case size {
     "xxs" -> theme.SizeXxs

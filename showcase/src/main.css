@@ -3,6 +3,7 @@
 
 /* https://tailwindcss.com/blog/tailwindcss-v4#automatic-content-detection */
 @source "../build/dev/javascript/gbr_ui";
+@source "../src/**/*.gleam";
 
 @theme {
   --font-sans: Outfit, sans-serif;

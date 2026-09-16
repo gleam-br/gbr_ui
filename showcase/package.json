@@ -11,19 +11,20 @@
     "build-storybook": "storybook build"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "latest",
     "@storybook/addon-a11y": "^10.6.0",
     "@storybook/addon-docs": "^10.6.0",
+    "@storybook/addon-themes": "^10.6.0",
+    "@storybook/addon-vitest": "^10.6.0",
     "@storybook/html-vite": "^10.6.0",
     "@types/node": "^26.6.0",
+    "@vitest/browser-playwright": "latest",
+    "@vitest/coverage-v8": "latest",
+    "playwright": "latest",
     "storybook": "^10.6.0",
     "vite": "^8.0.1",
     "vite-plugin-gleam": "^0.2.0",
-    "@chromatic-com/storybook": "latest",
-    "@storybook/addon-vitest": "^10.6.0",
-    "vitest": "latest",
-    "playwright": "latest",
-    "@vitest/browser-playwright": "latest",
-    "@vitest/coverage-v8": "latest"
+    "vitest": "latest"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
