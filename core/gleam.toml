@@ -3,7 +3,7 @@ version = "2.0.0"
 gleam = ">= 1.17.0"
 
 description = "Gleam-BR: UI design system library"
-repository = { type = "github", user = "gleam-br", repo = "gbr_ui" }
+repository = { type = "github", user = "gleam-br", repo = "gbr_ui", path = "core" }
 licences = ["Apache-2.0"]
 
 [dependencies]
