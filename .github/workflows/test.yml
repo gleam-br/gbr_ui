@@ -7,16 +7,31 @@ on:
   pull_request:
 
 jobs:
-  test:
+  test_core:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: erlef/setup-beam@v1
         with:
           otp-version: "28"
           gleam-version: "1.17"
           rebar3-version: "3"
           # elixir-version: "1"
+      - run: cd core
+      - run: gleam deps download
+      - run: gleam test
+      - run: gleam format --check src test
+  test_storybook:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: "28"
+          gleam-version: "1.17"
+          rebar3-version: "3"
+          # elixir-version: "1"
+      - run: cd storybook
       - run: gleam deps download
       - run: gleam test
       - run: gleam format --check src test
