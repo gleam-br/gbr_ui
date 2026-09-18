@@ -7,15 +7,31 @@ import { fn } from 'storybook/test';
 import { view } from "./typo_stories.gleam";
 
 export default {
-  title: 'UI/Typo',
+  title: 'UI/Admin/Typo',
   args: {
     onAction: fn(),
     label: "Olá, tudo bem.",
+    shadow: "flat",
   },
-  argTypes: { label: { control: 'text', description: 'Qual texto quer ver?' } },
+  argTypes: {
+    label: { control: 'text', description: 'Qual texto quer ver?' },
+    shadow: {
+      control: 'select',
+      options: ['flat', 'inner', 'low', 'high', 'medium', 'inherit']
+    },
+  },
   render: view()
 };
 
+export const ThemeHeader = {
+  argTypes: {
+    kind: {
+      control: 'select', description: 'Qual tipografia quer ver?',
+      options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
+    },
+    args: { kind: "h1", theme: { elevation: "high" } },
+  }
+}
 export const Header = {
   argTypes: {
     kind: {

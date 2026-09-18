@@ -5,5 +5,6 @@ pub fn main() {
 }
 
 pub fn ok_test() {
-  assert 0 == 0
+  let expected = "Ola"
+  assert "Ola" == expected
 }

@@ -4,6 +4,7 @@
 
 import gleam/dynamic.{type Dynamic}
 import gleam/dynamic/decode
+import gleam/option
 import gleam/result
 import gleam/string
 
@@ -23,6 +24,24 @@ pub fn decode(args, field, fallback, to_decode) {
   do_decode(field, fallback, to_decode)
   |> decode.run(args, _)
   |> result.unwrap(fallback)
+}
+
+///
+pub fn decode_field_try(args, field, decoder) {
+  let decoder = {
+    use field <- decode.field(field, decoder)
+    decode.success(field)
+  }
+
+  decode.run(args, decoder)
+}
+
+///
+pub fn decode_field(args, field, fallback, decoder) {
+  decode(args, field, "", decode.string)
+  |> string.to_option
+  |> option.map(decoder)
+  |> option.unwrap(fallback)
 }
 
 //

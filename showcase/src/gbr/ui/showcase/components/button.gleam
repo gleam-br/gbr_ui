@@ -4,30 +4,41 @@
 
 import gleam/option.{Some}
 
-import gbr/ui/theme as ui
+import gbr/ui/theme
 import gbr/ui/theme/lustre
 import gbr/ui/theme/lustre/button
+import gbr/ui/theme/lustre/tailwind/token
 
-import gbr/ui/showcase/components/theme
+import gbr/ui/showcase/components/button/button_token
+
+pub fn new_theme() {
+  theme.new()
+  |> theme.with_base_to_tokens(fn() { [] })
+  |> theme.with_design_to_tokens(button_token.button_design_tokens)
+  |> theme.with_shape_to_tokens(token.shape_rounded_to_tokens)
+  |> theme.with_size_to_tokens(button_token.button_size_tokens)
+  |> theme.with_stacking_to_tokens(token.stack_to_zindex_tokens)
+  |> theme.with_elevation_to_tokens(token.elevation_to_border_tokens)
+}
 
 pub opaque type Model {
-  Model(button: button.UIButton, theme: ui.UITheme(lustre.UILustre))
+  Model(button: button.UIButton, theme: theme.UITheme(lustre.UILustre))
 }
 
 pub fn normal() {
-  Model(button: button.Normal, theme: theme.new_button_theme())
+  Model(button: button.Normal, theme: new_theme())
 }
 
 pub fn submit() {
-  Model(button: button.Submit, theme: theme.new_button_theme())
+  Model(button: button.Submit, theme: new_theme())
 }
 
 pub fn reset() {
-  Model(button: button.Reset, theme: theme.new_button_theme())
+  Model(button: button.Reset, theme: new_theme())
 }
 
 pub fn link(href, target) {
-  Model(button: button.Link(href:, target:), theme: theme.new_button_theme())
+  Model(button: button.Link(href:, target:), theme: new_theme())
 }
 
 pub fn view(model, a, e) {
@@ -37,57 +48,65 @@ pub fn view(model, a, e) {
 }
 
 pub fn primary(model) {
-  Model(
-    ..model,
-    theme: model.theme
-      |> ui.with_variant(ui.VariantPrimary),
-  )
+  with_variant(model, theme.VariantPrimary)
 }
 
 pub fn secondary(model) {
-  Model(
-    ..model,
-    theme: model.theme
-      |> ui.with_variant(ui.VariantSecondary),
-  )
+  with_variant(model, theme.VariantSecondary)
 }
 
 pub fn tertiary(model) {
-  Model(
-    ..model,
-    theme: model.theme
-      |> ui.with_variant(ui.VariantTertiary),
-  )
+  with_variant(model, theme.VariantTertiary)
 }
 
 pub fn filled(model) {
-  Model(
-    ..model,
-    theme: model.theme
-      |> ui.with_appearance(ui.AppearanceFilled),
-  )
+  with_appearance(model, theme.AppearanceFilled)
 }
 
 pub fn light(model) {
-  Model(
-    ..model,
-    theme: model.theme
-      |> ui.with_appearance(ui.AppearanceLight),
-  )
+  with_appearance(model, theme.AppearanceLight)
 }
 
 pub fn ghost(model) {
+  with_appearance(model, theme.AppearanceGhost)
+}
+
+pub fn with_variant(model, variant) {
   Model(
     ..model,
     theme: model.theme
-      |> ui.with_appearance(ui.AppearanceGhost),
+      |> theme.with_variant(variant),
   )
 }
 
-pub fn size(model, size) {
+pub fn with_appearance(model, appearance) {
   Model(
     ..model,
     theme: model.theme
-      |> ui.with_size(Some(size)),
+      |> theme.with_appearance(appearance),
+  )
+}
+
+pub fn with_shape(model, shape) {
+  Model(
+    ..model,
+    theme: model.theme
+      |> theme.with_shape(Some(shape)),
+  )
+}
+
+pub fn with_size(model, size) {
+  Model(
+    ..model,
+    theme: model.theme
+      |> theme.with_size(Some(size)),
+  )
+}
+
+pub fn with_elevation(model, elevation) {
+  Model(
+    ..model,
+    theme: model.theme
+      |> theme.with_elevation(Some(elevation)),
   )
 }

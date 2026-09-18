@@ -2,27 +2,58 @@
 ////
 ////
 
-import gleam/option.{type Option}
+import gleam/option.{type Option, Some}
 
 import lustre/attribute as a
 import lustre/element as el
 import lustre/element/html as h
 
-import gbr/ui/theme as ui
+import gbr/ui/theme
 import gbr/ui/theme/lustre
+import gbr/ui/theme/lustre/tailwind/token
 import gbr/ui/theme/lustre/typo
 
-import gbr/ui/showcase/components/theme
-
 pub opaque type Model {
-  Model(typo: typo.UITypography, theme: ui.UITheme(lustre.UILustre))
+  Model(typo: typo.UITypography, theme: theme.UITheme(lustre.UILustre))
+}
+
+pub type Title(msg) {
+  Title(
+    title: Model,
+    subtitle: Option(Model),
+    title_attributes: List(a.Attribute(msg)),
+    subtitle_attributes: List(a.Attribute(msg)),
+  )
+}
+
+//
+// Construtor
+//
+
+pub fn new_theme(is_header) {
+  let size_to_text = token.size_text_to_classes(is_header)
+  theme.new()
+  |> theme.with_size_to_tokens(fn(size) { [size_to_text(size)] })
+  |> theme.with_elevation_to_tokens(token.elevation_to_text_shadow_tokens)
 }
 
 pub fn new(typo) {
   let is_header = typo.is_header(typo)
 
-  Model(typo:, theme: theme.new_typo_theme(is_header))
+  Model(typo:, theme: new_theme(is_header))
 }
+
+pub fn with_shadow(typo, elevation) {
+  Model(
+    ..typo,
+    theme: typo.theme
+      |> theme.with_elevation(Some(elevation)),
+  )
+}
+
+//
+// -- API
+//
 
 pub fn view(model, a, e) {
   let Model(typo:, theme:) = model
@@ -41,74 +72,52 @@ pub fn view(model, a, e) {
   }
 }
 
-pub fn h1(a, e) {
+pub fn h1() {
   new(typo.H1)
-  |> view(a, e)
 }
 
-pub fn h2(a, e) {
+pub fn h2() {
   new(typo.H2)
-  |> view(a, e)
 }
 
-pub fn h3(a, e) {
+pub fn h3() {
   new(typo.H3)
-  |> view(a, e)
 }
 
-pub fn h4(a, e) {
+pub fn h4() {
   new(typo.H4)
-  |> view(a, e)
 }
 
-pub fn h5(a, e) {
+pub fn h5() {
   new(typo.H5)
-  |> view(a, e)
 }
 
-pub fn h6(a, e) {
+pub fn h6() {
   new(typo.H6)
-  |> view(a, e)
 }
 
-pub fn p(size, a, e) {
+pub fn p(size) {
   new(typo.Paragraph(size))
-  |> view(a, e)
 }
 
-pub fn pre(size, a, e) {
+pub fn pre(size) {
   new(typo.Pre(size))
-  |> view(a, e)
 }
 
-pub fn span(size, a, e) {
+pub fn span(size) {
   new(typo.Span(size))
-  |> view(a, e)
 }
 
-pub fn label(size, a, e) {
+pub fn label(size) {
   new(typo.Label(size))
-  |> view(a, e)
-}
-
-pub type Title(msg) {
-  Title(
-    title: String,
-    subtitle: Option(String),
-    title_attributes: List(a.Attribute(msg)),
-    subtitle_attributes: List(a.Attribute(msg)),
-  )
 }
 
 pub fn title(title, a, e) {
   let Title(title:, subtitle:, title_attributes:, subtitle_attributes:) = title
-  let title = h1(title_attributes, [h.text(title)])
+  let title = view(title, title_attributes, [])
   let subtitle =
     subtitle
-    |> option.map(h.text)
-    |> option.map(fn(e) { [e] })
-    |> option.map(p(ui.SizeMd, subtitle_attributes, _))
+    |> option.map(view(_, subtitle_attributes, []))
     |> option.unwrap(el.none())
-
   h.div(a, [title, subtitle, ..e])
 }

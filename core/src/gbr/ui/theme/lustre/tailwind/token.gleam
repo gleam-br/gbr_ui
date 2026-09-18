@@ -13,20 +13,15 @@ import gbr/ui/theme/lustre
 
 /// Retorna o token da superfície do tema em arredondamento do tailwind.
 ///
-pub fn shape_rounded_to_class(shape: theme.UIShape) {
+pub fn shape_rounded_to_tokens(shape: theme.UIShape) {
   case shape {
-    theme.ShapeCircle -> lustre.Class("rounded-full")
-    theme.ShapePill -> lustre.Class("rounded-3xl")
-    theme.ShapeSharp -> lustre.Class("rounded-none")
-    theme.ShapeAncestor(_) -> lustre.Class("rounded-inherit")
-    theme.Shape(size, layout) -> size_layout_to_rounded_token(size, layout)
+    theme.ShapeDefault -> []
+    theme.ShapeCircle -> [lustre.Class("rounded-full")]
+    theme.ShapePill -> [lustre.Class("rounded-4xl")]
+    theme.ShapeSharp -> [lustre.Class("rounded-none")]
+    theme.ShapeAncestor(_) -> [lustre.Class("rounded-inherit")]
+    theme.Shape(size, layout) -> size_layout_to_rounded_tokens(size, layout)
   }
-}
-
-/// Converte a superfície do tema em arredondamentos do container do tailwind.
-///
-pub fn shape_rounded_tokens(shape: theme.UIShape) {
-  [shape_rounded_to_class(shape)]
 }
 
 // -----------------------------------------------------------------------------
@@ -36,13 +31,13 @@ pub fn shape_rounded_tokens(shape: theme.UIShape) {
 //
 // -----------------------------------------------------------------------------
 
-pub fn size_layout_to_rounded_token(size, layout) {
+pub fn size_layout_to_rounded_tokens(size, layout) {
   case layout {
-    theme.LayoutDefault -> lustre.Empty
-    theme.LayoutAncestor(_) -> lustre.Class("rounded-inherit")
-    theme.LayoutFlow(flow) -> size_layout_flow_to_rounded_token(size, flow)
+    theme.LayoutDefault -> []
+    theme.LayoutAncestor(_) -> [lustre.Class("rounded-inherit")]
+    theme.LayoutFlow(flow) -> [size_layout_flow_to_rounded_token(size, flow)]
     theme.LayoutAbsolute(absolute) ->
-      size_absolute_to_rounded_token(size, absolute)
+      size_absolute_to_rounded_tokens(size, absolute)
   }
 }
 
@@ -76,36 +71,72 @@ pub fn size_alignment_to_rounded_token(
   }
 }
 
-pub fn size_absolute_to_rounded_token(
+pub fn size_absolute_to_rounded_tokens(
   size: theme.UISize,
   absolute: theme.UIAbsolute,
 ) {
   case absolute {
-    theme.AxisY(theme.Start) -> size_to_rounded_top(size)
-    theme.AxisY(theme.End) -> size_to_rounded_bottom(size)
-    theme.AxisX(theme.Start) -> size_to_rounded_left(size)
-    theme.AxisX(theme.End) -> size_to_rounded_right(size)
+    theme.Axis(theme.Center, theme.Start) | theme.AxisY(theme.Start) -> [
+      size_to_rounded_top(size),
+    ]
+    theme.Axis(theme.Start, theme.Center) | theme.AxisX(theme.Start) -> [
+      size_to_rounded_left(size),
+    ]
+    theme.Axis(theme.Center, theme.End) | theme.AxisY(theme.End) -> [
+      size_to_rounded_bottom(size),
+    ]
+    theme.Axis(theme.End, theme.Center) | theme.AxisX(theme.End) -> [
+      size_to_rounded_right(size),
+    ]
 
     // Combinações (X, Y) mapeadas para os cantos exatos
-    theme.Axis(theme.Start, theme.Start) -> size_to_rounded_top_left(size)
-    theme.Axis(theme.Start, theme.End) -> size_to_rounded_bottom_left(size)
-    theme.Axis(theme.End, theme.Start) -> size_to_rounded_top_right(size)
-    theme.Axis(theme.End, theme.End) -> size_to_rounded_bottom_right(size)
+    theme.Axis(theme.Start, theme.Start) -> [size_to_rounded_top_left(size)]
+    theme.Axis(theme.Start, theme.End) -> [size_to_rounded_bottom_left(size)]
+    theme.Axis(theme.SpaceBetween, theme.Start)
+    | theme.Axis(theme.Start, theme.SpaceBetween) -> [
+      size_to_rounded_top_left(size),
+      size_to_rounded_bottom_right(size),
+    ]
+    theme.Axis(theme.Start, theme.SpaceAround) -> [
+      size_to_rounded_top(size),
+      size_to_rounded_left(size),
+    ]
 
-    // combinação Center e outras
-    _ -> size_to_rounded_all(size)
+    theme.Axis(theme.End, theme.Start) -> [size_to_rounded_top_right(size)]
+    theme.Axis(theme.End, theme.End) -> [size_to_rounded_bottom_right(size)]
+    theme.Axis(theme.SpaceBetween, theme.End)
+    | theme.Axis(theme.End, theme.SpaceBetween) -> [
+      size_to_rounded_bottom_left(size),
+      size_to_rounded_top_right(size),
+    ]
+    theme.Axis(theme.End, theme.SpaceAround) -> [
+      size_to_rounded_top(size),
+      size_to_rounded_right(size),
+    ]
+
+    theme.Axis(theme.SpaceAround, theme.Start) -> [
+      size_to_rounded_bottom(size),
+      size_to_rounded_right(size),
+    ]
+    theme.Axis(theme.SpaceAround, theme.End) -> [
+      size_to_rounded_bottom(size),
+      size_to_rounded_left(size),
+    ]
+
+    // fallback p/ combinações usando evenly e stretch
+    _ -> [size_to_rounded_all(size)]
   }
 }
 
 pub fn size_to_rounded_all(size: theme.UISize) {
   case size {
-    theme.SizeXxl -> "rounded-2xl"
-    theme.SizeXl -> "rounded-xl"
-    theme.SizeLg -> "rounded-lg"
-    theme.SizeMd -> "rounded-md"
-    theme.SizeSm -> "rounded-sm"
-    theme.SizeXs -> "rounded-xs"
-    theme.SizeXxs -> "rounded-[0.0625rem]"
+    theme.SizeXxl -> "rounded-3xl"
+    theme.SizeXl -> "rounded-2xl"
+    theme.SizeLg -> "rounded-xl"
+    theme.SizeMd -> "rounded-lg"
+    theme.SizeSm -> "rounded-md"
+    theme.SizeXs -> "rounded-sm"
+    theme.SizeXxs -> "rounded-xs"
     theme.SizeAncestor(_) -> "rounded-inherit"
   }
   |> lustre.Class
@@ -113,13 +144,13 @@ pub fn size_to_rounded_all(size: theme.UISize) {
 
 pub fn size_to_rounded_top(size: theme.UISize) {
   case size {
-    theme.SizeXxl -> "rounded-t-2xl"
-    theme.SizeXl -> "rounded-t-xl"
-    theme.SizeLg -> "rounded-t-lg"
-    theme.SizeMd -> "rounded-t-md"
-    theme.SizeSm -> "rounded-t-sm"
-    theme.SizeXs -> "rounded-t-xs"
-    theme.SizeXxs -> "rounded-t-[0.0625rem]"
+    theme.SizeXxl -> "rounded-t-3xl"
+    theme.SizeXl -> "rounded-t-2xl"
+    theme.SizeLg -> "rounded-t-xl"
+    theme.SizeMd -> "rounded-t-lg"
+    theme.SizeSm -> "rounded-t-md"
+    theme.SizeXs -> "rounded-t-sm"
+    theme.SizeXxs -> "rounded-t-xs"
     theme.SizeAncestor(_) -> "rounded-t-inherit"
   }
   |> lustre.Class
@@ -127,13 +158,13 @@ pub fn size_to_rounded_top(size: theme.UISize) {
 
 pub fn size_to_rounded_bottom(size: theme.UISize) {
   case size {
-    theme.SizeXxl -> "rounded-b-2xl"
-    theme.SizeXl -> "rounded-b-xl"
-    theme.SizeLg -> "rounded-b-lg"
-    theme.SizeMd -> "rounded-b-md"
-    theme.SizeSm -> "rounded-b-sm"
-    theme.SizeXs -> "rounded-b-xs"
-    theme.SizeXxs -> "rounded-b-[0.0625rem]"
+    theme.SizeXxl -> "rounded-b-3xl"
+    theme.SizeXl -> "rounded-b-2xl"
+    theme.SizeLg -> "rounded-b-xl"
+    theme.SizeMd -> "rounded-b-lg"
+    theme.SizeSm -> "rounded-b-md"
+    theme.SizeXs -> "rounded-b-sm"
+    theme.SizeXxs -> "rounded-b-xs"
     theme.SizeAncestor(_) -> "rounded-b-inherit"
   }
   |> lustre.Class
@@ -141,13 +172,13 @@ pub fn size_to_rounded_bottom(size: theme.UISize) {
 
 pub fn size_to_rounded_left(size: theme.UISize) {
   case size {
-    theme.SizeXxl -> "rounded-l-2xl"
-    theme.SizeXl -> "rounded-l-xl"
-    theme.SizeLg -> "rounded-l-lg"
-    theme.SizeMd -> "rounded-l-md"
-    theme.SizeSm -> "rounded-l-sm"
-    theme.SizeXs -> "rounded-l-xs"
-    theme.SizeXxs -> "rounded-l-[0.0625rem]"
+    theme.SizeXxl -> "rounded-l-3xl"
+    theme.SizeXl -> "rounded-l-2xl"
+    theme.SizeLg -> "rounded-l-xl"
+    theme.SizeMd -> "rounded-l-lg"
+    theme.SizeSm -> "rounded-l-md"
+    theme.SizeXs -> "rounded-l-sm"
+    theme.SizeXxs -> "rounded-l-xs"
     theme.SizeAncestor(_) -> "rounded-l-inherit"
   }
   |> lustre.Class
@@ -155,13 +186,13 @@ pub fn size_to_rounded_left(size: theme.UISize) {
 
 pub fn size_to_rounded_right(size: theme.UISize) {
   case size {
-    theme.SizeXxl -> "rounded-r-2xl"
-    theme.SizeXl -> "rounded-r-xl"
-    theme.SizeLg -> "rounded-r-lg"
-    theme.SizeMd -> "rounded-r-md"
-    theme.SizeSm -> "rounded-r-sm"
-    theme.SizeXs -> "rounded-r-xs"
-    theme.SizeXxs -> "rounded-r-[0.0625rem]"
+    theme.SizeXxl -> "rounded-r-3xl"
+    theme.SizeXl -> "rounded-r-2xl"
+    theme.SizeLg -> "rounded-r-xl"
+    theme.SizeMd -> "rounded-r-lg"
+    theme.SizeSm -> "rounded-r-md"
+    theme.SizeXs -> "rounded-r-sm"
+    theme.SizeXxs -> "rounded-r-xs"
     theme.SizeAncestor(_) -> "rounded-r-inherit"
   }
   |> lustre.Class
@@ -169,13 +200,13 @@ pub fn size_to_rounded_right(size: theme.UISize) {
 
 pub fn size_to_rounded_top_left(size: theme.UISize) {
   case size {
-    theme.SizeXxl -> "rounded-tl-2xl"
-    theme.SizeXl -> "rounded-tl-xl"
-    theme.SizeLg -> "rounded-tl-lg"
-    theme.SizeMd -> "rounded-tl-md"
-    theme.SizeSm -> "rounded-tl-sm"
-    theme.SizeXs -> "rounded-tl-xs"
-    theme.SizeXxs -> "rounded-tl-[0.0625rem]"
+    theme.SizeXxl -> "rounded-tl-3xl"
+    theme.SizeXl -> "rounded-tl-2xl"
+    theme.SizeLg -> "rounded-tl-xl"
+    theme.SizeMd -> "rounded-tl-lg"
+    theme.SizeSm -> "rounded-tl-md"
+    theme.SizeXs -> "rounded-tl-sm"
+    theme.SizeXxs -> "rounded-tl-xs"
     theme.SizeAncestor(_) -> "rounded-tl-inherit"
   }
   |> lustre.Class
@@ -183,13 +214,13 @@ pub fn size_to_rounded_top_left(size: theme.UISize) {
 
 pub fn size_to_rounded_top_right(size: theme.UISize) {
   case size {
-    theme.SizeXxl -> "rounded-tr-2xl"
-    theme.SizeXl -> "rounded-tr-xl"
-    theme.SizeLg -> "rounded-tr-lg"
-    theme.SizeMd -> "rounded-tr-md"
-    theme.SizeSm -> "rounded-tr-sm"
-    theme.SizeXs -> "rounded-tr-xs"
-    theme.SizeXxs -> "rounded-tr-[0.0625rem]"
+    theme.SizeXxl -> "rounded-tr-3xl"
+    theme.SizeXl -> "rounded-tr-2xl"
+    theme.SizeLg -> "rounded-tr-xl"
+    theme.SizeMd -> "rounded-tr-lg"
+    theme.SizeSm -> "rounded-tr-md"
+    theme.SizeXs -> "rounded-tr-sm"
+    theme.SizeXxs -> "rounded-tr-xs"
     theme.SizeAncestor(_) -> "rounded-tr-inherit"
   }
   |> lustre.Class
@@ -197,13 +228,13 @@ pub fn size_to_rounded_top_right(size: theme.UISize) {
 
 pub fn size_to_rounded_bottom_left(size: theme.UISize) {
   case size {
-    theme.SizeXxl -> "rounded-bl-2xl"
-    theme.SizeXl -> "rounded-bl-xl"
-    theme.SizeLg -> "rounded-bl-lg"
-    theme.SizeMd -> "rounded-bl-md"
-    theme.SizeSm -> "rounded-bl-sm"
-    theme.SizeXs -> "rounded-bl-xs"
-    theme.SizeXxs -> "rounded-bl-[0.0625rem]"
+    theme.SizeXxl -> "rounded-bl-3xl"
+    theme.SizeXl -> "rounded-bl-2xl"
+    theme.SizeLg -> "rounded-bl-xl"
+    theme.SizeMd -> "rounded-bl-lg"
+    theme.SizeSm -> "rounded-bl-md"
+    theme.SizeXs -> "rounded-bl-sm"
+    theme.SizeXxs -> "rounded-bl-xs"
     theme.SizeAncestor(_) -> "rounded-bl-inherit"
   }
   |> lustre.Class
@@ -211,13 +242,13 @@ pub fn size_to_rounded_bottom_left(size: theme.UISize) {
 
 pub fn size_to_rounded_bottom_right(size: theme.UISize) {
   case size {
-    theme.SizeXxl -> "rounded-br-2xl"
-    theme.SizeXl -> "rounded-br-xl"
-    theme.SizeLg -> "rounded-br-lg"
-    theme.SizeMd -> "rounded-br-md"
-    theme.SizeSm -> "rounded-br-sm"
-    theme.SizeXs -> "rounded-br-xs"
-    theme.SizeXxs -> "rounded-br-[0.0625rem]"
+    theme.SizeXxl -> "rounded-br-3xl"
+    theme.SizeXl -> "rounded-br-2xl"
+    theme.SizeLg -> "rounded-br-xl"
+    theme.SizeMd -> "rounded-br-lg"
+    theme.SizeSm -> "rounded-br-md"
+    theme.SizeXs -> "rounded-br-sm"
+    theme.SizeXxs -> "rounded-br-xs"
     theme.SizeAncestor(_) -> "rounded-br-inherit"
   }
   |> lustre.Class
@@ -225,13 +256,13 @@ pub fn size_to_rounded_bottom_right(size: theme.UISize) {
 
 pub fn size_to_rounded_start(size: theme.UISize) {
   case size {
-    theme.SizeXxl -> "rounded-s-2xl"
-    theme.SizeXl -> "rounded-s-xl"
-    theme.SizeLg -> "rounded-s-lg"
-    theme.SizeMd -> "rounded-s-md"
-    theme.SizeSm -> "rounded-s-sm"
-    theme.SizeXs -> "rounded-s-xs"
-    theme.SizeXxs -> "rounded-s-[0.0625rem]"
+    theme.SizeXxl -> "rounded-s-3xl"
+    theme.SizeXl -> "rounded-s-2xl"
+    theme.SizeLg -> "rounded-s-xl"
+    theme.SizeMd -> "rounded-s-lg"
+    theme.SizeSm -> "rounded-s-md"
+    theme.SizeXs -> "rounded-s-sm"
+    theme.SizeXxs -> "rounded-s-xs"
     theme.SizeAncestor(_) -> "rounded-s-inherit"
   }
   |> lustre.Class
@@ -239,13 +270,13 @@ pub fn size_to_rounded_start(size: theme.UISize) {
 
 pub fn size_to_rounded_end(size: theme.UISize) {
   case size {
-    theme.SizeXxl -> "rounded-e-2xl"
-    theme.SizeXl -> "rounded-e-xl"
-    theme.SizeLg -> "rounded-e-lg"
-    theme.SizeMd -> "rounded-e-md"
-    theme.SizeSm -> "rounded-e-sm"
-    theme.SizeXs -> "rounded-e-xs"
-    theme.SizeXxs -> "rounded-e-[0.0625rem]"
+    theme.SizeXxl -> "rounded-e-3xl"
+    theme.SizeXl -> "rounded-e-2xl"
+    theme.SizeLg -> "rounded-e-xl"
+    theme.SizeMd -> "rounded-e-lg"
+    theme.SizeSm -> "rounded-e-md"
+    theme.SizeXs -> "rounded-e-sm"
+    theme.SizeXxs -> "rounded-e-xs"
     theme.SizeAncestor(_) -> "rounded-e-inherit"
   }
   |> lustre.Class
@@ -253,13 +284,13 @@ pub fn size_to_rounded_end(size: theme.UISize) {
 
 pub fn size_to_rounded_start_start(size: theme.UISize) {
   case size {
-    theme.SizeXxl -> "rounded-ss-2xl"
-    theme.SizeXl -> "rounded-ss-xl"
-    theme.SizeLg -> "rounded-ss-lg"
-    theme.SizeMd -> "rounded-ss-md"
-    theme.SizeSm -> "rounded-ss-sm"
-    theme.SizeXs -> "rounded-ss-xs"
-    theme.SizeXxs -> "rounded-ss-[0.0625rem]"
+    theme.SizeXxl -> "rounded-ss-3xl"
+    theme.SizeXl -> "rounded-ss-2xl"
+    theme.SizeLg -> "rounded-ss-xl"
+    theme.SizeMd -> "rounded-ss-lg"
+    theme.SizeSm -> "rounded-ss-md"
+    theme.SizeXs -> "rounded-ss-sm"
+    theme.SizeXxs -> "rounded-ss-xs"
     theme.SizeAncestor(_) -> "rounded-ss-inherit"
   }
   |> lustre.Class
@@ -267,13 +298,13 @@ pub fn size_to_rounded_start_start(size: theme.UISize) {
 
 pub fn size_to_rounded_start_end(size: theme.UISize) {
   case size {
-    theme.SizeXxl -> "rounded-se-2xl"
-    theme.SizeXl -> "rounded-se-xl"
-    theme.SizeLg -> "rounded-se-lg"
-    theme.SizeMd -> "rounded-se-md"
-    theme.SizeSm -> "rounded-se-sm"
-    theme.SizeXs -> "rounded-se-xs"
-    theme.SizeXxs -> "rounded-se-[0.0625rem]"
+    theme.SizeXxl -> "rounded-se-3xl"
+    theme.SizeXl -> "rounded-se-2xl"
+    theme.SizeLg -> "rounded-se-xl"
+    theme.SizeMd -> "rounded-se-lg"
+    theme.SizeSm -> "rounded-se-md"
+    theme.SizeXs -> "rounded-se-sm"
+    theme.SizeXxs -> "rounded-se-xs"
     theme.SizeAncestor(_) -> "rounded-se-inherit"
   }
   |> lustre.Class
@@ -281,13 +312,13 @@ pub fn size_to_rounded_start_end(size: theme.UISize) {
 
 pub fn size_to_rounded_end_start(size: theme.UISize) {
   case size {
-    theme.SizeXxl -> "rounded-es-2xl"
-    theme.SizeXl -> "rounded-es-xl"
-    theme.SizeLg -> "rounded-es-lg"
-    theme.SizeMd -> "rounded-es-md"
-    theme.SizeSm -> "rounded-es-sm"
-    theme.SizeXs -> "rounded-es-xs"
-    theme.SizeXxs -> "rounded-es-[0.0625rem]"
+    theme.SizeXxl -> "rounded-es-3xl"
+    theme.SizeXl -> "rounded-es-2xl"
+    theme.SizeLg -> "rounded-es-xl"
+    theme.SizeMd -> "rounded-es-lg"
+    theme.SizeSm -> "rounded-es-md"
+    theme.SizeXs -> "rounded-es-sm"
+    theme.SizeXxs -> "rounded-es-xs"
     theme.SizeAncestor(_) -> "rounded-es-inherit"
   }
   |> lustre.Class
@@ -295,13 +326,13 @@ pub fn size_to_rounded_end_start(size: theme.UISize) {
 
 pub fn size_rounded_end_end(size: theme.UISize) {
   case size {
-    theme.SizeXxl -> "rounded-ee-2xl"
-    theme.SizeXl -> "rounded-ee-xl"
-    theme.SizeLg -> "rounded-ee-lg"
-    theme.SizeMd -> "rounded-ee-md"
-    theme.SizeSm -> "rounded-ee-sm"
-    theme.SizeXs -> "rounded-ee-xs"
-    theme.SizeXxs -> "rounded-ee-[0.0625rem]"
+    theme.SizeXxl -> "rounded-ee-3xl"
+    theme.SizeXl -> "rounded-ee-2xl"
+    theme.SizeLg -> "rounded-ee-xl"
+    theme.SizeMd -> "rounded-ee-lg"
+    theme.SizeSm -> "rounded-ee-md"
+    theme.SizeXs -> "rounded-ee-sm"
+    theme.SizeXxs -> "rounded-ee-xs"
     theme.SizeAncestor(_) -> "rounded-ee-inherit"
   }
   |> lustre.Class
@@ -313,35 +344,49 @@ pub fn size_rounded_end_end(size: theme.UISize) {
 //
 // -----------------------------------------------------------------------------
 
-pub fn elevation_to_border_tokens(elevation) {
-  [elevation_to_border_token(elevation)]
-}
-
 /// Converte a elevação do tema em bordas tailwind.
 ///
-pub fn elevation_to_border_token(elevation) {
+pub fn elevation_to_border_tokens(elevation) {
   case elevation {
-    theme.ElevationFlat -> lustre.Class("border-none")
-    theme.ElevationLow -> lustre.Class("border-2")
-    theme.ElevationMedium -> lustre.Class("border-4")
-    theme.ElevationHigh -> lustre.Class("border-8")
-    theme.ElevationInner -> lustre.Class("border-12")
-    theme.ElevationAncestor(_) -> lustre.Class("border-inherit")
+    theme.ElevationFlat -> [lustre.Class("shadow-2xs border-none")]
+    theme.ElevationLow(size) -> [
+      size_to_border_token(size),
+      lustre.Class("border-2"),
+    ]
+    theme.ElevationMedium(size) -> [
+      size_to_border_token(size),
+      lustre.Class("border-4"),
+    ]
+    theme.ElevationHigh(size) -> [
+      size_to_border_token(size),
+      lustre.Class("border-6"),
+    ]
+    theme.ElevationInner -> [
+      lustre.Class("shadow-inner border-6"),
+    ]
+    theme.ElevationAncestor(_) -> [lustre.Class("border-inherit")]
   }
 }
 
 pub fn elevation_to_text_shadow_tokens(elevation) {
-  [elevation_to_text_shadow_token(elevation)]
-}
-
-pub fn elevation_to_text_shadow_token(elevation) {
   case elevation {
-    theme.ElevationFlat -> "text-shadow-none" |> lustre.Class
-    theme.ElevationInner -> "text-shadow-2xs" |> lustre.Class
-    theme.ElevationLow -> "text-shadow-xs" |> lustre.Class
-    theme.ElevationMedium -> "text-shadow-md" |> lustre.Class
-    theme.ElevationHigh -> "text-shadow-lg" |> lustre.Class
-    theme.ElevationAncestor(_) -> "text-shadow-inherit" |> lustre.Class
+    theme.ElevationFlat -> [lustre.Class("text-shadow-none")]
+    theme.ElevationInner -> [
+      lustre.Class("shadow-inner text-shadow-2xs"),
+    ]
+    theme.ElevationLow(size) -> [
+      size_to_border_token(size),
+      lustre.Class("text-shadow-xs"),
+    ]
+    theme.ElevationMedium(size) -> [
+      size_to_border_token(size),
+      lustre.Class("text-shadow-md"),
+    ]
+    theme.ElevationHigh(size) -> [
+      size_to_border_token(size),
+      lustre.Class("text-shadow-lg"),
+    ]
+    theme.ElevationAncestor(_) -> [lustre.Class("text-shadow-inherit")]
   }
 }
 
@@ -479,6 +524,20 @@ pub fn size_icon_max_width_class(size) {
     theme.SizeXxs -> "max-w-1" |> lustre.Class
     theme.SizeAncestor(_) -> "max-w-inherit" |> lustre.Class
   }
+}
+
+pub fn size_to_border_token(size) {
+  case size {
+    theme.SizeAncestor(_) -> "shadow-inherit"
+    theme.SizeXxl -> "shadow-2xl"
+    theme.SizeXl -> "shadow-xl"
+    theme.SizeLg -> "shadow-lg"
+    theme.SizeMd -> "shadow-md"
+    theme.SizeSm -> "shadow-sm"
+    theme.SizeXs -> "shadow-xs"
+    theme.SizeXxs -> "shadow-2xs"
+  }
+  |> lustre.Class()
 }
 
 // -----------------------------------------------------------------------------

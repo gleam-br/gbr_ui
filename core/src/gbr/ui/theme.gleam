@@ -283,6 +283,7 @@ pub type UIShape {
   ShapePill
   /// Círculo perfeito (Para avatares e icon_only)
   ShapeCircle
+  ShapeDefault
 }
 
 /// Escala do tamanho de um elemento.
@@ -335,14 +336,14 @@ pub type UIElevation {
   ElevationAncestor(UIAncestor)
   /// Grudado no chão (Sem sombra)
   ElevationFlat
-  /// Levemente levantado (Cards, Dropdowns sutis)
-  ElevationLow
-  /// Flutuando (Modais, Menus flutuantes)
-  ElevationMedium
-  /// Voando alto (Tooltips, Notificações Toast)
-  ElevationHigh
   /// Afundado (Sombra interna, útil para inputs)
   ElevationInner
+  /// Levemente levantado (Cards, Dropdowns sutis)
+  ElevationLow(UISize)
+  /// Flutuando (Modais, Menus flutuantes)
+  ElevationMedium(UISize)
+  /// Voando alto (Tooltips, Notificações Toast)
+  ElevationHigh(UISize)
 }
 
 /// Define a estratégia de posicionamento no layout.
