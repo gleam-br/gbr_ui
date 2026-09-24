@@ -3,6 +3,7 @@
 ////
 
 import gleam/dynamic/decode
+import gleam/option.{None}
 import gleam/string
 
 import lustre/element/html as h
@@ -55,7 +56,7 @@ pub fn render() {
   |> button.with_variant(variant)
   |> button.with_appearance(appearance)
   |> button.with_size(size)
-  |> button.with_shape(shape |> echo)
-  |> button.with_elevation(elevation)
+  |> button.with_shape(shape)
+  |> button.with_elevation(elevation(None))
   |> button.view([evt.on_click(OnClickButton)], [h.text(label)])
 }

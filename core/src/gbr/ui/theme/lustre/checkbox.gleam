@@ -56,7 +56,7 @@ pub fn view(checkbox, theme, attributes) {
     |> option.map(a.checked)
     |> option.unwrap(a.none())
 
-  let attributes = [checked, ..attributes]
+  let attributes = [a.attribute("role", "checkbox"), checked, ..attributes]
 
   input.view(input, theme, attributes)
 }

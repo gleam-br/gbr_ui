@@ -2,15 +2,15 @@
 //// UI: Stories Typo Module (Storybook)
 ////
 
-import gbr/ui/storybook
 import gleam/dynamic/decode
+import gleam/option.{None}
 
 import lustre/element/html as h
 
-import gbr/ui/theme
-
 import gbr/ui/showcase/components/typo
 import gbr/ui/showcase/stories
+import gbr/ui/storybook
+import gbr/ui/theme
 
 pub fn view() {
   use args <- storybook.render()
@@ -32,7 +32,9 @@ pub fn view() {
     _ -> typo.h1()
   }
 
-  stories.decode_field_elevation(args, "theme.elevation", theme.ElevationFlat)
-  |> typo.with_shadow(typo, _)
+  let elevation =
+    stories.decode_field_elevation(args, "theme.elevation", theme.ElevationFlat)
+
+  typo.with_shadow(typo, elevation(None))
   |> typo.view([], [h.text(label)])
 }

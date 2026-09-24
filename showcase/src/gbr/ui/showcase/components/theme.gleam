@@ -24,7 +24,6 @@ pub fn new_button_theme() {
 fn button_size_tokens(s) {
   [
     case s {
-      ui.SizeAncestor(_) -> lustre.Empty
       ui.SizeXxl -> lustre.Class("h-24")
       ui.SizeXl -> lustre.Class("h-20")
       ui.SizeLg -> lustre.Class("h-18")
@@ -33,7 +32,7 @@ fn button_size_tokens(s) {
       ui.SizeXs -> lustre.Class("h-12")
       ui.SizeXxs -> lustre.Class("h-10")
     },
-    ..size_text_tokens(s, False)
+    ..size_text_tokens(s, token.TextBase)
   ]
 }
 

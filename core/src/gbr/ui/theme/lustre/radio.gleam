@@ -49,5 +49,9 @@ pub fn view(radio, theme, attributes) {
     |> option.map(a.checked)
     |> option.unwrap(a.none())
 
-  input.view(input, theme, [checked, ..attributes])
+  input.view(input, theme, [
+    a.attribute("role", "button"),
+    checked,
+    ..attributes
+  ])
 }

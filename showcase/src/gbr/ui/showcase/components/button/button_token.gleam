@@ -22,7 +22,6 @@ pub fn button_design_tokens(v, a, s) {
 
 pub fn button_size_tokens(s) {
   let size_to_height = case s {
-    theme.SizeAncestor(_) -> lustre.Empty
     theme.SizeXxl -> lustre.Class("h-24 p-6")
     theme.SizeXl -> lustre.Class("h-20 p-5")
     theme.SizeLg -> lustre.Class("h-18 p-4")
@@ -31,7 +30,7 @@ pub fn button_size_tokens(s) {
     theme.SizeXs -> lustre.Class("h-12 p-1")
     theme.SizeXxs -> lustre.Class("h-10 p-1")
   }
-  let size_to_text = token.size_text_to_classes(False)
+  let size_to_text = token.size_text_to_classes(token.TextBase)
 
   [
     size_to_text(s),

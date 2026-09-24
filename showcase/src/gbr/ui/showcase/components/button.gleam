@@ -18,7 +18,7 @@ pub fn new_theme() {
   |> theme.with_shape_to_tokens(token.shape_rounded_to_tokens)
   |> theme.with_size_to_tokens(button_token.button_size_tokens)
   |> theme.with_stacking_to_tokens(token.stack_to_zindex_tokens)
-  |> theme.with_elevation_to_tokens(token.elevation_to_border_tokens)
+  |> theme.with_elevation_to_tokens(token.elevation_to_shadow_border_tokens)
 }
 
 pub opaque type Model {

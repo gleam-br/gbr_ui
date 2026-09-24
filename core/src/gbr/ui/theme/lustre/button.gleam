@@ -38,7 +38,7 @@ pub fn view(
       let type_ = button_to_type(button)
       let attributes = [
         a.type_(type_),
-        a.attribute("role", type_),
+        a.attribute("role", "button"),
         ..attributes
       ]
 
@@ -56,13 +56,14 @@ pub fn view(
 fn view_link(theme, href, target, attributes, elements) {
   let attributes = [
     a.href(href),
+    a.attribute("role", "link"),
     target
       |> option.map(a.target)
       |> option.unwrap(a.none()),
     ..attributes
   ]
 
-  lustre.button(theme, attributes, elements)
+  lustre.a(theme, attributes, elements)
 }
 
 fn button_to_type(button: UIButton) -> String {

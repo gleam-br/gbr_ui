@@ -26,7 +26,11 @@ pub fn decode_field_size(args, field, fallback) {
 pub fn decode_field_shape(args, field, fallback) {
   let size = decode_field_size(args, field <> ".size", theme.SizeMd)
   let layout =
-    decode_field_layout(args, field <> ".layout", theme.LayoutDefault)
+    decode_field_layout(
+      args,
+      field <> ".layout",
+      theme.LayoutFlow(theme.Main(theme.Center)),
+    )
 
   decode_field(args, field, fallback, decode_shape(size, layout))
 }
@@ -171,8 +175,7 @@ pub fn decode_appearance(appearance) {
     "filled" -> theme.AppearanceFilled
     "ghost" -> theme.AppearanceGhost
     "light" -> theme.AppearanceLight
-    "slit" -> theme.AppearanceSlit
-    "thin" -> theme.AppearanceThin
+    "slit" -> theme.AppearanceOutline
     _ -> theme.AppearanceDefault
   }
 }
@@ -181,8 +184,6 @@ pub fn decode_state(state) {
   case state {
     "disable" -> theme.StateDisabled
     "load" -> theme.StateLoading
-    "focus" -> theme.StateFocus
-    "hover" -> theme.StateHover
     "pressed" -> theme.StatePressed
     _ -> theme.StateIdle
   }
@@ -194,8 +195,7 @@ pub fn decode_shape(size, layout) {
       "circle" -> theme.ShapeCircle
       "pill" -> theme.ShapePill
       "sharp" -> theme.ShapeSharp
-      "shape" -> theme.Shape(size:, layout:)
-      _ -> theme.ShapeDefault
+      _ -> theme.Shape(#(size, layout))
     }
   }
 }
@@ -244,7 +244,7 @@ pub fn decode_layout(flow, absolute) {
     case layout {
       "flow" -> theme.LayoutFlow(flow)
       "absolute" -> theme.LayoutAbsolute(absolute)
-      _ -> theme.LayoutDefault
+      _ -> theme.LayoutFlow(theme.Main(theme.Center))
     }
   }
 }
@@ -266,10 +266,12 @@ pub fn decode_elevation(size) {
   fn(value) {
     case value {
       "flat" -> theme.ElevationFlat
-      "inner" -> theme.ElevationInner
-      "high" -> theme.ElevationHigh(size)
-      "low" -> theme.ElevationLow(size)
-      _ -> theme.ElevationMedium(size)
+      _ -> theme.ElevationInner
+      // TODO
+      //"inner" -> theme.ElevationInner
+      // "high" -> theme.ElevationHigh(size)
+      // "low" -> theme.ElevationLow(size)
+      // _ -> theme.ElevationMedium(size)
     }
   }
 }

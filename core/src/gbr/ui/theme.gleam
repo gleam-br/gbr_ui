@@ -33,7 +33,6 @@
 ////   - **Filled**: Fundo pintado, texto branco/contraste.
 ////   - **Light** (ou Soft): Fundo bem clarinho, texto escuro.
 ////   - **Ghost**: Sem fundo, com borda. (Alguns chamam de Outlined).
-////   - **Flat** (ou Clear): Sem fundo, sem borda, só o texto pintado.
 //// - **UIState** (Interação): Responde à pergunta "O que o usuário (ou a rede)
 ////  está fazendo com essa peça AGORA?".  Ele está com o mouse em cima?
 //// Ele clicou? A rede está lenta e está carregando? O botão foi desativado?
@@ -190,100 +189,102 @@ type UIPainter {
   )
 }
 
+/// **BUILDER**
 ///
 ///
 type UIBuilder(token) {
   UIBuilder(
-    base_to_tokens: BaseToTokens(token),
-    design_to_tokens: DesignToTokens(token),
-    size_to_tokens: SizeToTokens(token),
-    shape_to_tokens: ShapeToTokens(token),
-    stacking_to_tokens: StackingToTokens(token),
-    elevation_to_tokens: ElevationToTokens(token),
-    layout_to_tokens: LayoutToTokens(token),
+    /// Para converter os tokens, iniciais, padrão de estilo.
+    ///
+    base_to_tokens: fn() -> List(token),
+    /// Para converter o tamanho em tokens.
+    ///
+    size_to_tokens: fn(UISize) -> List(token),
+    /// Para converter o formato da superfície em tokens
+    ///
+    shape_to_tokens: fn(UIShape) -> List(token),
+    /// Para converter o empilhamento em tokens
+    ///
+    stacking_to_tokens: fn(UIStacking) -> List(token),
+    /// Para converter a sensação de elevação em tokens
+    ///
+    elevation_to_tokens: fn(UIElevation) -> List(token),
+    /// Para converter a sensação de elevação em tokens
+    ///
+    layout_to_tokens: fn(UILayout) -> List(token),
+    /// Para converter o de design (variante x aparência x estado) em tokens.
+    ///
+    design_to_tokens: fn(UIVariant, UIAppearance, UIState) -> List(token),
   )
 }
 
 /// Variante semântica, conhecido como tema, de um elemento.
 ///
-/// - VariantAncestor: A variante que recupera as variantes do seu elemento pai
-/// - VariantPrimary: A variante principal do tema.
-/// - VariantSecondary: A variante secundaria do tema.
-/// - VariantTertiary: A variante de fallback do tema.
-/// - VariantSuccess: A variante de sucesso do tema.
-/// - VariantWarning: A variante de alerta do tema.
-/// - VariantError: A variante de erro do tema.
-/// - VariantInfo: A variante de info do tema.
 pub type UIVariant {
-  VariantAncestor(UIAncestor)
   VariantDefault
+  /// A variante principal do tema.
   VariantPrimary
+  /// A variante secundaria do tema.
   VariantSecondary
+  /// A variante de fallback do tema.
   VariantTertiary
-  // As Semânticas (Feedback)
+  /// A variante de sucesso do tema.
   VariantSuccess
+  /// A variante de alerta do tema.
   VariantWarning
+  /// A variante de erro do tema.
   VariantError
+  /// A variante de info do tema.
   VariantInfo
 }
 
 /// Aparência de um elemento o seu estilo.
 ///
 pub type UIAppearance {
-  AppearanceAncestor(UIAncestor)
   AppearanceDefault
   /// Apresentam fundo de cor sólida, ideal para ações primárias devido à alta
   /// visibilidade.
   AppearanceFilled
-  /// Combine uma ação primária padrão com uma seta suspensa que revela um menu
-  /// de ações alternativas relacionadas
-  AppearanceSlit
-  /// Tenha um fundo transparente com borda e rótulo de texto. Eles são adequados
+  /// Tenha um fundo transparente sem borda e com rótulo de texto. Eles são adequados
   /// para ações secundárias, pois são menos proeminentes visualmente do que
   /// a aparencia sólida.
   AppearanceGhost
   /// Ao sobrepor várias sombras desfocadas com cores brilhantes, você pode criar
   /// um efeito luminoso
   AppearanceLight
-  /// Estilo que adiciona bordas, sombras e cantos arredondados e, em seguida,
-  /// aplica suas próprias cores e preenchimento
-  AppearanceFlat
-  /// "fino" usando CSS, você pode ajustar suas dimensões usando padding, height.
-  AppearanceThin
+  /// Tenha um fundo transparente com borda e rótulo de texto. Eles são adequados
+  /// para ações secundárias, pois são menos proeminentes visualmente do que
+  /// a aparencia sólida.
+  AppearanceOutline
 }
 
 /// Estado de um elemento.
 ///
 pub type UIState {
-  StateAncestor(UIAncestor)
   /// Intocado ou parado (Padrão)
   StateIdle
-  /// Passando ou ficando sobre
-  StateHover
-  /// Focado (a11y)
-  StateFocus
-  /// Sendo precionado
-  StatePressed
-  /// Aguardando sistema
+  /// Aguardando processamento
   StateLoading
   /// Desligado ou não acessível
   StateDisabled
+  /// Sendo precionado
+  StatePressed
 }
 
 /// Formato da superfície de um elemento.
 ///
 /// O "quão redondo" é o elemento não depende do tamanho
 pub type UIShape {
-  ShapeAncestor(UIAncestor)
   /// Arredondamento
-  Shape(size: UISize, layout: UILayout)
-  /// Quadrado perfeito (0px radius)
-  ShapeSharp
+  Shape(UISizeLayout)
+  /// Bordas arredondadas perfeito para botões
+  ShapeRounded
   /// Bordas totalmente arredondadas (Design iOS/Mobile)
   ShapePill
   /// Círculo perfeito (Para avatares e icon_only)
   ShapeCircle
-  ShapeDefault
+  /// Quadrado perfeito (0px radius)
+  ShapeSharp
 }
 
 /// Escala do tamanho de um elemento.
@@ -291,7 +292,6 @@ pub type UIShape {
 /// - Altura, Largura, Fonte e Espaçamento Interno (Padding).
 ///
 pub type UISize {
-  SizeAncestor(UIAncestor)
   /// 2xl
   SizeXxl
   /// xl
@@ -311,7 +311,6 @@ pub type UISize {
 /// Controlar o empilhamento dos elementos no eixo Z.
 ///
 pub type UIStacking {
-  StackAncestor(UIAncestor)
   /// z-0
   StackBase
   /// z-10
@@ -333,26 +332,25 @@ pub type UIStacking {
 /// Como controlar a sensação de elevação dos elementos. (sombra)
 ///
 pub type UIElevation {
-  ElevationAncestor(UIAncestor)
   /// Grudado no chão (Sem sombra)
-  ElevationFlat
+  ElevationFlat(Option(UISizeLayout))
   /// Afundado (Sombra interna, útil para inputs)
-  ElevationInner
+  ElevationInner(Option(UISizeLayout))
+  /// Ultra fino (Botões, Badges, etc)
+  ElevationThin(Option(UISizeLayout))
   /// Levemente levantado (Cards, Dropdowns sutis)
-  ElevationLow(UISize)
+  ElevationLow(Option(UISizeLayout))
   /// Flutuando (Modais, Menus flutuantes)
-  ElevationMedium(UISize)
+  ElevationMedium(Option(UISizeLayout))
   /// Voando alto (Tooltips, Notificações Toast)
-  ElevationHigh(UISize)
+  ElevationHigh(Option(UISizeLayout))
 }
 
 /// Define a estratégia de posicionamento no layout.
 ///
 pub type UILayout {
-  LayoutDefault
   LayoutFlow(UIFlow)
   LayoutAbsolute(UIAbsolute)
-  LayoutAncestor(UIAncestor)
 }
 
 /// Direção de um elemento esquerda, direita, etc.
@@ -398,20 +396,25 @@ pub type UIAlignment {
   Stretch
 }
 
-/// Como controlar a herança:
-/// - initial: Define a propriedade para o valor padrão do CSS.
-/// - inherit: Força o elemento a herdar o valor do elemento pai.
-/// - all: Usado para forçar todas as propriedades a serem herdadas do pai.
+/// Tipo auxiliar para juntar tamanho e localização de um elemento visual.
 ///
-/// O padrão é recuperar o antecessor e se não encontrar recuperar as variantes
-/// padrões do dispositivo em que estamos pintando o elemento utilizando o tema
-/// específico.
-///
-pub type UIAncestor {
-  AncestorInitial
-  AncestorInherit
-  AncestorAll
-}
+pub type UISizeLayout =
+  #(UISize, UILayout)
+
+// WIP: Como controlar a herança:
+// - initial: Define a propriedade para o valor padrão do CSS.
+// - inherit: Força o elemento a herdar o valor do elemento pai.
+// - all: Usado para forçar todas as propriedades a serem herdadas do pai.
+//
+// O padrão é recuperar o antecessor e se não encontrar recuperar as variantes
+// padrões do dispositivo em que estamos pintando o elemento utilizando o tema
+// específico.
+//
+// pub type UIAncestor {
+//   AncestorInitial
+//   AncestorInherit
+//   AncestorAll
+// }
 
 // -----------------------------------------------------------------------------
 //
@@ -669,7 +672,7 @@ pub fn with_shape_default(
 ///
 pub fn with_base_to_tokens(
   theme: UITheme(token),
-  base_to_tokens: BaseToTokens(token),
+  base_to_tokens,
 ) -> UITheme(token) {
   UITheme(..theme, builder: UIBuilder(..theme.builder, base_to_tokens:))
 }
@@ -678,7 +681,7 @@ pub fn with_base_to_tokens(
 ///
 pub fn with_design_to_tokens(
   theme: UITheme(token),
-  design_to_tokens: DesignToTokens(token),
+  design_to_tokens,
 ) -> UITheme(token) {
   UITheme(..theme, builder: UIBuilder(..theme.builder, design_to_tokens:))
 }
@@ -687,7 +690,7 @@ pub fn with_design_to_tokens(
 ///
 pub fn with_stacking_to_tokens(
   theme: UITheme(token),
-  stacking_to_tokens: StackingToTokens(token),
+  stacking_to_tokens,
 ) -> UITheme(token) {
   UITheme(..theme, builder: UIBuilder(..theme.builder, stacking_to_tokens:))
 }
@@ -696,7 +699,7 @@ pub fn with_stacking_to_tokens(
 ///
 pub fn with_elevation_to_tokens(
   theme: UITheme(token),
-  elevation_to_tokens: ElevationToTokens(token),
+  elevation_to_tokens,
 ) -> UITheme(token) {
   UITheme(..theme, builder: UIBuilder(..theme.builder, elevation_to_tokens:))
 }
@@ -705,7 +708,7 @@ pub fn with_elevation_to_tokens(
 ///
 pub fn with_size_to_tokens(
   theme: UITheme(token),
-  size_to_tokens: SizeToTokens(token),
+  size_to_tokens,
 ) -> UITheme(token) {
   UITheme(..theme, builder: UIBuilder(..theme.builder, size_to_tokens:))
 }
@@ -714,7 +717,7 @@ pub fn with_size_to_tokens(
 ///
 pub fn with_shape_to_tokens(
   theme: UITheme(token),
-  shape_to_tokens: ShapeToTokens(token),
+  shape_to_tokens,
 ) -> UITheme(token) {
   UITheme(..theme, builder: UIBuilder(..theme.builder, shape_to_tokens:))
 }
@@ -723,14 +726,14 @@ pub fn with_shape_to_tokens(
 ///
 pub fn with_layout_to_tokens(
   theme: UITheme(token),
-  layout_to_tokens: LayoutToTokens(token),
+  layout_to_tokens,
 ) -> UITheme(token) {
   UITheme(..theme, builder: UIBuilder(..theme.builder, layout_to_tokens:))
 }
 
 // -----------------------------------------------------------------------------
 //
-// --- HELPER THEME
+// --- Construtores
 //
 // -----------------------------------------------------------------------------
 
@@ -770,23 +773,8 @@ pub fn error() -> UIVariant {
 }
 
 ///
-pub fn is_primary(variant: UIVariant) -> Bool {
-  VariantPrimary == variant
-}
-
-///
-pub fn is_not_primary(variant: UIVariant) -> Bool {
-  !is_primary(variant)
-}
-
-///
 pub fn filled() -> UIAppearance {
   AppearanceFilled
-}
-
-///
-pub fn flat() -> UIAppearance {
-  AppearanceFlat
 }
 
 ///
@@ -800,16 +788,6 @@ pub fn light() -> UIAppearance {
 }
 
 ///
-pub fn slit() -> UIAppearance {
-  AppearanceSlit
-}
-
-///
-pub fn thin() -> UIAppearance {
-  AppearanceThin
-}
-
-///
 pub fn idle() -> UIState {
   StateIdle
 }
@@ -820,13 +798,8 @@ pub fn disabled() -> UIState {
 }
 
 ///
-pub fn focus() -> UIState {
-  StateFocus
-}
-
-///
-pub fn hover() -> UIState {
-  StateHover
+pub fn pressed() -> UIState {
+  StatePressed
 }
 
 ///
@@ -835,41 +808,93 @@ pub fn loading() -> UIState {
 }
 
 ///
-pub fn pressed() -> UIState {
-  StatePressed
-}
-
-///
-pub fn sharp() -> Option(UIShape) {
+pub fn shape_sharp() -> UIShape {
   ShapeSharp
-  |> Some()
 }
 
 ///
-pub fn pill() -> Option(UIShape) {
+pub fn shape_pill() -> UIShape {
   ShapePill
-  |> Some()
 }
 
 ///
-pub fn circle() -> Option(UIShape) {
+pub fn shape_circle() -> UIShape {
   ShapeCircle
-  |> Some()
 }
 
 ///
-pub fn rounded_all(size: UISize) -> UIShape {
+pub fn shape_rounded() -> UIShape {
+  ShapeRounded
+}
+
+///
+pub fn shape_rounded_all(size: UISize) -> UIShape {
   rounded_absolute(size, AxisX(Center))
 }
 
 ///
 pub fn rounded_absolute(size: UISize, absolute: UIAbsolute) -> UIShape {
-  Shape(size, layout: LayoutAbsolute(absolute))
+  Shape(#(size, layout_absolute(absolute)))
+}
+
+///
+pub fn layout_flow_main(main) {
+  Main(main)
+  |> layout_flow()
+}
+
+///
+pub fn layout_flow_cross_items(main) {
+  CrossItems(main)
+  |> layout_flow()
+}
+
+///
+pub fn layout_flow_cross_content(main) {
+  CrossContent(main)
+  |> layout_flow()
+}
+
+///
+pub fn layout_flow_items(main, cross_items) {
+  FlowItems(main:, cross_items:)
+  |> layout_flow()
+}
+
+///
+pub fn layout_flow_content(main, cross_content) {
+  FlowContent(main:, cross_content:)
+  |> layout_flow()
+}
+
+pub fn layout_flow(flow) {
+  LayoutFlow(flow)
+}
+
+///
+pub fn layout_absolute_axis(horizontal, vertical) {
+  Axis(horizontal:, vertical:)
+  |> layout_absolute()
+}
+
+///
+pub fn layout_absolute(axis) {
+  LayoutAbsolute(axis)
 }
 
 //
 // --- HELPER
 //
+
+///
+pub fn is_primary(variant: UIVariant) -> Bool {
+  VariantPrimary == variant
+}
+
+///
+pub fn is_not_primary(variant: UIVariant) -> Bool {
+  !is_primary(variant)
+}
 
 pub fn size_decrement(size: UISize) {
   size_decrement_count(size, 0)
@@ -877,7 +902,6 @@ pub fn size_decrement(size: UISize) {
 
 pub fn size_decrement_count(size: UISize, count: Int) {
   let size = case size {
-    SizeAncestor(_) -> size
     SizeXxl -> SizeXl
     SizeXl -> SizeLg
     SizeLg -> SizeMd
@@ -897,7 +921,6 @@ pub fn size_decrement_count(size: UISize, count: Int) {
 ///
 pub fn layout_rotate(layout: UILayout) {
   case layout {
-    LayoutAncestor(_) | LayoutDefault -> layout
     LayoutFlow(flow) ->
       case flow {
         Main(justify:) -> Main(alignment_rotate(justify))
@@ -948,46 +971,6 @@ pub fn alignment_rotate(align: UIAlignment) {
     Stretch -> SpaceEvenly
   }
 }
-
-// **TEMA + BUILDER (DEFAULT)**
-//
-// -- Alias p/ os motores dos Tokens (Interno)
-//
-
-/// Para converter os tokens, iniciais, padrão de estilo.
-///
-type BaseToTokens(token) =
-  fn() -> List(token)
-
-/// Para converter o tamanho em tokens.
-///
-type SizeToTokens(token) =
-  fn(UISize) -> List(token)
-
-/// Para converter o formato da superfície em tokens
-///
-type ShapeToTokens(token) =
-  fn(UIShape) -> List(token)
-
-/// Para converter o empilhamento em tokens
-///
-type StackingToTokens(token) =
-  fn(UIStacking) -> List(token)
-
-/// Para converter a sensação de elevação em tokens
-///
-type ElevationToTokens(token) =
-  fn(UIElevation) -> List(token)
-
-/// Para converter a sensação de elevação em tokens
-///
-type LayoutToTokens(token) =
-  fn(UILayout) -> List(token)
-
-/// Para converter o de design (variante x aparência x estado) em tokens.
-///
-type DesignToTokens(token) =
-  fn(UIVariant, UIAppearance, UIState) -> List(token)
 
 //
 // --- CRIAR TEMA E BUILDER PADRÃO (Interno)

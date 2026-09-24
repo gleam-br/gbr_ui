@@ -44,6 +44,11 @@ pub fn decode_field(args, field, fallback, decoder) {
   |> option.unwrap(fallback)
 }
 
+pub fn decode_field_optional(args, field) {
+  decode(args, field, "", decode.string)
+  |> string.to_option
+}
+
 //
 // -- Interno
 //

@@ -38,7 +38,10 @@ pub fn new_theme(is_header) {
 }
 
 pub fn new(typo) {
-  let is_header = typo.is_header(typo)
+  let is_header = case typo.is_header(typo) {
+    True -> token.TextTitle
+    False -> token.TextTheme
+  }
 
   Model(typo:, theme: new_theme(is_header))
 }

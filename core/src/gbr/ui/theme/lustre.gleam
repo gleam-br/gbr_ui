@@ -151,6 +151,7 @@
 ////
 
 import gleam/list
+import gleam/string
 
 import lustre/attribute as a
 import lustre/element
@@ -204,13 +205,30 @@ pub fn to_lustre(
       Empty -> a.none()
     }
   }
-  theme.view(theme, fn(tokens: List(UILustre)) {
-    let attributes =
-      list.map(tokens, engine_lustre)
-      |> list.append(attributes)
 
-    to_lustre(attributes, elements)
-  })
+  use tokens <- theme.view(theme)
+
+  // fold class
+  let assert Class(class) =
+    list.fold(tokens, Class(""), fn(acc, token) {
+      case token {
+        Class(class) -> {
+          let assert Class(acc) = acc as "acc"
+          // TODO remove duplicates
+          let class = string.trim(class)
+
+          Class(acc <> class)
+        }
+        _ -> acc
+      }
+    })
+    as "fold"
+
+  let attributes =
+    list.map(tokens, engine_lustre)
+    |> list.append(attributes)
+
+  to_lustre([a.class(class), ..attributes], elements)
 }
 
 // -----------------------------------------------------------------------------
