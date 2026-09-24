@@ -1,0 +1,270 @@
+@import "tailwindcss";
+
+/* 
+ * VARIANTE CUSTOMIZADA: Lustre / Gleam
+ * Suporte a dark mode manual via classe no HTML ou em componentes específicos.
+ */
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  /* 
+   * 1. TIPOGRAFIA 
+   * REM para garantir acessibilidade (a11y) e zoom fluido.
+   */
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+
+  /* 
+   * 2. BREAKPOINTS 
+   */
+  /* 375px */
+  --breakpoint-2xsm: 23.4375rem;
+  /* 425px */
+  --breakpoint-xsm: 26.5625rem;
+  /* 640px */
+  --breakpoint-sm: 40rem;
+  /* 768px */
+  --breakpoint-md: 48rem;
+  /* 1024px */
+  --breakpoint-lg: 64rem;
+  /* 1280px */
+  --breakpoint-xl: 80rem;
+  /* 1536px */
+  --breakpoint-2xl: 96rem;
+  /* 2000px */
+  --breakpoint-3xl: 125rem;
+
+  /* 
+   * 3. TEXT SIZES (Tamanhos e Line Heights)
+   */
+  --text-title-4xl: 5.5rem;
+  --text-title-4xl--line-height: 6.625rem;
+
+  --text-title-2xl: 4.5rem;
+  --text-title-2xl--line-height: 5.625rem;
+
+  --text-title-xl: 3.75rem;
+  --text-title-xl--line-height: 4.5rem;
+
+  --text-title-lg: 3rem;
+  --text-title-lg--line-height: 3.75rem;
+
+  --text-title-md: 2.25rem;
+  --text-title-md--line-height: 2.75rem;
+
+  --text-title-sm: 1.875rem;
+  --text-title-sm--line-height: 2.375rem;
+
+  --text-title-xs: 1.675rem;
+  --text-title-xs--line-height: 2.275rem;
+
+  --text-theme-2xl: 1.375rem;
+  --text-theme-2xl--line-height: 2.5rem;
+
+  --text-theme-xl: 1.25rem;
+  --text-theme-xl--line-height: 1.875rem;
+
+  --text-theme-sm: 0.875rem;
+  --text-theme-sm--line-height: 1.25rem;
+
+  --text-theme-xs: 0.75rem;
+  --text-theme-xs--line-height: 1.125rem;
+
+  /* 
+   * 4. CORES PRIMITIVAS
+   */
+  --color-white: oklch(1 0 0);
+  --color-black: oklch(0 0 0);
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* Gray Scale (Base corporativa) */
+  --color-gray-50: oklch(0.98 0.01 260);
+  --color-gray-100: oklch(0.96 0.01 260);
+  --color-gray-200: oklch(0.92 0.02 260);
+  --color-gray-300: oklch(0.85 0.02 260);
+  --color-gray-400: oklch(0.70 0.03 260);
+  --color-gray-500: oklch(0.55 0.03 260);
+  --color-gray-600: oklch(0.40 0.04 260);
+  --color-gray-700: oklch(0.30 0.04 260);
+  --color-gray-800: oklch(0.22 0.04 260);
+  --color-gray-900: oklch(0.16 0.03 260);
+  --color-gray-950: oklch(0.12 0.03 260);
+
+  /* Brand Scale */
+  --color-brand-50: oklch(0.96 0.03 260);
+  --color-brand-100: oklch(0.92 0.05 260);
+  --color-brand-400: oklch(0.65 0.15 260);
+  --color-brand-500: oklch(0.52 0.20 260);
+  /* Primária base */
+  --color-brand-600: oklch(0.45 0.22 260);
+  --color-brand-900: oklch(0.28 0.15 260);
+  --color-brand-950: oklch(0.20 0.12 260);
+
+  /* Semânticas de Sucesso (Green) */
+  --color-success-50: oklch(0.97 0.04 150);
+  --color-success-500: oklch(0.65 0.16 150);
+  --color-success-600: oklch(0.55 0.15 150);
+  --color-success-content: var(--color-white);
+
+  /* Semânticas de Erro (Red) */
+  --color-error-50: oklch(0.97 0.03 25);
+  --color-error-500: oklch(0.60 0.18 25);
+  --color-error-600: oklch(0.52 0.18 25);
+  --color-error-content: var(--color-white);
+
+  /* Semânticas de Warning (Orange) */
+  --color-warning-50: oklch(0.98 0.04 70);
+  --color-warning-500: oklch(0.72 0.16 70);
+  --color-warning-600: oklch(0.65 0.15 70);
+  --color-warning-content: var(--color-white);
+
+  /* 
+   * 5. CORES SEMÂNTICAS E DE ESTADO
+   * Aliasing de Design Tokens
+   */
+  --color-primary-50: var(--color-brand-50);
+  --color-primary-100: var(--color-brand-100);
+  --color-primary-400: var(--color-brand-400);
+  --color-primary-500: var(--color-brand-500);
+  --color-primary-600: var(--color-brand-600);
+  --color-primary-900: var(--color-brand-900);
+  --color-primary-950: var(--color-brand-950);
+  --color-primary-content: var(--color-white);
+
+  --color-blue-light-25: #f5fbff;
+  --color-blue-light-50: #f0f9ff;
+  --color-blue-light-100: #e0f2fe;
+  --color-blue-light-200: #b9e6fe;
+  --color-blue-light-300: #7cd4fd;
+  --color-blue-light-400: #36bffa;
+  --color-blue-light-500: #0ba5ec;
+  --color-blue-light-600: #0086c9;
+  --color-blue-light-700: #026aa2;
+  --color-blue-light-800: #065986;
+  --color-blue-light-900: #0b4a6f;
+  --color-blue-light-950: #062c41;
+
+  /* 
+   * 6. SHADOWS E Z-INDEX 
+   */
+  --shadow-theme-md: 0px 4px 8px -2px oklch(0.16 0.03 260 / 0.1), 0px 2px 4px -2px oklch(0.16 0.03 260 / 0.06);
+  --shadow-theme-lg: 0px 12px 16px -4px oklch(0.16 0.03 260 / 0.08), 0px 4px 6px -2px oklch(0.16 0.03 260 / 0.03);
+  --shadow-theme-sm: 0px 1px 3px 0px oklch(0.16 0.03 260 / 0.1), 0px 1px 2px 0px oklch(0.16 0.03 260 / 0.06);
+
+  --shadow-datepicker: -5px 0 0 var(--color-surface), 5px 0 0 var(--color-surface);
+  --shadow-focus-ring: 0px 0px 0px 4px var(--color-primary-500);
+}
+
+/* 
+ * LAYER BASE: Tema Light / Dark Automático + Resets 
+ */
+@layer base {
+
+  :root,
+  :host {
+    --color-base: var(--color-gray-50);
+    --color-surface: var(--color-gray-100);
+    --color-surface-muted: var(--color-gray-200);
+
+    --color-content: var(--color-gray-900);
+    --color-content-muted: var(--color-gray-600);
+    --color-border: var(--color-gray-300);
+  }
+
+  :root.dark,
+  :host.dark,
+  .dark {
+    --color-base: var(--color-gray-950);
+    --color-surface: var(--color-gray-900);
+    --color-surface-muted: var(--color-gray-800);
+
+    --color-content: oklch(0.98 0 0 / 0.9);
+    --color-content-muted: var(--color-gray-400);
+    --color-border: var(--color-gray-700);
+  }
+
+  body,
+  html {
+    background-color: var(--color-base);
+    color: var(--color-content);
+    font-family: var(--font-sans);
+  }
+
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-border);
+  }
+
+  a:not(:disabled),
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* 
+ * LAYER UTILITIES: Componentes Moleculares do Admin
+ */
+@layer utilities {
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: var(--color-surface-muted);
+  }
+}
+
+/* 
+ * LAYER COMPONENTS: Estilos Globais de Elementos Nativos 
+ */
+@layer components {
+
+  input[type="datetime-local"],
+  input[type="date"],
+  input[type="time"] {
+    color: var(--color-content);
+    font-size: 0.875rem;
+    font-family: inherit;
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    background-color: var(--color-surface);
+
+    &::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      border-radius: 0.125rem;
+      background-color: var(--color-surface-muted);
+    }
+
+    &:is(.dark *) {
+      color: var(--color-content-muted);
+
+      &::-webkit-calendar-picker-indicator {
+        border-color: var(--color-border);
+      }
+    }
+  }
+}
+
+@utility custom-scrollbar {
+  &::-webkit-scrollbar {
+    @apply size-1.5;
+  }
+
+  &::-webkit-scrollbar-track {
+    @apply rounded-full;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--color-border);
+    @apply rounded-full;
+  }
+}
+
+@utility no-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
