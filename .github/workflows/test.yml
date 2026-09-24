@@ -20,7 +20,6 @@ jobs:
         run: | 
           cd core
           gleam deps download
-          gleam format
           gleam test
           gleam format --check src test
 
@@ -28,7 +27,6 @@ jobs:
         run: | 
           cd storybook
           gleam deps download
-          gleam format
           gleam test
           gleam format --check src test
 
@@ -36,6 +34,5 @@ jobs:
         run: | 
           cd showcase
           gleam deps download
-          gleam format
           gleam test
           gleam format --check src test
