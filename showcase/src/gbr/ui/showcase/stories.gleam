@@ -262,7 +262,7 @@ pub fn decode_size(value) {
   }
 }
 
-pub fn decode_elevation(size) {
+pub fn decode_elevation(_size) {
   fn(value) {
     case value {
       "flat" -> theme.ElevationFlat

@@ -77,9 +77,9 @@ pub fn env(key, default) {
 // -- FFI
 //
 
-type TimerID
+pub type TimerID
 
-fn on_timeout(delay, callback) {
+pub fn on_timeout(delay, callback) {
   use dispatch <- e.from()
 
   let _timer_id =
@@ -98,4 +98,4 @@ fn ffi_env(key: String) -> Result(String, Nil)
 fn set_timeout(delay: Int, callback: msg) -> TimerID
 
 @external(javascript, "../../showcase_ffi.mjs", "do_initial_uri")
-fn ffi_do_initial_uri() -> Result(uri.Uri, Nil)
+pub fn ffi_do_initial_uri() -> Result(uri.Uri, Nil)
