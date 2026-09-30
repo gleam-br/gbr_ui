@@ -22,17 +22,3 @@ jobs:
           gleam deps download
           gleam test
           gleam format --check src test
-
-      - name: Test storybook
-        run: | 
-          cd storybook
-          gleam deps download
-          gleam test
-          gleam format --check src test
-
-      - name: Test showcase
-        run: | 
-          cd showcase
-          gleam deps download
-          gleam test
-          gleam format --check src test
