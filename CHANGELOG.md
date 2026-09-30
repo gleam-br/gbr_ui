@@ -40,6 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add doc readme to repo demo gbr-ui-demo by @salespaulo
 
 ### Changed
+- Update node 22 storybook execa union bug by @salespaulo
+- Update changelog by @github-actions[bot]
 - Merge pull request #4 from gleam-br/vrn/1.1.0 by @salespaulo in [#4](https://github.com/gleam-br/gbr_ui/pull/4)
 - Feat(ci,cd): Github actions CI/CD e doc README by @salespaulo
 - V1.1.0 by @salespaulo
