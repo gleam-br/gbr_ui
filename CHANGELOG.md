@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Add: CD do gbr_ui no hex.pm by @salespaulo
+- Add: doc readme e melhorias no codigo e docs by @salespaulo
+- Melhorias no codigo e is_valid no input by @salespaulo
+- Tailwindcss button, checkbox, input, loader by @salespaulo
+- Light/dark mode via css com tailwindcss variants para o modo administrador by @salespaulo
+- Tailwindcss/image e estilos base e admin(default) by @salespaulo
+- Tailwindcss/theme e ajustes no engine.gleam by @salespaulo
+- Doc ADR e button/group by @salespaulo
+- Comentário no codigo by @salespaulo
+- Add: theme, control, typo, svg, img, a11y modules by @salespaulo
 - More modal styles and fix typo element by @salespaulo
 - Add el.class_append and fixes by @salespaulo
 - Add more svg icons and fixes in select checkbox and more by @salespaulo
@@ -30,7 +40,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add doc readme to repo demo gbr-ui-demo by @salespaulo
 
 ### Changed
+- Merge pull request #4 from gleam-br/vrn/1.1.0 by @salespaulo in [#4](https://github.com/gleam-br/gbr_ui/pull/4)
+- Feat(ci,cd): Github actions CI/CD e doc README by @salespaulo
+- V1.1.0 by @salespaulo
+- Feat(core): Melhorias na documentação e inclusão de testes unitários by @salespaulo
+- Melhorando o tema base e as historias do storybook by @salespaulo
+- Format: Formatando os arquivos by @salespaulo
+- Feat(showcase): Melhoria no showcase storybook usando UITheme by @salespaulo
+- #12 #10: feat(showcase): Build ok, server executando showcase base wip by @salespaulo
+- Feat(storybook): Versionando o gbr_ui_storybook p/ v1.0.0 by @salespaulo
+- #3 #2: feat(storybook): Nova ferramenta para trabalhar com gleam, lustre e storybook by @salespaulo
+- Feat(storybook): Removida a configuração do viteConfigPath no .storybook/main.ts by @salespaulo
+- Feat(storybook): Melhoria no typo_stories.gleam by @salespaulo
+- Chore: Pequenos ajustes by @salespaulo
+- #2 #3: feat(storybook): Nova estrutura de monorepo e novos projetos showcase e storybook by @salespaulo
+- #2 #3: feat(layout, tokens): Criação de layout tokens e funções auxiliares para conversão de UITheme em tailwind tokens by @salespaulo
+- Merge branch 'main' into vrn/2.0.0 by @salespaulo
+- Update changelog by @github-actions[bot]
 - Update stdlib by @salespaulo
+- #2 #3: Limpeza geral, refatoração e criação de novos componentes seguindo nova estrutura de theme.gleam by @salespaulo
+- #2 #3: Melhorando o compmonente typo.gleam, e implementação lustre usando novo UILustre by @salespaulo
+- #2 #3: feat(gbr_ui): Melhorando a nomenclatura dos tipos em theme.gleam, UIThemeBuilder -> UITheme e UITheme -> UIPainter, faz mais sentido by @salespaulo
+- #2 #3: Criado tipo UILustre, representando os tokens p/ conversão em atributos lustre (que serão convertidos em HTML no final pelo lustre). Agora podemos incluir outros desing tokens alem de #(String, Bool), contrato lustre a.classes, segue: by @salespaulo
+- #2 #3: Deixando os tipos UITheme e UIBuilder privados e tipo UIBuilderTheme opaco, protegendo assim nossos ADTs e contratos (API) by @salespaulo
+- #2 #3: Fix no button by @salespaulo
+- #2 #3: Melhorando nosso theme.gleam, tipo genérico de Tokens em engine.gleam, UIThemeBuilder e construtores adequados para pipe operator, escondendo a engine genérica em internal, no futuro iremos criar design tokens específicos tailwindcss, css, desk, etc, e.g. Layout(Background(Color.Amber(600))), algo assim hehe by @salespaulo
+- Update gleam version no gh workflow test by @salespaulo
+- Refatorando o componente de input p/ representar a AST by @salespaulo
 - Update changelog by @github-actions[bot]
 - Merge branch 'main' of https://github.com/gleam-br/gbr_ui by @salespaulo
 - Update changelog by @github-actions[bot]
@@ -56,6 +92,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update changelog by @github-actions[bot]
 
 ### Fixed
+- Removendo a formatação, temos que criar um git-hook antes do commit ou ao add os arquivos pra formatar o codigo by @salespaulo
+- Test.yml formatando o codigo agora by @salespaulo
+- Fix(ci): Correção do test.yml gh action by @salespaulo
+- Typo text-content e ajustes no design system light/dark no gbr_ui_admin.css by @salespaulo
+- O módulo tailwindcss/theme foi renomeado para tailwindcss/engine by @salespaulo
 - Fix onclick option by @salespaulo
 - Fix select call event more than once by @salespaulo
 - Fix and ajusts in checkbox, select, table, textarea, api by @salespaulo
@@ -81,6 +122,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix user dropdown cursor and add sidebar menu helper funcs by @salespaulo
 
 ### Removed
+- Master branch do gh workflow test by @salespaulo
+- Rsvp dependency e update lustre p/ 5.6 by @salespaulo
+- Remove: input types inválidos (button,submit,checkbox,radio,etc) by @salespaulo
+- Remove: Todos arquivos da v1.x e inclusão dos arquivos novos by @salespaulo
 - Remove sensitive data by @salespaulo
 - Remove echos by @salespaulo
 - Remove textarea.is_empty by @salespaulo
