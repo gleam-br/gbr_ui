@@ -10,12 +10,19 @@ pub fn button_design_tokens(v, a, s) {
   [
     case v, a, s {
       theme.VariantPrimary, _, _ ->
-        lustre.Class("bg-green-500 dark:bg-green-800")
+        // Gleam BR Green
+        lustre.Class(
+          "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-slate-900 font-bold",
+        )
       theme.VariantSecondary, _, _ ->
-        lustre.Class("bg-amber-200 dark:bg-amber-300")
+        // Gleam Yellow com Gleam Charcoal para contraste perfeito
+        lustre.Class("bg-[#faffb0] text-[#292d3e] font-bold")
       theme.VariantTertiary, _, _ ->
-        lustre.Class("bg-gray-900 dark:bg-black-300 text-white")
-      _, _, _ -> lustre.Class("bg-gray-600 border-gray-900")
+        // Gleam Pink com Gleam Charcoal
+        lustre.Class("bg-[#ffaff3] text-[#292d3e] font-bold")
+      _, _, _ ->
+        // Fallback genérico
+        lustre.Class("bg-[#a6f0fc] text-[#292d3e] font-bold")
     },
   ]
 }
