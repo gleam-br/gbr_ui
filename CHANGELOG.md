@@ -40,6 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add doc readme to repo demo gbr-ui-demo by @salespaulo
 
 ### Changed
+- Nome da env var para HEXPM_API_KEY no publish by @salespaulo
+- Update changelog by @github-actions[bot]
 - Paleta dos botoes com cores oficiais do Gleam by @salespaulo
 - Trigger changelog somente p/ tags by @salespaulo
 - Merge branch 'main' of github.com:gleam-br/gbr_ui by @salespaulo
