@@ -5,6 +5,9 @@ Esta é uma biblioteca open-source de componentes de interface construída intei
 
 Desenvolvido com ❤️ pela comunidade [Gleam BR](https://github.com/gleam-br).
 
+[![Package Version](https://img.shields.io/hexpm/v/gbr_ui)](https://hex.pm/packages/gbr_ui)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/gbr_ui/)
+
 ---
 
 ## 📦 Estrutura do Monorepo
