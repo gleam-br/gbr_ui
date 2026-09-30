@@ -16,5 +16,6 @@ export default {
   "core": {
     "disableTelemetry": true,
     "disableWhatsNewNotifications": true,
-  }
+  },
+  "staticDirs": ["../public"]
 };
