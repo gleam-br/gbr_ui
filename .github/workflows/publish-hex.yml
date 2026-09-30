@@ -32,6 +32,6 @@ jobs:
           cd core
           gleam publish -y
         env:
-          # Chave de escrita no Hex para publicar
-          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+          # Chave de escrita no Hex para publicar (Gleam espera HEXPM_API_KEY)
+          HEXPM_API_KEY: ${{ secrets.HEX_API_KEY }}
           HEXPM_READ_API_KEY: ${{ secrets.HEXPM_READ_API_KEY }}
