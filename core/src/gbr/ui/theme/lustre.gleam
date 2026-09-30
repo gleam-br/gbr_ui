@@ -132,7 +132,7 @@
 ////   |> theme.with_shape(theme.ShapePill)
 ////   |> theme.with_elevation(theme.ElevationFlat)
 ////   |> theme.with_stacking(theme.StackXxl)
-////   |> to_alert()
+////   |> to_alert
 //// }
 //// ```
 ////
@@ -209,20 +209,17 @@ pub fn to_lustre(
   use tokens <- theme.view(theme)
 
   // fold class
-  let assert Class(class) =
-    list.fold(tokens, Class(""), fn(acc, token) {
+  let class =
+    list.fold(tokens, "", fn(acc, token) {
       case token {
         Class(class) -> {
-          let assert Class(acc) = acc as "acc"
           // TODO remove duplicates
           let class = string.trim(class)
-
-          Class(acc <> class)
+          acc <> class
         }
         _ -> acc
       }
     })
-    as "fold"
 
   let attributes =
     list.map(tokens, engine_lustre)

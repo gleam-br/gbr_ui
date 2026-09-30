@@ -26,6 +26,7 @@ pub fn decode(args, field, fallback, to_decode) {
   |> result.unwrap(fallback)
 }
 
+/// Decodifica um campo de um objeto `Dynamic`, retornando um `Result`.
 ///
 pub fn decode_field_try(args, field, decoder) {
   let decoder = {
@@ -36,6 +37,7 @@ pub fn decode_field_try(args, field, decoder) {
   decode.run(args, decoder)
 }
 
+/// Decodifica um campo opcional; caso falhe ou não exista, retorna o valor `fallback`.
 ///
 pub fn decode_field(args, field, fallback, decoder) {
   decode(args, field, "", decode.string)
@@ -44,6 +46,8 @@ pub fn decode_field(args, field, fallback, decoder) {
   |> option.unwrap(fallback)
 }
 
+/// Decodifica um campo de texto opcional, retornando um `Option(String)`.
+///
 pub fn decode_field_optional(args, field) {
   decode(args, field, "", decode.string)
   |> string.to_option
@@ -86,8 +90,10 @@ fn mount(
     )
 
   // Inicia a aplicação no seletor injetado pelo DOM Observer em js/*
-  let _ = lustre.start(app, selector, Nil)
-  Nil
+  case lustre.start(app, selector, Nil) {
+    Ok(_) -> Nil
+    Error(_) -> panic as "Erro ao montar o Lustre no DOM do Storybook"
+  }
 }
 
 fn do_decode(field, fallback, to_decode) {

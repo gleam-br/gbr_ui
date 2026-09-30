@@ -1,8 +1,4 @@
-[![Package Version](https://img.shields.io/hexpm/v/gbr_ui_storybook)](https://hex.pm/packages/gbr_ui_storybook)
-[![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/gbr_ui_storybook/)
-
-
-# 📺 GleamBR UI Storybook library
+# 📺 GBR: UI Storybook
 
 [Gleam](https://gleam.run/) UI [lustre](https://lustre.build/) com o bundler [vitejs](https://vite.dev) e [storybook](https://storybook.js.org).
 

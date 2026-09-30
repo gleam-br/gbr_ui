@@ -34,12 +34,14 @@ fn design_classes(variant v, appearance a, state s) {
     theme.VariantPrimary, theme.AppearanceFilled, _ -> [
       lustre.Class("bg-primary-500"),
       lustre.Classes([
-        #("bg-primary-500 border border-red", s == theme.StateError),
+        #("opacity-50 cursor-not-allowed", s == theme.StateDisabled),
       ]),
     ]
     _, _, _ -> [
       lustre.Class("bg-secondary-500"),
-      lustre.Classes([ #("bg-orange-500", s == theme.StateError) ]),
+      lustre.Classes([
+        #("opacity-75 cursor-wait", s == theme.StateLoading),
+      ]),
     ]
   }
 }
@@ -73,22 +75,22 @@ pub fn title(state) -> el.Element(msg) {
 
 fn design_classes(variant v, appearance a, state s) {
   case v, a, s {
-    theme.VariantPrimary, theme.AppearanceFilled, theme.StateLoading ->[
-      lustre.Class("hover:text-primary-600 text-primary-500"),
+    theme.VariantPrimary, theme.AppearanceFilled, theme.StatePressed -> [
+      lustre.Class("text-primary-700"),
     ]
 
     theme.VariantPrimary, theme.AppearanceFilled, _ -> [
       lustre.Classes([
         #("text-primary-500", s == theme.StateIdle),
-        #("text-error-500", s == theme.StateError),
-        #("text-blue-light-500", s == theme.StateInfo),
-      ])
+        #("opacity-50 cursor-wait", s == theme.StateLoading),
+      ]),
     ]
     _, _, _ -> [
       lustre.Classes([
         #("text-secondary-500", s == theme.StateIdle),
-        #("text-orange-500", s == theme.StateError),
-      ])
+        #("opacity-50 cursor-not-allowed", s == theme.StateDisabled),
+      ]),
+    ]
   }
 }
 ```

@@ -496,8 +496,7 @@ pub fn view(
   apply theme: UITheme(token),
   in to_element: fn(List(token)) -> a,
 ) -> a {
-  paint(theme)
-  |> to_element()
+  to_element(paint(theme))
 }
 
 // -----------------------------------------------------------------------------
@@ -839,32 +838,27 @@ pub fn rounded_absolute(size: UISize, absolute: UIAbsolute) -> UIShape {
 
 ///
 pub fn layout_flow_main(main) {
-  Main(main)
-  |> layout_flow()
+  layout_flow(Main(main))
 }
 
 ///
 pub fn layout_flow_cross_items(main) {
-  CrossItems(main)
-  |> layout_flow()
+  layout_flow(CrossItems(main))
 }
 
 ///
 pub fn layout_flow_cross_content(main) {
-  CrossContent(main)
-  |> layout_flow()
+  layout_flow(CrossContent(main))
 }
 
 ///
 pub fn layout_flow_items(main, cross_items) {
-  FlowItems(main:, cross_items:)
-  |> layout_flow()
+  layout_flow(FlowItems(main:, cross_items:))
 }
 
 ///
 pub fn layout_flow_content(main, cross_content) {
-  FlowContent(main:, cross_content:)
-  |> layout_flow()
+  layout_flow(FlowContent(main:, cross_content:))
 }
 
 pub fn layout_flow(flow) {
@@ -873,8 +867,7 @@ pub fn layout_flow(flow) {
 
 ///
 pub fn layout_absolute_axis(horizontal, vertical) {
-  Axis(horizontal:, vertical:)
-  |> layout_absolute()
+  layout_absolute(Axis(horizontal:, vertical:))
 }
 
 ///
