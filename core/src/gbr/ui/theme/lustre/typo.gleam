@@ -24,7 +24,7 @@
 ////   case v, a, s {
 ////     theme.VariantPrimary, theme.AppearanceFilled, theme.StateIdle ->
 ////       "text-primary-500"
-////     theme.VariantPrimary, theme.AppearanceFilled, theme.StateHover ->
+////     theme.VariantPrimary, theme.AppearanceFilled, theme.StateLoading ->
 ////       "hover:text-primary-600 text-primary-500"
 ////     _, _, _ -> "text-secondary-500"
 ////   }

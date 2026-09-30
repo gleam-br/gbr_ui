@@ -763,7 +763,7 @@ pub fn success() -> UIVariant {
 }
 
 ///
-pub fn waring() -> UIVariant {
+pub fn warning() -> UIVariant {
   VariantWarning
 }
 

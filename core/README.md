@@ -73,7 +73,7 @@ pub fn title(state) -> el.Element(msg) {
 
 fn design_classes(variant v, appearance a, state s) {
   case v, a, s {
-    theme.VariantPrimary, theme.AppearanceFilled, theme.StateHover ->[
+    theme.VariantPrimary, theme.AppearanceFilled, theme.StateLoading ->[
       lustre.Class("hover:text-primary-600 text-primary-500"),
     ]
 
