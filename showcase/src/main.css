@@ -1,0 +1,19 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+@import "../build/dev/javascript/gbr_ui/priv/ui.css";
+
+/* https://tailwindcss.com/blog/tailwindcss-v4#automatic-content-detection */
+@source "../build/dev/javascript/gbr_ui";
+@source "../src/**/*.gleam";
+
+@theme {
+  --font-sans: Outfit, sans-serif;
+
+  --color-base: var(--color-gray-50);
+
+  --color-surface: var(--color-surface);
+  --color-surface-muted: var(--color-surface-muted);
+
+  --color-content: var(--color-content);
+  --color-content-muted: var(--color-content-muted);
+  --color-border: var(--color-border);
+}

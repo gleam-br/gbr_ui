@@ -1,0 +1,37 @@
+name: Publish to Hex
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Gleam
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: "28"
+          gleam-version: "1.17"
+
+      - name: Download deps and Test Core
+        run: |
+          cd core
+          gleam deps download
+          gleam test
+          gleam format --check src test
+        env:
+          # Evita rate limits do Hex ao baixar pacotes
+          HEXPM_READ_API_KEY: ${{ secrets.HEXPM_READ_API_KEY }}
+
+      - name: Publish Core to Hex
+        run: |
+          cd core
+          gleam publish -y
+        env:
+          # Chave de escrita no Hex para publicar
+          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+          HEXPM_READ_API_KEY: ${{ secrets.HEXPM_READ_API_KEY }}
