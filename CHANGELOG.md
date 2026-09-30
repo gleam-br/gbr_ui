@@ -42,6 +42,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Merge branch 'main' of github.com:gleam-br/gbr_ui by @salespaulo
 - Update changelog by @github-actions[bot]
+- Diretorio de saida do wrangler no deploy-showcase by @salespaulo
+- Merge branch 'main' of github.com:gleam-br/gbr_ui by @salespaulo
+- Update changelog by @github-actions[bot]
 - Config vitest e playwright no showcase CI by @salespaulo
 - Update manifest.toml showcase e remove warnings by @salespaulo
 - Update node 22 storybook execa union bug by @salespaulo
