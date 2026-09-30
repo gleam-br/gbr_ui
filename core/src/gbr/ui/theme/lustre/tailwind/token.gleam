@@ -63,7 +63,7 @@ pub fn size_alignment_to_rounded_token(
     theme.End -> size_to_rounded_end(size)
     theme.SpaceBetween -> size_to_rounded_start_start(size)
     theme.SpaceAround -> size_to_rounded_start_end(size)
-    theme.SpaceEvenly -> size_rounded_end_end(size)
+    theme.SpaceEvenly -> size_to_rounded_end_end(size)
     theme.Stretch -> size_to_rounded_end_start(size)
     theme.Center -> size_to_rounded_all(size)
   }
@@ -308,7 +308,7 @@ pub fn size_to_rounded_end_start(size: theme.UISize) {
   |> lustre.Class
 }
 
-pub fn size_rounded_end_end(size: theme.UISize) {
+pub fn size_to_rounded_end_end(size: theme.UISize) {
   case size {
     theme.SizeXxl -> "rounded-ee-3xl"
     theme.SizeXl -> "rounded-ee-2xl"
