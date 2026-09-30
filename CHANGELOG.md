@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.1.0] - 2026-09-30
 
 ### Added
 - Add: CD do gbr_ui no hex.pm by @salespaulo
@@ -40,6 +40,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add doc readme to repo demo gbr-ui-demo by @salespaulo
 
 ### Changed
+- Paleta dos botoes com cores oficiais do Gleam by @salespaulo
+- Trigger changelog somente p/ tags by @salespaulo
+- Merge branch 'main' of github.com:gleam-br/gbr_ui by @salespaulo
+- Update changelog by @github-actions[bot]
+- Core: rename function p/ seguir padrao by @salespaulo
+- Feat: showcase melhorado by @salespaulo
 - Merge branch 'main' of github.com:gleam-br/gbr_ui by @salespaulo
 - Update changelog by @github-actions[bot]
 - Diretorio de saida do wrangler no deploy-showcase by @salespaulo
@@ -131,6 +137,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix user dropdown cursor and add sidebar menu helper funcs by @salespaulo
 
 ### Removed
+- Remove manager.js do storybook devido a pacotes não resolvidos by @salespaulo
 - Master branch do gh workflow test by @salespaulo
 - Rsvp dependency e update lustre p/ 5.6 by @salespaulo
 - Remove: input types inválidos (button,submit,checkbox,radio,etc) by @salespaulo
@@ -235,7 +242,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## New Contributors
 * @salespaulo made their first contribution
-[unreleased]: https://github.com/gleam-br/gbr_ui/compare/v1.0.1..HEAD
+[1.1.0]: https://github.com/gleam-br/gbr_ui/compare/v1.0.1..v1.1.0
 [1.0.1]: https://github.com/gleam-br/gbr_ui/compare/v1.0.0..v1.0.1
 [1.0.0]: https://github.com/gleam-br/gbr_ui/compare/v0.0.1..v1.0.0
 
