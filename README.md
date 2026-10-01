@@ -22,6 +22,11 @@ Este projeto é um monorepo que contém a biblioteca principal, o motor de hist�
 | **`storybook/`** | Motor de integração FFI entre Lustre e Storybook. | [Ler README](./storybook/README.md) |
 | **`showcase/`** | Aplicação Vite com todas as histórias e testes visuais. | [Ler README](./showcase/README.md) |
 
+## 📚 Documentação de Componentes
+A fonte de verdade (Single Source of Truth) para todos os componentes é o **Storybook / Showcase**, onde as histórias e documentações são renderizadas visualmente.
+No futuro, estas documentações serão extraídas diretamente dos comentários do código-fonte pelo compilador.
+*Consulte o catálogo atual (snapshot) em: [Catálogo de Componentes](./docs/COMPONENTS.md).*
+
 ## 🚀 Como Rodar Localmente
 
 Certifique-se de ter o [Gleam](https://gleam.run/) e o [Node.js](https://nodejs.org/) instalados em sua máquina.
