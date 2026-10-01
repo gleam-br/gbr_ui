@@ -5,6 +5,11 @@ Esta é uma biblioteca open-source de componentes de interface construída intei
 
 Desenvolvido com ❤️ pela comunidade [Gleam BR](https://github.com/gleam-br).
 
+[![Package Version](https://img.shields.io/hexpm/v/gbr_ui)](https://hex.pm/packages/gbr_ui)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/gbr_ui/)
+
+> Roadmap: https://github.com/gleam-br/gbr_ui/issues/2
+
 ---
 
 ## 📦 Estrutura do Monorepo
@@ -16,6 +21,11 @@ Este projeto é um monorepo que contém a biblioteca principal, o motor de hist�
 | **`core/`** | Motor CVA, Design Tokens e Componentes base. | [Ler README](./core/README.md) |
 | **`storybook/`** | Motor de integração FFI entre Lustre e Storybook. | [Ler README](./storybook/README.md) |
 | **`showcase/`** | Aplicação Vite com todas as histórias e testes visuais. | [Ler README](./showcase/README.md) |
+
+## 📚 Documentação de Componentes
+A fonte de verdade (Single Source of Truth) para todos os componentes é o **Storybook / Showcase**, onde as histórias e documentações são renderizadas visualmente.
+No futuro, estas documentações serão extraídas diretamente dos comentários do código-fonte pelo compilador.
+*Consulte o catálogo atual (snapshot) em: [Catálogo de Componentes](./docs/COMPONENTS.md).*
 
 ## 🚀 Como Rodar Localmente
 

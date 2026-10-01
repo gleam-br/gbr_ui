@@ -35,3 +35,21 @@ jobs:
           # Chave de escrita no Hex para publicar (Gleam espera HEXPM_API_KEY)
           HEXPM_API_KEY: ${{ secrets.HEX_API_KEY }}
           HEXPM_READ_API_KEY: ${{ secrets.HEXPM_READ_API_KEY }}
+
+      - name: Download deps and Test Storybook
+        run: |
+          cd storybook
+          gleam deps download
+          gleam test
+          gleam format --check src test
+        env:
+          HEXPM_READ_API_KEY: ${{ secrets.HEXPM_READ_API_KEY }}
+
+      - name: Publish Storybook to Hex
+        run: |
+          cd storybook
+          gleam publish -y
+        env:
+          HEXPM_API_KEY: ${{ secrets.HEX_API_KEY }}
+          HEXPM_READ_API_KEY: ${{ secrets.HEXPM_READ_API_KEY }}
+
