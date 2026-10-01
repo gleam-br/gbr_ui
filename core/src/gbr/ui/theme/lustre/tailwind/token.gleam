@@ -2,9 +2,10 @@
 //// UI Lustre Tailwind Module
 ////
 
+import gleam/option
+
 import gbr/ui/theme
 import gbr/ui/theme/lustre
-import gleam/option
 
 // -----------------------------------------------------------------------------
 //
