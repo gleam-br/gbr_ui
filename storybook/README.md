@@ -170,6 +170,7 @@ Estrutura de diretórios:
 ----> stories/
 --------> typo_stories.gleam
 --------> typo.stories.js
+```
 
 **Executando**
 
