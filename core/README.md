@@ -1,4 +1,4 @@
-# 📺 GleamBR UI Lustre library
+# 📺 GBR: UI ADT Theme
 
 [Gleam](https://gleam.run/) UI [lustre](https://lustre.build/) library by @gleam-br
 
