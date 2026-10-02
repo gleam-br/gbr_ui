@@ -442,6 +442,22 @@ pub fn table(
   to_lustre(theme, attributes, elements, h.table)
 }
 
+pub fn thead(
+  theme: UITheme(UILustre),
+  attributes: List(a.Attribute(a)),
+  elements: List(element.Element(a)),
+) -> element.Element(a) {
+  to_lustre(theme, attributes, elements, h.thead)
+}
+
+pub fn tbody(
+  theme: UITheme(UILustre),
+  attributes: List(a.Attribute(a)),
+  elements: List(element.Element(a)),
+) -> element.Element(a) {
+  to_lustre(theme, attributes, elements, h.tbody)
+}
+
 pub fn th(
   theme: UITheme(UILustre),
   attributes: List(a.Attribute(a)),
