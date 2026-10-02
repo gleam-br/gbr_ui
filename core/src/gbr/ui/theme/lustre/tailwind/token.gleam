@@ -987,7 +987,8 @@ pub fn new_layout_absolute_y_right() {
   new_layout_absolute_y(theme.End)
 }
 
-/// Processa o modelo de posicionamento absoluto, já injetando a classe 'absolute'
+/// Processa o modelo de posicionamento absoluto, já injetando a classe 
+/// 'absolute'
 pub fn absolute_to_layout_token(absolute: theme.UIAbsolute) {
   case absolute {
     theme.AxisX(x) -> [horizontal_to_layout_token(x)]

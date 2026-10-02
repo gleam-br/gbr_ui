@@ -52,6 +52,11 @@ Pull requests são super bem-vindos! Se você é novo no ecossistema Gleam ou qu
 
 Sempre rode `gleam format` antes de commitar e garanta que não haja erros de compilação ou de formatação.
 
+> **Nota para a Equipe:** Para garantir a execução automática do `gleam format` antes de cada commit, configure os hooks do Git localmente. Após clonar o projeto, rode uma única vez na raiz do repositório:
+> ```bash
+> git config core.hooksPath .githooks
+> ```
+
 ## 📄 Licença
 
 Este projeto é distribuído sob a licença [Apache-2.0](./LICENSE).

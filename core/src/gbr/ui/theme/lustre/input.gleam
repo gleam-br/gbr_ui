@@ -75,59 +75,59 @@ pub fn without_value(input) {
 /// guarda no Model). Não faz sentido tematizar um campo oculto.
 ///
 pub type UIInputType {
-  /// Um controle para inserir um número de telefone. Exibe um teclado telefônico
-  /// em alguns dispositivos com teclados dinâmicos.
+  /// Um controle para inserir um número de telefone. Exibe um teclado 
+  /// telefônico em alguns dispositivos com teclados dinâmicos.
   Tel
-  /// Um campo para editar um endereço de e-mail. Parece um campo de entrada de texto,
-  /// mas possui parâmetros de validação e teclado compatível em navegadores e
-  /// dispositivos com teclados dinâmicos.
+  /// Um campo para editar um endereço de e-mail. Parece um campo de entrada
+  /// de texto, mas possui parâmetros de validação e teclado compatível em 
+  /// navegadores e dispositivos com teclados dinâmicos.
   Email
   /// O valor padrão. Um campo de texto de linha única. As quebras de linha são
   /// removidas automaticamente do valor de entrada.
   Text
-  /// Um campo de texto de linha única cujo valor está oculto. Alertará o usuário se
-  /// o site não for seguro.
+  /// Um campo de texto de linha única cujo valor está oculto. Alertará o 
+  /// usuário se o site não for seguro.
   Password
   /// ❌ InputCheckbox (Use checkbox.gleam focado em Bool)
   Checkbox
   /// ❌ InputRadio (Use radio.gleam focado em Bool/Enums)
   Radio
-  /// Um campo para inserir um URL. Parece um campo de entrada de texto, mas possui
-  /// parâmetros de validação e teclado compatível em navegadores e dispositivos
-  /// com teclados dinâmicos.
+  /// Um campo para inserir um URL. Parece um campo de entrada de texto, mas 
+  /// possui parâmetros de validação e teclado compatível em navegadores e 
+  /// dispositivos com teclados dinâmicos.
   Url
-  /// Um controle para especificar uma cor; abre um seletor de cores quando ativo
-  /// em navegadores compatíveis.
+  /// Um controle para especificar uma cor; abre um seletor de cores quando 
+  /// ativo em navegadores compatíveis.
   Color
-  /// Um controle para inserir um número cujo valor exato não é importante. Exibe-se
-  /// como um widget de intervalo, com o valor médio como padrão. Usado em conjunto
-  /// com os controles min e max para definir o intervalo de valores aceitáveis.
+  /// Um controle para inserir um número cujo valor exato não é importante. 
+  /// Exibe-se como um widget de intervalo, com o valor médio como padrão. 
+  /// Usado em conjunto com os controles min e max para definir o intervalo.
   /// TODO: Range merecesse um slider customizado no futuro!
   Range
-  /// Um controle para inserir um número. Exibe um indicador de seleção e adiciona
-  /// validação padrão. Exibe um teclado numérico em alguns dispositivos com teclados
-  /// dinâmicos.
+  /// Um controle para inserir um número. Exibe um indicador de seleção e 
+  /// adiciona validação padrão. Exibe um teclado numérico em alguns 
+  /// dispositivos com teclados dinâmicos.
   Number
-  /// Um controle para inserir uma data (ano, mês e dia, sem hora). Abre um seletor
-  /// de datas ou listas numéricas para ano, mês e dia quando ativo em navegadores
-  /// compatíveis.
+  /// Um controle para inserir uma data (ano, mês e dia, sem hora). Abre um 
+  /// seletor de datas ou listas numéricas para ano, mês e dia quando ativo em 
+  /// navegadores compatíveis.
   Date
   /// Um controle para inserir um valor de tempo sem fuso horário.
   Time
-  /// Um controle para inserir uma data composta por um número de semana-ano e um
-  /// número de semana, sem fuso horário.
+  /// Um controle para inserir uma data composta por um número de semana-ano e 
+  /// um número de semana, sem fuso horário.
   Week
   /// Um campo para inserir o mês e o ano, sem fuso horário.
   Month
   /// Um controle para inserir data e hora, sem fuso horário. Abre um seletor
-  /// de data ou listas numéricas para componentes de data e hora quando ativo em
-  /// navegadores compatíveis.
+  /// de data ou listas numéricas para componentes de data e hora quando ativo 
+  /// em navegadores compatíveis.
   DateTimeLocal
   /// Um campo de texto de linha única para inserir termos de pesquisa. As
   /// quebras de linha são removidas automaticamente do valor de entrada.
-  /// Pode incluir um ícone de exclusão em navegadores compatíveis, que pode ser
-  /// usado para limpar o campo. Exibe um ícone de pesquisa em vez da tecla Enter
-  /// em alguns dispositivos com teclados dinâmicos.
+  /// Pode incluir um ícone de exclusão em navegadores compatíveis, que pode 
+  /// ser usado para limpar o campo. Exibe um ícone de pesquisa em vez da 
+  /// tecla Enter em alguns dispositivos com teclados dinâmicos.
   Search
   /// Controle para inserir arquivos.
   File

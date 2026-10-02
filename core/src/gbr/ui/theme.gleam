@@ -10,8 +10,9 @@
 //// Aqui iremos encontrar as variantes do tema, a aparência dos componentes, o
 //// estado em que eles estão, seu tamanho, etc.
 ////
-//// **IDEIA: Que esta biblioteca e vocabulário sejam universais para desenvolver
-//// componentes UI para qualquer interface**
+//// **IDEIA:**
+//// Que esta biblioteca e vocabulário sejam universais para desenvolver
+//// componentes UI para qualquer interface
 ////
 
 import gleam/option.{type Option, None, Some}
@@ -33,10 +34,11 @@ import gbr/ui/theme/internal/engine
 ///
 /// **Exemplo**
 ///
-/// Abaixo temos um código utilizando o sistema de tipos Gleam para representar
-/// o tema de um elemento HTML `<div>`. Utilizamos como estrutura de dados para
-/// nossos design tokens finais, uma tupla `List(#(String, True))`, compatível
-/// com a função lustre `attribute.classes()`, que aplica os tokens tailwind
+/// Abaixo temos um código utilizando o sistema de tipos Gleam para
+/// representar o tema de um elemento HTML `<div>`. Utilizamos como
+/// estrutura de dados para nossos design tokens finais, uma tupla
+/// `List(#(String, True))`, compatível com a função lustre 
+/// `attribute.classes()`, que aplica os tokens tailwind
 ///
 /// ```gleam
 ///  import lustre/attribute as a
@@ -61,8 +63,8 @@ import gbr/ui/theme/internal/engine
 ///  }
 /// ```
 ///
-/// - `tokens`: Representar os tokens finais, possibilita ser qualquer estrutura
-/// de dados, é um tipo genérico.
+/// - `tokens`: Representar os tokens finais, possibilita ser qualquer
+/// estrutura de dados, é um tipo genérico.
 ///
 pub opaque type UITheme(tokens) {
   UITheme(painter: UIPainter, builder: UIBuilder(tokens))
@@ -147,14 +149,15 @@ pub type UIAppearance {
   /// Apresentam fundo de cor sólida, ideal para ações primárias devido à alta
   /// visibilidade.
   AppearanceFilled
-  /// Tenha um fundo transparente sem borda e com rótulo de texto. Eles são adequados
-  /// para ações secundárias, pois são menos proeminentes visualmente do que
-  /// a aparencia sólida.
+  /// Tenha um fundo transparente sem borda e com rótulo de texto. Eles são 
+  /// adequados para ações secundárias, pois são menos proeminentes
+  /// visualmente do que a aparencia sólida.
   AppearanceGhost
-  /// Ao sobrepor várias sombras desfocadas com cores brilhantes, você pode criar
-  /// um efeito luminoso
+  /// Ao sobrepor várias sombras desfocadas com cores brilhantes, você pode
+  /// criar um efeito luminoso
   AppearanceLight
-  /// Tenha um fundo transparente com borda e rótulo de texto. Eles são adequados
+  /// Tenha um fundo transparente com borda e rótulo de texto. Eles são
+  /// adequados
   /// para ações secundárias, pois são menos proeminentes visualmente do que
   /// a aparencia sólida.
   AppearanceOutline
@@ -308,9 +311,9 @@ pub type UISizeLayout =
 // - inherit: Força o elemento a herdar o valor do elemento pai.
 // - all: Usado para forçar todas as propriedades a serem herdadas do pai.
 //
-// O padrão é recuperar o antecessor e se não encontrar recuperar as variantes
-// padrões do dispositivo em que estamos pintando o elemento utilizando o tema
-// específico.
+// O padrão é recuperar o antecessor e se não encontrar recuperar as
+// variantes padrões do dispositivo em que estamos pintando o elemento
+// utilizando o tema específico.
 //
 // pub type UIAncestor {
 //   AncestorInitial
@@ -371,7 +374,7 @@ pub fn paint(theme: UITheme(token)) -> List(token) {
     option.map(layout, layout_to_tokens)
     |> option.unwrap([])
 
-  // O design é a parte mais importante do tema, pois é ele que define a aparência
+  // O design é a parte mais importante do tema, pois define a aparência
   let designs = design_to_tokens(variant, appearance, state)
 
   engine.new(base)
@@ -384,8 +387,9 @@ pub fn paint(theme: UITheme(token)) -> List(token) {
   |> engine.resolve()
 }
 
-/// Construtor de uma visualização de um elemento injetado, aplicando o tema
-/// passado como argumento da função e a base dos tokens do estilo do elemento.
+/// Construtor de uma visualização de um elemento injetado, aplicando o 
+/// tema passado como argumento da função e a base dos tokens do estilo
+/// do elemento.
 ///
 /// - theme: Os dados do tema a ser aplicado ao elemento injetado.
 /// - build: Os dados de como construir os design tokens a partir do tema.
@@ -892,8 +896,8 @@ fn painter() -> UIPainter {
 ///
 /// Contrato para o construtor de tokens a partir dos nossos tipos algébricos.
 ///
-/// > O tipo UITheme depende, exclusivamente do UIBuilder para converter os tipos
-/// semânticos do tema em tokens para a interface UI final.
+/// > O tipo UITheme depende, exclusivamente do UIBuilder para converter os
+/// tipos semânticos do tema em tokens para a interface UI final.
 ///
 fn builder() -> UIBuilder(token) {
   UIBuilder(
