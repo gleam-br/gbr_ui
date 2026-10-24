@@ -1,15 +1,15 @@
-# Guia do Agente AI - Biblioteca gbr_ui
+# Guia do Agente AI - Biblioteca `gbr_ui`
 
-Este arquivo serve como contexto exclusivo (always_on) para desenvolvimento e modificação dentro de gbr_ui.
+> **SSOT Consolidado no Monorepo:** Todas as diretrizes deste arquivo, de [`libs/gbr_ui_admin/AGENT.md`](../gbr_ui_admin/AGENT.md) e dos ADRs ([`0001`](./docs/adr/0001-ui-architecture.md) a [`0004`](./docs/adr/0004-color-architecture.md)) estão consolidadas no subagente especialista [`gbr-ui-expert.md`](../../.agents/plugins/core-team/agents/gbr-ui-expert.md). Este arquivo é mantido como referência local do submódulo `gbr_ui`.
 
 ---
 
 ## 1. Escopo
 
-gbr_ui é o "Core" do nosso ecossistema Visual e o coração do nosso Design System.
+`gbr_ui` é o "Core" do nosso ecossistema Visual e o coração do nosso Design System.
 O seu propósito é disponibilizar componentes "Dumb" (Puros, sem lógica de negócio), tipificados de ponta a ponta e estruturados a partir da metodologia **Atomic Design**.
 
-Aqui adotamos um sistema próprio de **Type-Safe Styled Systems / Typed Tokens** via **AST (Abstract Syntax Tree)** (	heme.gleam), em que todos os estilos são primeiramente modelos de dados (AST) e só no final são injetados como classes do Tailwind via geradores (ex: ui_lustre ou renderização de Lustre pura).
+Aqui adotamos um sistema próprio de **Type-Safe Styled Systems / Typed Tokens** via **AST (Abstract Syntax Tree)** (`theme.gleam`), em que todos os estilos são primeiramente modelos de dados (AST) e só no final são injetados como classes do Tailwind via geradores (`theme.to_attributes(t)`).
 
 **Objetivo Central:** Oferecer uma **DX (Developer Experience)** e **UX (User Experience)** imbatíveis.
 
@@ -18,10 +18,10 @@ Aqui adotamos um sistema próprio de **Type-Safe Styled Systems / Typed Tokens**
 ## 2. Restrições
 
 - **Dumb Components Somente:** Todo componente deve receber propriedades via seu modelo/atributos e emitir mensagens/ações. Eles NÃO conhecem o estado global da aplicação.
-- **TEA (The Elm Architecture):** Respeite o modelo FP TEA. O fluxo é sempre Model -> View -> Msg.
+- **TEA (The Elm Architecture):** Respeite o modelo FP TEA. O fluxo é sempre `Model -> View -> Msg`.
 - **Atomic Design:** Comece pelo básico (Átomos) antes de fazer composições complexas (Moléculas e Organismos). Não misture abstrações.
-- **AST First:** NUNCA escreva strings de TailwindCss avulsas dentro da view final se elas pertencem a uma configuração temática. Sempre extenda ou utilize os construtores em 	heme.gleam (e.g. 	heme.new() |> theme.with_variant(...)).
-- **Sem Side-Effects:** Funções de view (view_xxx) devem ser puras. Sem chamadas impuras, sem IO ou dependências acopladas.
+- **AST First:** NUNCA escreva strings de TailwindCss avulsas dentro da view final se elas pertencem a uma configuração temática. Sempre estenda ou utilize os construtores em `theme.gleam` (ex.: `theme.new() |> theme.variant(...)`).
+- **Sem Side-Effects:** Funções de view (`view`) devem ser puras. Sem chamadas impuras, sem IO ou dependências acopladas.
 
 ---
 
