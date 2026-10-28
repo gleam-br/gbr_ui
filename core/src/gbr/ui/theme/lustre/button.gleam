@@ -36,11 +36,7 @@ pub fn view(
     Link(href:, target:) -> view_link(theme, href, target, attributes, elements)
     _ -> {
       let type_ = button_to_type(button)
-      let attributes = [
-        a.type_(type_),
-        a.attribute("role", "button"),
-        ..attributes
-      ]
+      let attributes = [a.type_(type_), ..attributes]
 
       lustre.button(theme, attributes, elements)
     }
