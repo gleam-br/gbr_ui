@@ -1,5 +1,8 @@
-import gbr/ui/theme/lustre
+//// Lustre tests
+
 import gleeunit/should
+
+import gbr/ui/lustre
 
 pub fn sort_tailwind_classes_test() {
   let tokens = [

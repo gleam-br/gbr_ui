@@ -1,11 +1,7 @@
-////
-//// ✍ GBR: UI Typography Module
-////
+//// ✍ GBR: UI Lustre Typography
 //// Olá, neste módulo temos o componente visual para escrevermos textos.
-////
 //// > Imagine este módulo como se fosse uma máquina de escrever, com várias
 //// opções de fontes, tamanhos, etc.
-////
 //// ```gleam
 //// pub fn title(state) {
 ////   let title = H2
@@ -32,7 +28,6 @@
 ////   |> theme.token_to_list
 //// }
 //// ```
-////
 
 import gleam/option.{Some}
 
@@ -40,11 +35,10 @@ import lustre/attribute as a
 import lustre/element as el
 import lustre/element/html as h
 
+import gbr/ui/lustre
 import gbr/ui/theme
-import gbr/ui/theme/lustre
 
 /// UI typograph: tipo para escrevermos na tela.
-///
 /// - H1..H4: São os cabeçalhos e níveis.
 /// - Pre: São textos usados para representar códigos, etc.
 /// - Span: São textos comuns.
@@ -63,16 +57,12 @@ pub type UITypography {
   Paragraph(size: theme.UISize)
 }
 
-//
 // --- Api
-//
 
 /// View UI: Elemento tipográfico.
-///
 /// - typo: O tipo de tipografia, o que vamos escrever na tela.
 /// - theme: Os dados do tema a ser aplicado na tipografia.
 /// - attributes: Mais atributos para a tipografia, incluídos ao final.
-///
 pub fn view(
   typo: UITypography,
   theme theme,
@@ -97,14 +87,9 @@ pub fn view(
   }
 }
 
-// -----------------------------------------------------------------------------
-//
-// -- Api
-//
-// -----------------------------------------------------------------------------
+// -- Construtores
 
 /// Construtor universal de tipografia.
-///
 pub fn text(
   typo: UITypography,
   theme: theme.UITheme(lustre.UILustre),
@@ -115,20 +100,14 @@ pub fn text(
   view(typo, theme, attributes, [h.text(text), ..elements])
 }
 
-// -----------------------------------------------------------------------------
-//
 // -- Header
-//
-// -----------------------------------------------------------------------------
 
 /// Header 1
-///
 pub fn h1(theme, with attributes: List(a.Attribute(msg)), elements elements) {
   view(H1, theme, attributes, elements)
 }
 
 /// Header 2
-///
 pub fn h2(
   theme,
   attributes attributes: List(a.Attribute(msg)),
@@ -138,13 +117,11 @@ pub fn h2(
 }
 
 /// Header 3
-///
 pub fn h3(theme, attributes attributes: List(a.Attribute(msg)), with elements) {
   view(H3, theme, attributes, elements)
 }
 
 /// Header 4
-///
 pub fn h4(
   theme,
   attributes attributes: List(a.Attribute(msg)),
@@ -154,7 +131,6 @@ pub fn h4(
 }
 
 /// Header 5
-///
 pub fn h5(
   theme,
   attributes attributes: List(a.Attribute(msg)),
@@ -164,7 +140,6 @@ pub fn h5(
 }
 
 /// Header 6
-///
 pub fn h6(
   theme,
   attributes attributes: List(a.Attribute(msg)),
@@ -173,14 +148,9 @@ pub fn h6(
   view(H6, theme, attributes, elements)
 }
 
-// -----------------------------------------------------------------------------
-//
 // -- Span
-//
-// -----------------------------------------------------------------------------
 
 /// Span
-///
 pub fn span(
   theme,
   size size,
@@ -190,14 +160,9 @@ pub fn span(
   view(Span(size), theme, attributes, elements)
 }
 
-// -----------------------------------------------------------------------------
-//
 // -- Pre
-//
-// -----------------------------------------------------------------------------
 
 /// Pre
-///
 pub fn pre(
   theme,
   size size,
@@ -207,14 +172,9 @@ pub fn pre(
   view(Pre(size), theme, attributes, elements)
 }
 
-// -----------------------------------------------------------------------------
-//
 // -- Paragrafo
-//
-// -----------------------------------------------------------------------------
 
 /// Paragraph
-///
 pub fn p(
   theme,
   size,
@@ -224,14 +184,9 @@ pub fn p(
   view(Paragraph(size), theme, attributes, elements)
 }
 
-// -----------------------------------------------------------------------------
-//
 // -- Label
-//
-// -----------------------------------------------------------------------------
 
 /// Label
-///
 pub fn label(
   theme,
   size,
@@ -241,14 +196,10 @@ pub fn label(
   view(Label(size), theme, attributes, elements)
 }
 
-//
 // -- HELPERS
-//
 
 /// Retorna se a tipografia é de um tipo de cabeçalho.
-///
 /// - typo: Dados da tipografia.
-///
 pub fn is_header(typo) {
   case typo {
     H1 | H2 | H3 | H4 | H5 | H6 -> True
@@ -257,9 +208,7 @@ pub fn is_header(typo) {
 }
 
 /// Recupera um cabeçalho pelo tamanho passado como argumento.
-///
 /// - size: Tamanho desejado do cabeçalho de retorno.
-///
 pub fn header_from_size(size: theme.UISize) {
   case size {
     theme.SizeXxl -> H1
@@ -272,9 +221,7 @@ pub fn header_from_size(size: theme.UISize) {
 }
 
 /// Retorna o tamnaho a partir da tipografia, se existir.
-///
 /// - typo: Dados sobre a tipografia.
-///
 pub fn to_size(typo: UITypography) -> theme.UISize {
   case typo {
     H1 -> theme.SizeXxl

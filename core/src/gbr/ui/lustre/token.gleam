@@ -1,11 +1,9 @@
-////
-//// UI Lustre Tailwind Module
-////
+//// GBR: UI Lustre Token
 
 import gleam/option
 
+import gbr/ui/lustre
 import gbr/ui/theme
-import gbr/ui/theme/lustre
 
 // -----------------------------------------------------------------------------
 //
@@ -987,7 +985,7 @@ pub fn new_layout_absolute_y_right() {
   new_layout_absolute_y(theme.End)
 }
 
-/// Processa o modelo de posicionamento absoluto, já injetando a classe 
+/// Processa o modelo de posicionamento absoluto, já injetando a classe
 /// 'absolute'
 pub fn absolute_to_layout_token(absolute: theme.UIAbsolute) {
   case absolute {

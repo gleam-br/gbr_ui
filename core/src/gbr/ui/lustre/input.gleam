@@ -1,28 +1,19 @@
-////
-//// 📥 UI Theme Input Module
-////
-//// Olá, neste módulo podemos encontrar a representação de um input.
+//// 📥 UI Lustre Input
 
 import gleam/option.{type Option, None, Some}
 
 import lustre/attribute as a
 import lustre/element as el
 
+import gbr/ui/lustre
 import gbr/ui/theme
-import gbr/ui/theme/lustre
 
-// -----------------------------------------------------------------------------
-//
-// -- Tipos
-//
-// -----------------------------------------------------------------------------
+// ---------- Tipos ------------
 
 /// Dados do input.
-///
 /// - id: O identificador único do input.
 /// - type_: O tipo de input.
-///
-pub type UIInput {
+pub opaque type UIInput {
   UIInput(
     id: String,
     type_: UIInputType,
@@ -33,100 +24,123 @@ pub type UIInput {
 }
 
 /// Criar novo input com id e tipo de texto (padrão).
-///
 /// - id: O identificador único do input.
-///
 pub fn new(id) {
   UIInput(id:, type_: Text, value: None, name: None, required: None)
 }
 
 /// Altera o tipo de input.
-///
 pub fn with_type(input, type_) {
   UIInput(..input, type_:)
 }
 
 /// Altera o nome do input.
-///
 pub fn with_name(input, name) {
   UIInput(..input, name: Some(name))
 }
 
 /// Altera o valor do input.
-///
 pub fn with_value(input, value) {
   UIInput(..input, value: Some(value))
 }
 
 /// Altera o valor para intocado, usado para limpar dados dos formulários.
-///
 pub fn without_value(input) {
   UIInput(..input, value: None)
 }
 
+/// Retorna o input id.
+pub fn id(input) {
+  let UIInput(id:, ..) = input
+  id
+}
+
+/// Retorna o tipo do input.
+pub fn type_(input) {
+  let UIInput(type_:, ..) = input
+  type_
+}
+
+/// Retorna o nome do input.
+pub fn name(input) {
+  let UIInput(name:, ..) = input
+  name
+}
+
+/// Retorna se o input é obrigatório.
+pub fn required(input) {
+  let UIInput(required:, ..) = input
+  required
+}
+
+/// Retorna o valor do input.
+pub fn value(input) {
+  let UIInput(value:, ..) = input
+  value
+}
+
 /// O tipo de componente de input queremos representar
-///
 /// Inputs removidos e motivos:
 ///
-/// ❌ InputButton (Use button.gleam)
-/// ❌ InputSubmit (Use button.gleam com button.Submit)
-/// ❌ InputImage (Obsoleto, use button com imagem dentro)
-/// ❌ InputHidden (Se você precisa de um dado oculto, você apenas
-/// guarda no Model). Não faz sentido tematizar um campo oculto.
-///
 pub type UIInputType {
-  /// Um controle para inserir um número de telefone. Exibe um teclado 
+  /// Input invisível, útil p/ views customizadas.
+  Hidden
+  /// Um controle para inserir um uma opção se seleção únicas, checkbox.
+  /// O controle é feito em três estados:
+  /// - None -> "Não tocado"
+  /// - Some(True) -> "Tocado e checado"
+  /// - Some(False) -> "Tocado e não checado"
+  Checkbox(Option(Bool))
+  /// Um controle para inserir um número de telefone. Exibe um teclado
   /// telefônico em alguns dispositivos com teclados dinâmicos.
   Tel
   /// Um campo para editar um endereço de e-mail. Parece um campo de entrada
-  /// de texto, mas possui parâmetros de validação e teclado compatível em 
+  /// de texto, mas possui parâmetros de validação e teclado compatível em
   /// navegadores e dispositivos com teclados dinâmicos.
   Email
   /// O valor padrão. Um campo de texto de linha única. As quebras de linha são
   /// removidas automaticamente do valor de entrada.
   Text
-  /// Um campo de texto de linha única cujo valor está oculto. Alertará o 
+  /// Um campo de texto de linha única cujo valor está oculto. Alertará o
   /// usuário se o site não for seguro.
   Password
-  /// ❌ InputCheckbox (Use checkbox.gleam focado em Bool)
-  Checkbox
   /// ❌ InputRadio (Use radio.gleam focado em Bool/Enums)
   Radio
-  /// Um campo para inserir um URL. Parece um campo de entrada de texto, mas 
-  /// possui parâmetros de validação e teclado compatível em navegadores e 
+  /// Um campo para inserir um URL. Parece um campo de entrada de texto, mas
+  /// possui parâmetros de validação e teclado compatível em navegadores e
   /// dispositivos com teclados dinâmicos.
   Url
-  /// Um controle para especificar uma cor; abre um seletor de cores quando 
+  /// Um controle para especificar uma cor; abre um seletor de cores quando
   /// ativo em navegadores compatíveis.
   Color
-  /// Um controle para inserir um número cujo valor exato não é importante. 
-  /// Exibe-se como um widget de intervalo, com o valor médio como padrão. 
+  /// Um controle para inserir um número cujo valor exato não é importante.
+  /// Exibe-se como um widget de intervalo, com o valor médio como padrão.
   /// Usado em conjunto com os controles min e max para definir o intervalo.
   /// TODO: Range merecesse um slider customizado no futuro!
   Range
-  /// Um controle para inserir um número. Exibe um indicador de seleção e 
-  /// adiciona validação padrão. Exibe um teclado numérico em alguns 
+  /// Um controle para inserir um número. Exibe um indicador de seleção e
+  /// adiciona validação padrão. Exibe um teclado numérico em alguns
   /// dispositivos com teclados dinâmicos.
   Number
-  /// Um controle para inserir uma data (ano, mês e dia, sem hora). Abre um 
-  /// seletor de datas ou listas numéricas para ano, mês e dia quando ativo em 
+  /// Um controle para inserir uma data (ano, mês e dia, sem hora). Abre um
+  /// seletor de datas ou listas numéricas para ano, mês e dia quando ativo em
   /// navegadores compatíveis.
   Date
   /// Um controle para inserir um valor de tempo sem fuso horário.
   Time
-  /// Um controle para inserir uma data composta por um número de semana-ano e 
+  /// Um controle para inserir uma data composta por um número de semana-ano e
   /// um número de semana, sem fuso horário.
   Week
   /// Um campo para inserir o mês e o ano, sem fuso horário.
   Month
   /// Um controle para inserir data e hora, sem fuso horário. Abre um seletor
-  /// de data ou listas numéricas para componentes de data e hora quando ativo 
+  /// de data ou listas numéricas para componentes de data e hora quando ativo
   /// em navegadores compatíveis.
   DateTimeLocal
   /// Um campo de texto de linha única para inserir termos de pesquisa. As
   /// quebras de linha são removidas automaticamente do valor de entrada.
-  /// Pode incluir um ícone de exclusão em navegadores compatíveis, que pode 
-  /// ser usado para limpar o campo. Exibe um ícone de pesquisa em vez da 
+  /// Pode incluir um ícone de exclusão em navegadores compatíveis, que pode
+  /// ser usado para limpar o campo. Exibe um ícone de pesquisa em vez da
   /// tecla Enter em alguns dispositivos com teclados dinâmicos.
   Search
   /// Controle para inserir arquivos.
@@ -134,11 +148,9 @@ pub type UIInputType {
 }
 
 /// Converte a representação de um input em um elemento lustre.
-///
 /// - id: Identificação do elemento input.
 /// - type_: Tipo do elemento input.
 /// - attributes: Atributos adicionais ao elemento input.
-///
 pub fn view(
   input: UIInput,
   theme: theme.UITheme(lustre.UILustre),
@@ -146,7 +158,8 @@ pub fn view(
 ) -> el.Element(msg) {
   let UIInput(id:, type_:, value:, name:, required:) = input
 
-  let type_ = get_type(type_)
+  let attributes = attributes_by_type(type_, attributes)
+  let role = attribute_role_by_type(type_)
   let value =
     value
     |> option.map(a.value)
@@ -160,15 +173,25 @@ pub fn view(
     |> option.map(a.required)
     |> option.unwrap(a.none())
 
-  lustre.input(theme, [a.id(id), type_, value, name, required, ..attributes])
+  lustre.input(theme, [a.id(id), role, value, name, required, ..attributes])
 }
 
-//
-// -- Auxiliares (Interno)
-//
+// ----------- Auxiliares (Interno) ------------
+
+fn attributes_by_type(type_, attributes) {
+  case type_ {
+    Checkbox(checked) -> [
+      checked
+        |> option.map(a.checked)
+        |> option.unwrap(a.none()),
+      ..attributes
+    ]
+    _ -> attributes
+  }
+}
 
 /// Lustre attribute a partir do tipo de input
-fn get_type(type_) -> a.Attribute(msg) {
+fn attribute_role_by_type(type_) -> a.Attribute(msg) {
   case type_ {
     Tel -> "tel"
     Email -> "email"
@@ -184,9 +207,10 @@ fn get_type(type_) -> a.Attribute(msg) {
     Month -> "month"
     DateTimeLocal -> "datetime-local"
     Search -> "search"
-    Checkbox -> "checkbox"
     Radio -> "radio"
     File -> "file"
+    Hidden -> "hidden"
+    Checkbox(_) -> "checkbox"
   }
   |> a.type_()
 }

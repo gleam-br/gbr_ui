@@ -52,7 +52,7 @@
 //// **Lustre + UIThemeBuilder**
 ////
 //// Utilizamos os design tokens do tema como uma estrutura de uma tupla
-//// `#(String, Bool)`, compatível com a assinatura da função 
+//// `#(String, Bool)`, compatível com a assinatura da função
 //// `attribute.classes`
 //// do lustre.
 ////

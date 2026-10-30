@@ -1,20 +1,15 @@
-////
-//// 🎛️ UI Tailwindcss Button Module
-////
+//// 🎛️ UI Lustre Button
 //// Olá, aqui temos o módulo que permite mostrarmos botões na tela utilizando
 //// `lustre/element/html.button`.
-////
 
 import gleam/option.{type Option}
 
 import lustre/attribute as a
 import lustre/element as el
 
-import gbr/ui/theme/lustre
+import gbr/ui/lustre
 
-//
-// -- Tipos
-//
+// ------------ Tipos -----------
 
 /// Dados do botão.
 pub type UIButton {
@@ -25,7 +20,6 @@ pub type UIButton {
 }
 
 /// Visualizar um botão temático.
-///
 pub fn view(
   button: UIButton,
   theme theme,
@@ -43,11 +37,7 @@ pub fn view(
   }
 }
 
-// -----------------------------------------------------------------------------
-//
 // -- Auxiliares (Interno)
-//
-// -----------------------------------------------------------------------------
 
 fn view_link(theme, href, target, attributes, elements) {
   let attributes = [
