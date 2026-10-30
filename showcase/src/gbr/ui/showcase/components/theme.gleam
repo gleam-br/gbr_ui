@@ -4,9 +4,9 @@
 
 import gleam/option.{Some}
 
+import gbr/ui/lustre
+import gbr/ui/lustre/token
 import gbr/ui/theme as ui
-import gbr/ui/theme/lustre
-import gbr/ui/theme/lustre/tailwind/token
 
 pub fn new_button_theme() {
   ui.new()

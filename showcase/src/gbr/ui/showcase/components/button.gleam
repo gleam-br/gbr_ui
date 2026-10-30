@@ -1,13 +1,11 @@
-////
-////
-////
+//// GBR: UI Showcase Button
 
 import gleam/option.{Some}
 
+import gbr/ui/lustre
+import gbr/ui/lustre/button
+import gbr/ui/lustre/token
 import gbr/ui/theme
-import gbr/ui/theme/lustre
-import gbr/ui/theme/lustre/button
-import gbr/ui/theme/lustre/tailwind/token
 
 import gbr/ui/showcase/components/button/button_token
 

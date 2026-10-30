@@ -8,10 +8,10 @@ import lustre/attribute as a
 import lustre/element as el
 import lustre/element/html as h
 
+import gbr/ui/lustre
+import gbr/ui/lustre/token
+import gbr/ui/lustre/typo
 import gbr/ui/theme
-import gbr/ui/theme/lustre
-import gbr/ui/theme/lustre/tailwind/token
-import gbr/ui/theme/lustre/typo
 
 pub opaque type Model {
   Model(typo: typo.UITypography, theme: theme.UITheme(lustre.UILustre))

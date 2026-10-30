@@ -1,10 +1,8 @@
-////
-////
-////
+//// GBR: UI Showcase Button Token
 
+import gbr/ui/lustre
+import gbr/ui/lustre/token
 import gbr/ui/theme
-import gbr/ui/theme/lustre
-import gbr/ui/theme/lustre/tailwind/token
 
 pub fn button_design_tokens(v, a, s) {
   [
