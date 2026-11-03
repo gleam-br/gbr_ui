@@ -493,6 +493,15 @@ pub fn select(
   to_lustre(theme, attributes, elements, h.select)
 }
 
+/// <select...><optgroup><option .../></optgroup></select>
+pub fn optgroup(
+  theme: UITheme(UILustre),
+  attributes: List(a.Attribute(a)),
+  elements: List(element.Element(a)),
+) {
+  to_lustre(theme, attributes, elements, h.optgroup)
+}
+
 /// <select...><option .../></select>
 pub fn option(
   theme: UITheme(UILustre),
