@@ -162,8 +162,8 @@ pub fn view(
   let role = attribute_role_by_type(type_)
   let value =
     value
-    |> option.map(a.value)
-    |> option.unwrap(a.none())
+    |> option.unwrap("")
+    |> a.value
   let name =
     name
     |> option.map(a.name)
