@@ -90,7 +90,8 @@ pub type UIInputType {
   /// - None -> "Não tocado"
   /// - Some(True) -> "Tocado e checado"
   /// - Some(False) -> "Tocado e não checado"
-  Checkbox(Option(Bool))
+  /// - sr_only
+  Checkbox(checked: Option(Bool), sr_only: Bool)
   /// Um controle para inserir um número de telefone. Exibe um teclado
   /// telefônico em alguns dispositivos com teclados dinâmicos.
   Tel
@@ -180,10 +181,11 @@ pub fn view(
 
 fn attributes_by_type(type_, attributes) {
   case type_ {
-    Checkbox(checked) -> [
+    Checkbox(checked:, sr_only:) -> [
       checked
         |> option.map(a.checked)
         |> option.unwrap(a.none()),
+      a.classes([#("sr-only", sr_only)]),
       ..attributes
     ]
     _ -> attributes
@@ -210,7 +212,7 @@ fn attribute_role_by_type(type_) -> a.Attribute(msg) {
     Radio -> "radio"
     File -> "file"
     Hidden -> "hidden"
-    Checkbox(_) -> "checkbox"
+    Checkbox(_, _) -> "checkbox"
   }
   |> a.type_()
 }
