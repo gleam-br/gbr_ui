@@ -1,37 +1,39 @@
-////
-//// GBR: UI Theme Lustre Module
-////
-//// # Descrição
+//// GBR: UI Theme Lustre
 ////
 //// Módulo que sobre-escreve funções do módulo lustre/element/html utilizando o
-//// tipo `ui.UITheme` como argumento. Utiliza o tipo `UILustre` os tokens (ADT)
-//// que representam as funções lustre. Exemplo:
+//// tipo `theme.UITheme` como argumento. Utiliza o tipo `lustre.UILustre`, os
+//// tokens (ADT) que representam as funções lustre. Exemplo:
 ////
-//// Sem `ui.UITheme`:
+//// **Sem `UITheme`**:
 ////
 //// ```gleam
 //// import lustre/element/html as h
+//// import lustre/attribute as a
 ////
 //// pub fn main() {
-////   let theme = [
-////     // codigos p/ selecionar tema primário ou defaul (fallback)
-////     ...
-////   ]
-////
+////   let theme =
+////     a.classes([
+////       #(
+////         "bg-blue-400 text-gray-800 dark:bg-blue-600 dark:text-white-1/2",
+////         primary == True
+////       )
+////       // codigos p/ selecionar tema primário ou default etc.
+////     ])
 ////   h.span(theme, [h.text("Olá mundo!")])
 //// }
 //// ```
 ////
-//// Com `ui.Theme`:
+//// **Com `Theme`**:
 ////
 //// ```gleam
-//// import gbr/ui/lustre as h
+//// import gbr/ui/theme
+//// import gbr/ui/lustre
 ////
 //// pub fn main() {
-////   ui.new()
-////   |> ui.with_variant(ui.primary())
-////   |> ui.with_appearance(ui.ghost())
-////   |> ui.with_design_to_tokens(fn(v, a, _) {
+////   let theme = theme.new()
+////   |> theme.with_variant(ui.primary())
+////   |> theme.with_appearance(ui.ghost())
+////   |> theme.with_design_to_tokens(fn(v, a, _) {
 ////     case v, a {
 ////       ui.VariantPrimary, _ -> [
 ////         h.Style("display", "block"),
@@ -41,13 +43,12 @@
 ////       _, _ -> "text-gray-800"
 ////     }
 ////   })
-////   |> h.span([],[h.text("Olá mundo!")])
+////
+////   h.span(theme, [], [h.text("Olá mundo!")])
 //// }
 //// ```
 ////
-//// -----------------------------------------------------------------------------
-////
-//// ## Implementaçâo Do Tema Usando o Lustre
+//// ## Implementando tema usando o lUstre
 ////
 //// **Lustre + UIThemeBuilder**
 ////
@@ -58,7 +59,7 @@
 ////
 //// ```gleam
 //// pub fn to_lustre(
-////   theme: UITheme(UILustre),
+////   theme: theme.UITheme(UILustre),
 ////   attributes: List(a.Attribute(a)),
 ////   elements: List(element.Element(a)),
 ////   to_lustre: fn(List(a.Attribute(a)), List(element.Element(a))) ->
@@ -73,7 +74,7 @@
 ////       Empty -> a.none()
 ////     }
 ////   }
-////   ui.view(theme, fn(tokens: List(UILustre)) {
+////   theme.view(theme, fn(tokens: List(UILustre)) {
 ////     let attributes =
 ////       list.map(tokens, engine_lustre)
 ////       |> list.append(attributes)
@@ -143,14 +144,12 @@
 //// background, text-color e border-radius. Se o usuário quer um botão menor,
 //// ele deve usar a ADT `theme.SizeSm`.
 //// - **Usuário é dono do espaço exterior (DOM):** O argumento `attributes`
-//// serve
-//// EXCLUSIVAMENTE para injetar:
+//// serve EXCLUSIVAMENTE para injetar:
+////   - **Metadados do DOM:** id="meu-botao", aria-label, data-testid.
 ////   - **Margens:** mt-4, mb-2 (porque o botão não sabe se ele está perto ou
 //// longe de outro elemento).
 ////   - **Posicionamento:** absolute, flex.
-////   - **Metadados do DOM:** id="meu-botao", aria-label, data-testid.
 ////   - **Eventos extras:** on_mouse_enter, on_blur.
-////
 
 import gleam/list
 import gleam/string
@@ -161,19 +160,13 @@ import lustre/element/html as h
 
 import gbr/ui/theme.{type UITheme}
 
-// -----------------------------------------------------------------------------
-//
-// -- 🛠️ ENGINE LUSTRE (DESIGN TOKEN)
-//
-// -----------------------------------------------------------------------------
+// --- 🛠️ ENGINE LUSTRE (DESIGN TOKEN) ----------------------------------------
 
 /// Tipos que representam os design tokens convertidos para atributos lustre.
-///
 /// - Classes: Convertido para a.classes
 /// - Styles: Convertido para a.styles
 /// - Style: Convertido para a.style
 /// - Class: Convertido para a.class
-///
 pub type UILustre {
   Classes(List(#(String, Bool)))
   Styles(List(#(String, String)))
@@ -184,12 +177,10 @@ pub type UILustre {
 }
 
 /// Conversor dos design tokens para um elementos lustre.
-///
 /// - theme: Design tokens gerados a partir do tema + o construtor de temas.
 /// - attributes: Atributos do elemento lustre.
 /// - elements: Elementos internos, caso necessário.
 /// - to_lustre: Construtor do elemento lustre.
-///
 pub fn to_lustre(
   theme: UITheme(UILustre),
   attributes: List(a.Attribute(a)),
@@ -220,21 +211,14 @@ pub fn to_lustre(
   to_lustre([a.class(class), ..attributes], elements)
 }
 
-// -----------------------------------------------------------------------------
-//
-// -- 🛠️ Componentes base
-//
-// -----------------------------------------------------------------------------
+// --- 🧱 COMPONENTES (Lustre + UITheme + UIBuilder) ----------------------------
 
+/// Equivalente `lustre/element/html.text`
 pub fn text(text: String) {
   h.text(text)
 }
 
-// -----------------------------------------------------------------------------
-//
-// 🧱 COMPONENTES (Lustre + UITheme + UIBuilder)
-//
-// -----------------------------------------------------------------------------
+// --- Layout ------------------------------------------------------------------
 
 pub fn div(
   theme: UITheme(UILustre),
@@ -252,12 +236,15 @@ pub fn main(
   to_lustre(theme, attributes, elements, h.main)
 }
 
-//
-// -- Layout
-//
+pub fn dialog(
+  theme: UITheme(UILustre),
+  attributes: List(a.Attribute(a)),
+  elements: List(element.Element(a)),
+) -> element.Element(a) {
+  to_lustre(theme, attributes, elements, h.dialog)
+}
 
 /// Define um cabeçalho para o documento ou seção.
-///
 pub fn header(
   theme: UITheme(UILustre),
   attributes: List(a.Attribute(a)),
@@ -267,7 +254,6 @@ pub fn header(
 }
 
 /// Define uma seção no documento.
-///
 pub fn section(
   theme: UITheme(UILustre),
   attributes: List(a.Attribute(a)),
@@ -277,7 +263,6 @@ pub fn section(
 }
 
 /// Define um rodapé para o documento ou seção.
-///
 pub fn footer(
   theme: UITheme(UILustre),
   attributes: List(a.Attribute(a)),
@@ -287,7 +272,6 @@ pub fn footer(
 }
 
 /// Define um conteúdo independente, auto-contindo.
-///
 pub fn article(
   theme: UITheme(UILustre),
   attributes: List(a.Attribute(a)),
@@ -297,7 +281,6 @@ pub fn article(
 }
 
 /// Define um conteúdo a parte do conteúdo principal.
-///
 pub fn aside(
   theme: UITheme(UILustre),
   attributes: List(a.Attribute(a)),
@@ -307,7 +290,6 @@ pub fn aside(
 }
 
 /// Define um conjunto de links de navegação.
-///
 pub fn nav(
   theme: UITheme(UILustre),
   attributes: List(a.Attribute(a)),
@@ -317,10 +299,8 @@ pub fn nav(
 }
 
 /// Define detalhes adicionais que pode ser aberto para visualização.
-///
 /// - Usado em conjunto com o `summary()`. Algumas interfaces oferecem uma
 /// descrição de resumo, `summary`, padrão.
-///
 pub fn details(
   theme: UITheme(UILustre),
   attributes: List(a.Attribute(a)),
@@ -330,7 +310,6 @@ pub fn details(
 }
 
 /// Define o cabeçalho para o elemento `details()`, caso necessário.
-///
 pub fn summary(
   theme: UITheme(UILustre),
   attributes: List(a.Attribute(a)),
@@ -339,9 +318,7 @@ pub fn summary(
   to_lustre(theme, attributes, elements, h.summary)
 }
 
-//
-// -- Lista
-//
+// --- Lista ------------------------------------------------------------------
 
 pub fn ul(
   theme: UITheme(UILustre),
@@ -359,9 +336,7 @@ pub fn li(
   to_lustre(theme, attributes, elements, h.li)
 }
 
-//
-// -- Typoq
-//
+// --- Typo -------------------------------------------------------------------
 
 pub fn h1(theme, attributes, elements) {
   to_lustre(theme, attributes, elements, h.h1)
@@ -403,9 +378,7 @@ pub fn p(theme, attributes, elements) {
   to_lustre(theme, attributes, elements, h.p)
 }
 
-//
-// -- Imagem
-//
+// --- Imagem -----------------------------------------------------------------
 
 pub fn img(
   theme: UITheme(UILustre),
@@ -422,9 +395,7 @@ pub fn svg(
   to_lustre(theme, attributes, elements, h.svg)
 }
 
-//
-// -- Tabela
-//
+// --- Tabela -----------------------------------------------------------------
 
 pub fn table(
   theme: UITheme(UILustre),
@@ -474,9 +445,7 @@ pub fn td(
   to_lustre(theme, attributes, elements, h.td)
 }
 
-//
-// -- Input
-//
+// --- Input ------------------------------------------------------------------
 
 pub fn input(
   theme: UITheme(UILustre),
@@ -536,17 +505,11 @@ pub fn a(
   to_lustre(theme, attributes, elements, h.a)
 }
 
-// -----------------------------------------------------------------------------
-//
-// 🧪 MÓDULO INTERNO: ORDENAÇÃO TAILWIND TAIL-RECURSIVE
-//
-// -----------------------------------------------------------------------------
+// --- 🧪 MÓDULO INTERNO: ORDENAÇÃO TAILWIND TAIL-RECURSIVE --------------------
 
 /// Ordena tokens de classe CSS utilizando a precedência semântica do Tailwind.
-///
 /// A ordem de precedência adotada é:
-/// Layout -> Sizing -> Typography -> Colors -> Other -> States
-///
+/// - **Layout -> Sizing -> Typography -> Colors -> Other -> States**
 /// Internamente, a ordenação é executada por meio de um algoritmo O(N)
 /// (Bucket Sort) construído de forma puramente funcional através de
 /// *Strict Tail Recursion*. Essa abordagem minimiza a criação de abstrações
@@ -554,7 +517,6 @@ pub fn a(
 /// quanto no V8 (NodeJS/Browser) via TCO (Tail Call Optimization).
 pub fn sort_tailwind_classes(tokens: List(UILustre)) -> String {
   let all_classes = extract_and_deduplicate(tokens, [])
-
   // A extração empilha as classes inversamente. O `list.unique` retém
   // a primeira ocorrência, garantindo efetivamente a diretiva do Tailwind
   // em que a última classe declarada sobrescreve as anteriores.
