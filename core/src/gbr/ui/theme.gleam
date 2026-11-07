@@ -31,41 +31,8 @@ import gbr/ui/theme/internal/engine
 /// - painter: Dados do pintor do tema, os design tokens em ADTs.
 /// - builder: Dados do motor para converter os tipos Gleam em design tokens
 /// específicos para a interface visual utilizada.
-///
-/// **Exemplo**
-///
-/// Abaixo temos um código utilizando o sistema de tipos Gleam para
-/// representar o tema de um elemento HTML `<div>`. Utilizamos como
-/// estrutura de dados para nossos design tokens finais, uma tupla
-/// `List(#(String, True))`, compatível com a função lustre 
-/// `attribute.classes()`, que aplica os tokens tailwind
-///
-/// ```gleam
-///  import lustre/attribute as a
-///  import lustre/element/html as h
-///
-///  import gbr/ui/theme
-///
-///  pub fn main() {
-///    let builder_variant = fn (variant) {
-///      [
-///        #("bg-amber-700", theme.is_primary(variant)),
-///        #("bg-gray-500", theme.is_not_primary(variant)),
-///      ]
-///    }
-///
-///    theme.new()
-///    |> theme.with_variant(theme.primary())
-///    |> theme.with_builder_variant(builder_variant)
-///    |> theme.view(fn (tokens) {
-///      h.div([a.classes(tokens)], [h.text("Olá mundo temático!")])
-///    })
-///  }
-/// ```
-///
 /// - `tokens`: Representar os tokens finais, possibilita ser qualquer
 /// estrutura de dados, é um tipo genérico.
-///
 pub opaque type UITheme(tokens) {
   UITheme(painter: UIPainter, builder: UIBuilder(tokens))
 }
@@ -149,7 +116,7 @@ pub type UIAppearance {
   /// Apresentam fundo de cor sólida, ideal para ações primárias devido à alta
   /// visibilidade.
   AppearanceFilled
-  /// Tenha um fundo transparente sem borda e com rótulo de texto. Eles são 
+  /// Tenha um fundo transparente sem borda e com rótulo de texto. Eles são
   /// adequados para ações secundárias, pois são menos proeminentes
   /// visualmente do que a aparencia sólida.
   AppearanceGhost
@@ -387,7 +354,7 @@ pub fn paint(theme: UITheme(token)) -> List(token) {
   |> engine.resolve()
 }
 
-/// Construtor de uma visualização de um elemento injetado, aplicando o 
+/// Construtor de uma visualização de um elemento injetado, aplicando o
 /// tema passado como argumento da função e a base dos tokens do estilo
 /// do elemento.
 ///
