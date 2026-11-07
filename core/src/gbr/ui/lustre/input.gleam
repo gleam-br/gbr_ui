@@ -30,6 +30,11 @@ pub fn new(id) {
 }
 
 /// Altera o tipo de input.
+pub fn with_id(input, id) {
+  UIInput(..input, id:)
+}
+
+/// Altera o tipo de input.
 pub fn with_type(input, type_) {
   UIInput(..input, type_:)
 }
