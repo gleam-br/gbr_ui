@@ -1,6 +1,7 @@
 //// 📥 UI Lustre Input
 
 import gleam/option.{type Option, None, Some}
+import gleam/string
 
 import lustre/attribute as a
 import lustre/element as el
@@ -46,7 +47,7 @@ pub fn with_name(input, name) {
 
 /// Altera o valor do input.
 pub fn with_value(input, value) {
-  UIInput(..input, value: Some(value))
+  UIInput(..input, value: string.to_option(value))
 }
 
 /// Altera o valor para intocado, usado para limpar dados dos formulários.
