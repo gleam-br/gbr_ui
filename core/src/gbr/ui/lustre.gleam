@@ -190,12 +190,11 @@ pub fn to_lustre(
 ) -> element.Element(a) {
   let engine_lustre = fn(token) {
     case token {
-      Class(token) -> a.class(token)
       Classes(token) -> a.classes(token)
       Styles(token) -> a.styles(token)
       Style(key, value) -> a.style(key, value)
       Attribute(key, value) -> a.attribute(key, value)
-      Empty -> a.none()
+      Class(_) | Empty -> a.none()
     }
   }
 
