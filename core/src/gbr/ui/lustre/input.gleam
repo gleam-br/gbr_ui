@@ -1,5 +1,6 @@
 //// 📥 UI Lustre Input
 
+import gleam/int
 import gleam/option.{type Option, None, Some}
 import gleam/string
 
@@ -128,7 +129,7 @@ pub type UIInputType {
   /// Um controle para inserir um número. Exibe um indicador de seleção e
   /// adiciona validação padrão. Exibe um teclado numérico em alguns
   /// dispositivos com teclados dinâmicos.
-  Number
+  Number(min: Option(Int), max: Option(Int))
   /// Um controle para inserir uma data (ano, mês e dia, sem hora). Abre um
   /// seletor de datas ou listas numéricas para ano, mês e dia quando ativo em
   /// navegadores compatíveis.
@@ -179,8 +180,29 @@ pub fn view(
     required
     |> option.map(a.required)
     |> option.unwrap(a.none())
+  let #(min, max) = case type_ {
+    Number(min:, max:) -> {
+      let to_attribute = fn(value, to) {
+        value
+        |> option.map(int.to_string)
+        |> option.map(to)
+        |> option.unwrap(a.none())
+      }
+      #(to_attribute(min, a.min), to_attribute(max, a.max))
+    }
+    _ -> #(a.none(), a.none())
+  }
 
-  lustre.input(theme, [a.id(id), role, value, name, required, ..attributes])
+  lustre.input(theme, [
+    a.id(id),
+    role,
+    value,
+    name,
+    required,
+    min,
+    max,
+    ..attributes
+  ])
 }
 
 // ----------- Auxiliares (Interno) ------------
@@ -208,7 +230,7 @@ fn attribute_role_by_type(type_) -> a.Attribute(msg) {
     Url -> "url"
     Color -> "color"
     Range -> "range"
-    Number -> "number"
+    Number(_, _) -> "number"
     Date -> "date"
     Time -> "time"
     Week -> "week"
