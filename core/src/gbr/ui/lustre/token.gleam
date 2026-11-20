@@ -728,27 +728,27 @@ pub fn size_text_to_classes(text_token) {
       theme.SizeXxl -> [
         #("text-theme-2xl sm:text-theme-4xl", text_token == TextTheme),
         #("text-title-2xl sm:text-title-4xl", text_token == TextTitle),
-        #("text-3xl sm:text-4xl", text_token == TextBase),
+        #("text-xl sm:text-2xl", text_token == TextBase),
       ]
       theme.SizeXl -> [
         #("text-theme-xl sm:text-theme-2xl", text_token == TextTheme),
         #("text-title-xl sm:text-title-2xl", text_token == TextTitle),
-        #("text-2xl sm:text-3xl", text_token == TextBase),
+        #("text-lg sm:text-xl", text_token == TextBase),
       ]
       theme.SizeLg -> [
         #("text-theme-lg sm:text-theme-xl", text_token == TextTheme),
         #("text-title-lg sm:text-title-xl", text_token == TextTitle),
-        #("text-xl sm:text-2xl", text_token == TextBase),
+        #("text-base sm:text-lg", text_token == TextBase),
       ]
       theme.SizeMd -> [
         #("text-theme-md sm:text-theme-lg", text_token == TextTheme),
         #("text-title-md sm:text-title-lg", text_token == TextTitle),
-        #("text-md sm:text-lg", text_token == TextBase),
+        #("text-sm sm:text-base", text_token == TextBase),
       ]
       theme.SizeSm -> [
         #("text-theme-sm sm:text-theme-md", text_token == TextTheme),
         #("text-title-sm sm:text-title-md", text_token == TextTitle),
-        #("text-sm sm:text-md", text_token == TextBase),
+        #("text-sm", text_token == TextBase),
       ]
       theme.SizeXxs | theme.SizeXs -> [
         #("text-theme-xs sm:text-theme-sm", text_token == TextTheme),
