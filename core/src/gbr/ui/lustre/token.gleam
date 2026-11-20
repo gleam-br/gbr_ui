@@ -738,12 +738,12 @@ pub fn size_text_to_classes(text_token) {
       theme.SizeLg -> [
         #("text-theme-lg sm:text-theme-xl", text_token == TextTheme),
         #("text-title-lg sm:text-title-xl", text_token == TextTitle),
-        #("text-base sm:text-lg", text_token == TextBase),
+        #("text-theme-md sm:text-lg", text_token == TextBase),
       ]
       theme.SizeMd -> [
         #("text-theme-md sm:text-theme-lg", text_token == TextTheme),
         #("text-title-md sm:text-title-lg", text_token == TextTitle),
-        #("text-sm sm:text-base", text_token == TextBase),
+        #("text-sm sm:text-theme-md", text_token == TextBase),
       ]
       theme.SizeSm -> [
         #("text-theme-sm sm:text-theme-md", text_token == TextTheme),

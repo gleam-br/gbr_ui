@@ -22,6 +22,7 @@ Aqui adotamos um sistema próprio de **Type-Safe Styled Systems / Typed Tokens**
 - **Atomic Design:** Comece pelo básico (Átomos) antes de fazer composições complexas (Moléculas e Organismos). Não misture abstrações.
 - **AST First:** NUNCA escreva strings de TailwindCss avulsas dentro da view final se elas pertencem a uma configuração temática. Sempre estenda ou utilize os construtores em `theme.gleam` (ex.: `theme.new() |> theme.variant(...)`).
 - **Sem Side-Effects:** Funções de view (`view`) devem ser puras. Sem chamadas impuras, sem IO ou dependências acopladas.
+- **Tokens Tipográficos no Tailwind v4:** Nunca utilize `text-base` ou `text-md` para tamanho de fonte (`text-base` colide com `--color-base` e pinta textos de preto no dark mode; `text-md` é inválido). Use os tokens dedicados `--text-theme-*` (`text-theme-sm`, `text-theme-md`, `text-theme-lg`).
 
 ---
 

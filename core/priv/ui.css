@@ -63,8 +63,11 @@
   --text-theme-xl: 1.25rem;
   --text-theme-xl--line-height: 1.875rem;
 
+  --text-theme-lg: 1.125rem;
+  --text-theme-lg--line-height: 1.75rem;
+
   --text-theme-md: 1rem;
-  --text-theme-md--line-height: 1.25rem;
+  --text-theme-md--line-height: 1.5rem;
 
   --text-theme-sm: 0.875rem;
   --text-theme-sm--line-height: 1.25rem;
