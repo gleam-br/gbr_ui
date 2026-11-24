@@ -3,6 +3,7 @@
 import gleeunit/should
 
 import gbr/ui/lustre
+import gbr/ui/theme
 
 pub fn sort_tailwind_classes_test() {
   let tokens = [
@@ -34,4 +35,12 @@ pub fn sort_tailwind_classes_deduplication_test() {
 
   sorted
   |> should.equal("flex w-full bg-blue-500 bg-red-500 bg-green-500")
+}
+
+pub fn from_classes_test() {
+  let ui_theme = lustre.from_classes("flex gap-2")
+
+  theme.paint(ui_theme)
+  |> lustre.sort_tailwind_classes
+  |> should.equal("flex gap-2")
 }

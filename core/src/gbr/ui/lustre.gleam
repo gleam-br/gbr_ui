@@ -176,6 +176,12 @@ pub type UILustre {
   Empty
 }
 
+/// Cria um `UITheme(UILustre)` a partir de uma string de classes Tailwind.
+pub fn from_classes(classes: String) -> UITheme(UILustre) {
+  theme.new()
+  |> theme.with_base_to_tokens(fn() { [Class(classes)] })
+}
+
 /// Conversor dos design tokens para um elementos lustre.
 /// - theme: Design tokens gerados a partir do tema + o construtor de temas.
 /// - attributes: Atributos do elemento lustre.
