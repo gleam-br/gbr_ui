@@ -158,6 +158,7 @@ import lustre/attribute as a
 import lustre/element
 import lustre/element/html as h
 
+import gbr/ui/lustre/internal/tailwind_sort
 import gbr/ui/theme.{type UITheme}
 
 // --- 🛠️ ENGINE LUSTRE (DESIGN TOKEN) ----------------------------------------
@@ -522,15 +523,7 @@ pub fn a(
 /// quanto no V8 (NodeJS/Browser) via TCO (Tail Call Optimization).
 pub fn sort_tailwind_classes(tokens: List(UILustre)) -> String {
   let all_classes = extract_and_deduplicate(tokens, [])
-  // A extração empilha as classes inversamente. O `list.unique` retém
-  // a primeira ocorrência, garantindo efetivamente a diretiva do Tailwind
-  // em que a última classe declarada sobrescreve as anteriores.
-  let unique_classes =
-    all_classes
-    |> list.unique()
-    |> list.reverse()
-
-  bucket_sort_classes(unique_classes, [], [], [], [], [], [])
+  tailwind_sort.sort_class_strings(all_classes)
 }
 
 fn extract_and_deduplicate(
@@ -541,148 +534,9 @@ fn extract_and_deduplicate(
     [] -> acc
     [Class(classes_str), ..rest] -> {
       let classes = string.split(classes_str, on: " ")
-      let new_acc = push_classes(classes, acc)
+      let new_acc = tailwind_sort.push_classes(classes, acc)
       extract_and_deduplicate(rest, new_acc)
     }
     [_, ..rest] -> extract_and_deduplicate(rest, acc)
-  }
-}
-
-fn push_classes(classes: List(String), acc: List(String)) -> List(String) {
-  case classes {
-    [] -> acc
-    ["", ..rest] -> push_classes(rest, acc)
-    [c, ..rest] -> push_classes(rest, [string.trim(c), ..acc])
-  }
-}
-
-fn bucket_sort_classes(
-  classes: List(String),
-  layout: List(String),
-  sizing: List(String),
-  typo: List(String),
-  colors: List(String),
-  states: List(String),
-  other: List(String),
-) -> String {
-  case classes {
-    [] -> {
-      list.flatten([
-        list.reverse(layout),
-        list.reverse(sizing),
-        list.reverse(typo),
-        list.reverse(colors),
-        list.reverse(other),
-        list.reverse(states),
-      ])
-      |> string.join(" ")
-    }
-    [c, ..rest] -> {
-      case string.contains(c, ":") {
-        True ->
-          bucket_sort_classes(
-            rest,
-            layout,
-            sizing,
-            typo,
-            colors,
-            [c, ..states],
-            other,
-          )
-        False -> {
-          let is_layout =
-            string.starts_with(c, "flex")
-            || string.starts_with(c, "grid")
-            || string.starts_with(c, "block")
-            || string.starts_with(c, "hidden")
-            || string.starts_with(c, "absolute")
-            || string.starts_with(c, "relative")
-            || string.starts_with(c, "fixed")
-          case is_layout {
-            True ->
-              bucket_sort_classes(
-                rest,
-                [c, ..layout],
-                sizing,
-                typo,
-                colors,
-                states,
-                other,
-              )
-            False -> {
-              let is_sizing =
-                string.starts_with(c, "w-")
-                || string.starts_with(c, "h-")
-                || string.starts_with(c, "size-")
-                || string.starts_with(c, "m-")
-                || string.starts_with(c, "p-")
-                || string.starts_with(c, "gap-")
-                || string.starts_with(c, "min-")
-                || string.starts_with(c, "max-")
-              case is_sizing {
-                True ->
-                  bucket_sort_classes(
-                    rest,
-                    layout,
-                    [c, ..sizing],
-                    typo,
-                    colors,
-                    states,
-                    other,
-                  )
-                False -> {
-                  let is_typo =
-                    string.starts_with(c, "text-")
-                    || string.starts_with(c, "font-")
-                    || string.starts_with(c, "leading-")
-                    || string.starts_with(c, "tracking-")
-                  case is_typo {
-                    True ->
-                      bucket_sort_classes(
-                        rest,
-                        layout,
-                        sizing,
-                        [c, ..typo],
-                        colors,
-                        states,
-                        other,
-                      )
-                    False -> {
-                      let is_colors =
-                        string.starts_with(c, "bg-")
-                        || string.starts_with(c, "border")
-                        || string.starts_with(c, "shadow-")
-                        || string.starts_with(c, "ring-")
-                      case is_colors {
-                        True ->
-                          bucket_sort_classes(
-                            rest,
-                            layout,
-                            sizing,
-                            typo,
-                            [c, ..colors],
-                            states,
-                            other,
-                          )
-                        False ->
-                          bucket_sort_classes(
-                            rest,
-                            layout,
-                            sizing,
-                            typo,
-                            colors,
-                            states,
-                            [c, ..other],
-                          )
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
   }
 }
